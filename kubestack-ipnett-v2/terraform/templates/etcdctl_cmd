@@ -1,0 +1,1 @@
+etcdctl set "/lb/tc/svc/${cluster_name}/backends/${cluster_name}-kube-${index}/addrs" '[ "${address}" ]'

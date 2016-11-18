@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: heapster-v1.2.0
+  namespace: kube-system
+  labels:
+    k8s-app: heapster
+    kubernetes.io/cluster-service: "true"
+    version: v1.2.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: heapster
+      version: v1.2.0
+  template:
+    metadata:
+      labels:
+        k8s-app: heapster
+        version: v1.2.0
+    spec:
+      containers:
+        - image: gcr.io/google_containers/heapster:v1.2.0
+          name: heapster
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+              scheme: HTTP
+            initialDelaySeconds: 180
+            timeoutSeconds: 5
+          resources:
+            # keep request = limit to keep this container in guaranteed class
+            limits:
+              cpu: 500m
+              memory: 500Mi
+            requests:
+              cpu: 300m
+              memory: 300Mi
+          command:
+            - /heapster
+            - --source=kubernetes.summary_api:''
+        - image: gcr.io/google_containers/addon-resizer:1.6
+          name: heapster-nanny
+          resources:
+            limits:
+              cpu: 250m
+              memory: 300Mi
+            requests:
+              cpu: 150m
+              memory: 150Mi
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command:
+            - /pod_nanny
+            - --cpu=40m
+            - --extra-cpu=10m
+            - --memory=70Mi
+            - --extra-memory=30Mi
+            - --threshold=5
+            - --deployment=heapster-v1.2.0
+            - --container=heapster
+            - --poll-period=300000
+            - --estimator=exponential
+
+---
+kind: Service
+apiVersion: v1
+metadata: 
+  name: heapster
+  namespace: kube-system
+  labels: 
+    kubernetes.io/cluster-service: "true"
+    kubernetes.io/name: "Heapster"
+spec: 
+  ports: 
+    - port: 80
+      targetPort: 8082
+  selector: 
+    k8s-app: heapster

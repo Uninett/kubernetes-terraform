@@ -1,0 +1,17 @@
+[Service]
+Environment=KUBELET_VERSION=${k8s_ver}
+ExecStart=/usr/lib/coreos/kubelet-wrapper \
+  --kubeconfig=/etc/kubernetes/apiserver-kubeconfig.yaml \
+  --require-kubeconfig \
+  --network-plugin-dir=/etc/kubernetes/cni/net.d \
+  --network-plugin=${network_plugin} \
+  --register-schedulable=false \
+  --allow-privileged=true \
+  --pod-manifest-path=/etc/kubernetes/manifests \
+  --hostname-override=${hostname_override} \
+  --cluster-dns=${dns_service_ip} \
+  --cluster-domain=cluster.local
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
