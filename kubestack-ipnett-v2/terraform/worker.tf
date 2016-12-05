@@ -111,6 +111,7 @@ resource "tls_locally_signed_cert" "kube_apiserver_client" {
 resource "openstack_compute_servergroup_v2" "workers" {
     name = "${var.cluster_name}-workers"
     policies = ["anti-affinity"]
+    region = "${var.region}"
 }
 
 data "template_file" "lb_sec_group" {

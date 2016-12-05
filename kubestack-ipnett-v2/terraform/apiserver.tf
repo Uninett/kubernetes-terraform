@@ -146,6 +146,7 @@ resource "tls_private_key" "apiserver_service_account" {
 resource "openstack_compute_servergroup_v2" "apiservers" {
     name = "${var.cluster_name}-apiservers"
     policies = ["anti-affinity"]
+    region = "${var.region}"
 }
 
 resource "openstack_compute_instance_v2" "kube-apiserver" {

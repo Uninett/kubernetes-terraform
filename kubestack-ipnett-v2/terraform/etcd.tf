@@ -9,6 +9,7 @@ resource "openstack_compute_floatingip_v2" "etcd_flip" {
 resource "openstack_compute_servergroup_v2" "etcd_servers" {
     name = "${var.cluster_name}-etcd-servers"
     policies = ["anti-affinity"]
+    region = "${var.region}"
 }
 
 resource "openstack_compute_instance_v2" "etcd" {
