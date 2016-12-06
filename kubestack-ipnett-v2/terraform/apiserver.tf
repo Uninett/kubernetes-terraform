@@ -157,7 +157,7 @@ resource "openstack_compute_instance_v2" "kube-apiserver" {
     region = "${var.region}"
     image_id = "${var.images["coreos"]}"
     flavor_name = "${var.apiserver_flavor}"
-    key_pair = "${var.ssh_key["name"]}"
+    key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
         "default",
         "ssh-uninett",
