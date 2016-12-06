@@ -52,6 +52,6 @@ variable "etcd_port" { default = "2379" }
 #variable "ssl_path" { default = "${path.module}/../openssl" }
 #variable "template_path" { default = "${path.module}/templates" }
 
-variable "etcd_flavor" { default = "b.tiny" }
-variable "apiserver_flavor" { default = "b.small" }
-variable "worker_flavor" { default = "b.small" }
+variable "etcd_flavor" { default = "m1.small" }
+variable "apiserver_flavor" { default = "m1.small" }
+variable "worker_flavor" { default = "m1.small" }
