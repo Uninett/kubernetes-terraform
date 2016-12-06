@@ -5,7 +5,7 @@ data "template_file" "etcdctl_cmd" {
     vars {
         index = "${count.index}"
         cluster_name = "${var.cluster_name}"
-        address = "${element(openstack_compute_floatingip_v2.kube_flip.*.address,count.index)}"
+        address = "${element(openstack_compute_instance_v2.kube.*.network.0.fixed_ip_v4, count.index)}"
     }
 }
 

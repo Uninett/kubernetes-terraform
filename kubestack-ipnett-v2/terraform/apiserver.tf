@@ -117,7 +117,7 @@ resource "tls_cert_request" "apiserver_kubernetes_server" {
     ip_addresses = [
         "127.0.0.1", # To access via haproxy running on localhost
         "${var.k8s_service_ip}",
-        "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}",
+#        "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}",
         "${element(openstack_compute_instance_v2.kube-apiserver.*.network.0.fixed_ip_v4, count.index)}",
     ]
 }
@@ -170,8 +170,8 @@ resource "openstack_compute_instance_v2" "kube-apiserver" {
 
     #   Connecting to the set network with the provided floating ip.
     network {
-        name = "kubes"
-        floating_ip = "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}"
+        name = "public"
+    #     floating_ip = "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}"
     }
 }
 
@@ -321,7 +321,7 @@ resource "null_resource" "kube-apiserver" {
     #   'file(...)' loads the private key, and gives it to Terraform for secure connection.
     connection {
         user = "core"
-        host = "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}"
+        host = "${element(openstack_compute_instance_v2.kube-apiserver.*.network.0.fixed_ip_v4, count.index)}"
         private_key = "${file(var.ssh_key["private"])}"
         access_network = true
     }
@@ -333,10 +333,10 @@ resource "null_resource" "kube-apiserver" {
     ]
 }
 
-resource "openstack_compute_floatingip_v2" "api_flip" {
-    #   Get one floating ip for the api server
-    count = "${var.apiserver_count}"
+# resource "openstack_compute_floatingip_v2" "api_flip" {
+#     #   Get one floating ip for the api server
+#     count = "${var.apiserver_count}"
 
-    region = "${var.region}"
-    pool = "public-v4"
-}
+#     region = "${var.region}"
+#     pool = "public-v4"
+# }

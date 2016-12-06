@@ -1,10 +1,10 @@
-resource "openstack_compute_floatingip_v2" "etcd_flip" {
-    #   Pull x floating ips from the given ip-pool, where x is the number of etcd instances.
-    count = "${var.etcd_count}"
+# resource "openstack_compute_floatingip_v2" "etcd_flip" {
+#     #   Pull x floating ips from the given ip-pool, where x is the number of etcd instances.
+#     count = "${var.etcd_count}"
 
-    region = "${var.region}"
-    pool = "public-v4"
-}
+#     region = "${var.region}"
+#     pool = "public-v4"
+# }
 
 resource "openstack_compute_servergroup_v2" "etcd_servers" {
     name = "${var.cluster_name}-etcd-servers"
@@ -32,8 +32,8 @@ resource "openstack_compute_instance_v2" "etcd" {
 
     #   Connecting to the set network with the provided floating ip.
     network {
-        name = "kubes"
-        floating_ip = "${element(openstack_compute_floatingip_v2.etcd_flip.*.address, count.index)}"
+        name = "public"
+    #     floating_ip = "${element(openstack_compute_floatingip_v2.etcd_flip.*.address, count.index)}"
     }
 }
 
@@ -174,7 +174,7 @@ resource "null_resource" "etcd" {
     #   'file(...)' loads the private key, and gives it to Terraform for secure connection.
     connection {
         user = "core"
-        host = "${element(openstack_compute_floatingip_v2.etcd_flip.*.address, count.index)}"
+        host = "${element(openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, count.index)}"
         private_key = "${file(var.ssh_key["private"])}"
         access_network = true
     }

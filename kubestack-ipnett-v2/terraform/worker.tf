@@ -141,8 +141,8 @@ resource "openstack_compute_instance_v2" "kube" {
 
     #   Connecting to the set network with the provided floating ip.
     network {
-        name = "kubes"
-        floating_ip = "${element(openstack_compute_floatingip_v2.kube_flip.*.address, count.index)}"
+        name = "public"
+    #     floating_ip = "${element(openstack_compute_floatingip_v2.kube_flip.*.address, count.index)}"
     }
 
 }
@@ -286,7 +286,7 @@ resource "null_resource" "kube" {
     #   'file(...)' loads the private key, and gives it to Terraform for secure connection.
     connection {
         user = "core"
-        host = "${element(openstack_compute_floatingip_v2.kube_flip.*.address, count.index)}"
+        host = "${element(openstack_compute_instance_v2.kube.*.network.0.fixed_ip_v4, count.index)}"
         private_key = "${file(var.ssh_key["private"])}"
         access_network = true
     }
@@ -297,10 +297,10 @@ resource "null_resource" "kube" {
     ]
 }
 
-resource "openstack_compute_floatingip_v2" "kube_flip" {
-    #   Pull y floating ips from the given ip-pool, where y is the number of worker instances.
-    count = "${var.worker_count}"
+# resource "openstack_compute_floatingip_v2" "kube_flip" {
+#     #   Pull y floating ips from the given ip-pool, where y is the number of worker instances.
+#     count = "${var.worker_count}"
 
-    region = "${var.region}"
-    pool = "public-v4"
-}
+#     region = "${var.region}"
+#     pool = "public-v4"
+# }

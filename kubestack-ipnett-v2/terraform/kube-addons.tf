@@ -43,7 +43,7 @@ resource "null_resource" "kube-addons" {
     # We connect to one of the API servers.
     connection {
         user = "core"
-        host = "${openstack_compute_floatingip_v2.api_flip.0.address}"
+        host = "${openstack_compute_instance_v2.kube-apiserver.0.network.0.fixed_ip_v4}"
         private_key = "${file(var.ssh_key["private"])}"
         access_network = true
     }

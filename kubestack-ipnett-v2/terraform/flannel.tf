@@ -15,7 +15,7 @@ resource "null_resource" "flannel_config" {
 
     connection {
         user = "core"
-        host = "${openstack_compute_floatingip_v2.etcd_flip.0.address}"
+        host = "${openstack_compute_instance_v2.etcd.0.network.0.fixed_ip_v4}"
         private_key = "${file(var.ssh_key["private"])}"
         access_network = true
     }
