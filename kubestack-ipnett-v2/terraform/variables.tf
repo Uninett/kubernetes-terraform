@@ -1,12 +1,12 @@
 variable "cluster_name" { default = "testkube" }
 variable "cluster_dns_domain" { default = "testkube.paas2-dev.uninett.no" }
 
-variable "auth_url" { default = "https://keystone.api.cloud.ipnett.no/v3" }
+variable "auth_url" {}
 variable "user_name" {}
 variable "password" {}
-variable "domain_name" { default = "uninett.no" }
-variable "tenant_name" { default = "paastest.uninett.no" }
-variable "region" { default = "no-south-1" }
+variable "domain_name" {}
+variable "tenant_name" {}
+variable "region" {}
 
 variable "images" { default = {
     coreos = "0adf880a-6e50-4cf4-8d43-f61a7d2b3d62"

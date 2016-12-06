@@ -8,6 +8,8 @@ The general setup, including some of the variables, can be found [here][getting-
 - Install [Terraform][terraform-download]
 - For image-output of the dependency graph, install [Graphviz][graphviz-download]
 - Network, security groups and key pair must be (pre-created) for now.
+- Upload a coreos image to the openstack installation in question, place it's ID in the variables.tf file, or one of the override files
+- Create security groups `ssh-uninett`, `kube-lb` and `kube-api`. Make sure there is a `default` security group (There should be)
 
 ## Good-to-know
 
@@ -35,6 +37,12 @@ This is by design, but might lead to problems if scripts/files/settings/etc. on 
 - `terraform [taint|untaint] <resource>`</br>
 This will mark a certain resource as *tainted*, or "unclean". A tainted resource will always be recreated on the next `terraform apply`. Use this if some resources needs to be set up again, but you don't want to level your whole infrastructure with `terraform destroy`.
 
+## Selecting a provider
+
+Default configuration values for various providers are in the `providers` folder. You can select which provider to use using the `-var-file` parameter to various terraform commands. Example running terraform plan towards the IPNett provider:
+
+    terraform plan --var-file=../providers/ipnett.tfvars --var-file=../secrets/secret-credentials.tfvars
+
 ## Files and folders
 
 As per now, there are two main folders: *secrets* and *terraform*, where the latter is where all configuration files are.
@@ -49,6 +57,9 @@ Value files. Terraform variables may be given values by one of these files. Terr
 
 - ***terraform.tfstate*** and ***terraform.tfstate.backup***</br>
 Created and used by `terraform [plan|apply|destroy]` to keep track of the current infrastructure. Editing or deleting these files may (will almost certainly) cause errors, as Terraform will try to create resources that already exists.
+
+### providers/
+This folder contains default configuration values for various providers
 
 ### secrets/
 This folder, and the file within it, must be present before the first run:
