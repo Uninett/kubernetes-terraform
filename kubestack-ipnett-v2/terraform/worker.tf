@@ -132,7 +132,7 @@ resource "openstack_compute_instance_v2" "kube" {
     region = "${var.region}"
     image_id = "${var.images["coreos"]}"
     flavor_name = "${var.worker_flavor}"
-    key_pair = "${var.ssh_key["name"]}"
+    key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = ["${split(",",element(concat(data.template_file.lb_sec_group.*.rendered, data.template_file.worker_sec_group.*.rendered), count.index))}"]
 
 #    scheduler_hints {
