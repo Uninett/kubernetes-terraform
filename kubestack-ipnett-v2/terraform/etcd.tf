@@ -35,16 +35,6 @@ resource "openstack_compute_instance_v2" "etcd" {
         name = "kubes"
         floating_ip = "${element(openstack_compute_floatingip_v2.etcd_flip.*.address, count.index)}"
     }
-
-    #   Tells Terraform how to connect to instances of this type.
-    #   The floating ip is the same one given to 'network'.
-    #   'file(...)' loads the private key, and gives it to Terraform for secure connection.
-    connection {
-        user = "core"
-        host = "${element(openstack_compute_floatingip_v2.etcd_flip.*.address, count.index)}"
-        private_key = "${file(var.ssh_key["private"])}"
-        access_network = true
-    }
 }
 
 resource "tls_private_key" "etcd_ca" {
