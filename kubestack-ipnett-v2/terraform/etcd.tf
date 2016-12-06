@@ -26,9 +26,9 @@ resource "openstack_compute_instance_v2" "etcd" {
         "ssh-uninett"
     ]
 
-    scheduler_hints {
-        group = "${openstack_compute_servergroup_v2.etcd_servers.id}"
-    }
+#    scheduler_hints {
+#        group = "${openstack_compute_servergroup_v2.etcd_servers.id}"
+#    }
 
     #   Connecting to the set network with the provided floating ip.
     network {

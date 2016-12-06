@@ -135,9 +135,9 @@ resource "openstack_compute_instance_v2" "kube" {
     key_pair = "${var.ssh_key["name"]}"
     security_groups = ["${split(",",element(concat(data.template_file.lb_sec_group.*.rendered, data.template_file.worker_sec_group.*.rendered), count.index))}"]
 
-    scheduler_hints {
-        group = "${openstack_compute_servergroup_v2.workers.id}"
-    }
+#    scheduler_hints {
+#        group = "${openstack_compute_servergroup_v2.workers.id}"
+#    }
 
     #   Connecting to the set network with the provided floating ip.
     network {

@@ -164,9 +164,9 @@ resource "openstack_compute_instance_v2" "kube-apiserver" {
         "kube-api",
     ]
 
-    scheduler_hints {
-        group = "${openstack_compute_servergroup_v2.apiservers.id}"
-    }
+#    scheduler_hints {
+#        group = "${openstack_compute_servergroup_v2.apiservers.id}"
+#    }
 
     #   Connecting to the set network with the provided floating ip.
     network {
