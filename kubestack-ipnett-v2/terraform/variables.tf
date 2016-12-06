@@ -14,6 +14,7 @@ variable "images" { default = {
 variable "ssh_key" { default = {
     name = "kube-key"
     private = "../secrets/ssh-key"
+    public = "../secrets/ssh-key.pub"
 } }
 
 variable "lb_sec_groups" {
