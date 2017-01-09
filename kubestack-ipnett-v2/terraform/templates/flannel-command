@@ -1,1 +1,0 @@
-etcdctl --ca-file /etc/ssl/etcd/ca.pem --cert-file /etc/ssl/etcd/node.pem --key-file /etc/ssl/etcd/node-key.pem --endpoints=${etcd_endpoints} set 'coreos.com/network/config' "{\"Network\":\"${pod_network}\",\"Backend\":{\"Type\":\"vxlan\"}}"

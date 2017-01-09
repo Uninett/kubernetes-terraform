@@ -181,12 +181,8 @@ resource "null_resource" "kube" {
             "sudo mkdir -p /etc/kubernetes/ssl",
             "sudo mkdir /etc/kubernetes/manifests",
             "sudo chmod -R ugo+w /etc/kubernetes",
-            "sudo mkdir -p /etc/flannel",
-            "sudo chmod ugo+w /etc/flannel",
             "sudo chmod -R ugo+w /etc/systemd",
             "sudo chmod ugo+w /etc/kubernetes",
-            "sudo mkdir -p /etc/systemd/system/flanneld.service.d",
-            "sudo chmod ugo+w /etc/systemd/system/flanneld.service.d",
             "sudo mkdir -p /etc/cni/net.d",
         ]
     }
@@ -204,21 +200,6 @@ resource "null_resource" "kube" {
     provisioner "file" {
         destination = "/etc/kubernetes/ssl/worker-key.pem"
         content = "${element(tls_private_key.kube_apiserver_client.*.private_key_pem, count.index)}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/flannel/options.env"
-        content = "FLANNELD_IFACE=${element(openstack_compute_instance_v2.kube.*.network.0.fixed_ip_v4, count.index)}\nFLANNELD_ETCD_ENDPOINTS=${join(",", formatlist("https://%s:%s", openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, var.etcd_port))}\nFLANNELD_ETCD_CAFILE=/etc/ssl/etcd/ca.pem\nFLANNELD_ETCD_CERTFILE=/etc/ssl/etcd/node.pem\nFLANNELD_ETCD_KEYFILE=/etc/ssl/etcd/node-key.pem\n"
-    }
-
-    provisioner "file" {
-        destination = "/etc/systemd/system/flanneld.service.d/40-ExecStartPre-symlink.conf"
-        content = "[Service]\nExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env\n"
-    }
-
-    provisioner "file" {
-        destination = "/etc/systemd/system/docker.service.d/40-flannel.conf"
-        content = "[Unit]\nRequires=flanneld.service\nAfter=flanneld.service"
     }
 
     provisioner "file" {
@@ -260,9 +241,7 @@ resource "null_resource" "kube" {
             "sudo ln -s kube-worker-${count.index}-worker-key.pem worker-key.pem",
 
             "sudo systemctl daemon-reload",
-            "sudo systemctl start flanneld",
             "sudo systemctl start kubelet",
-            "sudo systemctl enable flanneld",
             "sudo systemctl enable kubelet"
         ]
     }
@@ -291,11 +270,6 @@ resource "null_resource" "kube" {
         private_key = "${file(var.ssh_key["private"])}"
         access_network = true
     }
-
-    #   This resource can't be initialized until the given resources has completed.
-    depends_on = [
-        "null_resource.flannel_config",
-    ]
 }
 
 resource "openstack_compute_floatingip_v2" "kube_flip" {
