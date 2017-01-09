@@ -1,5 +1,5 @@
 [Service]
-Environment=KUBELET_VERSION=${k8s_ver}
+Environment=KUBELET_VERSION=${k8s_ver_kubelet}
 Environment='RKT_OPTS= \
   --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
   --mount volume=etc-cni,target=/etc/cni \

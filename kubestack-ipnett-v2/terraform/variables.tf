@@ -40,7 +40,8 @@ variable "worker_count" { default = 4 }
 variable "lb_count" { default = 3 }
 
 
-variable "k8s_version" { default = "v1.4.3_coreos.0" }
+variable "k8s_version" { default = "v1.4.3" }
+variable "k8s_version_kubelet" { default = "v1.4.3_coreos.0" }
 # These are default values provided by Kubernetes
 variable "service_ip_range" { default = "10.3.0.0/24" }
 variable "k8s_service_ip" { default = "10.3.0.1" }

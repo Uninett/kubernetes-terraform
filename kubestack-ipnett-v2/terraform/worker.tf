@@ -14,7 +14,7 @@ data "template_file" "kubelet-worker-service" {
     template = "${file("${path.module}/templates/kubelet.service")}"
     vars {
         kubeconfig_path = "/etc/kubernetes/worker-kubeconfig.yaml"
-        k8s_ver = "${var.k8s_version}"
+        k8s_ver_kubelet = "${var.k8s_version_kubelet}"
         network_plugin = ""
         dns_service_ip = "${var.dns_service_ip}"
         hostname_override = "${element(openstack_compute_instance_v2.kube.*.network.0.fixed_ip_v4, count.index)}"
