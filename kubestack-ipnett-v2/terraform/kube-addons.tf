@@ -32,6 +32,11 @@ resource "null_resource" "kube-addons" {
         source = "${path.module}/templates/kube-lego.yaml"
     }
 
+    provisioner "file" {
+        destination = "/tmp/addons/weave-kube.yaml"
+        source = "${path.module}/templates/weave-kube.yaml"
+    }
+
     # Install the Kubernetes addons
     provisioner "remote-exec" {
         inline = [

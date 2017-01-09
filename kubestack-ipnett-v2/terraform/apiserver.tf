@@ -4,7 +4,7 @@ data "template_file" "kubelet-service" {
     template = "${file("${path.module}/templates/kubelet-apiserver.service")}"
     vars {
         k8s_ver_kubelet = "${var.k8s_version_kubelet}"
-        network_plugin = ""
+        network_plugin = "cni"
         dns_service_ip = "${var.dns_service_ip}"
         hostname_override = "${element(openstack_compute_instance_v2.kube-apiserver.*.network.0.fixed_ip_v4, count.index)}"
     }
@@ -295,6 +295,23 @@ resource "null_resource" "kube-apiserver" {
             "sudo mv /tmp/locksmithd.conf /etc/systemd/system/locksmithd.service.d/",
             "sudo systemctl daemon-reload",
             "sudo systemctl restart locksmithd",
+        ]
+    }
+
+    # Work around CoreOS breaking weave network configuration
+    # See: https://github.com/weaveworks/weave/issues/2601
+    # The difference between our zz-default.network and the standard is that we
+    # limit it to only "physical" network devices by specifying a path.
+    provisioner "file" {
+        destination = "/tmp/zz-default.network"
+        content = "[Match]\nPath=*\n[Network]\nDHCP=yes\n[DHCP]\nUseMTU=true\nUseDomains=true\n"
+    }
+    provisioner "remote-exec" {
+        inline = [
+            "sudo ln -sf /dev/null /etc/systemd/network/50-docker-veth.network",
+            "sudo mv /tmp/zz-default.network /etc/systemd/network/zz-default.network",
+            "sudo chown -R root:root /etc/systemd/network/zz-default.network",
+            "sudo systemctl restart systemd-networkd",
         ]
     }
 
