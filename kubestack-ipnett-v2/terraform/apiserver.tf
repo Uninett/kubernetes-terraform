@@ -217,6 +217,7 @@ resource "null_resource" "kube-apiserver" {
             "sudo chmod ugo+w /etc/systemd/system",
             "sudo mkdir /etc/kubernetes/manifests",
             "sudo chmod ugo+w /etc/kubernetes/manifests",
+            "sudo mkdir -p /etc/cni/net.d",
         ]
     }
 

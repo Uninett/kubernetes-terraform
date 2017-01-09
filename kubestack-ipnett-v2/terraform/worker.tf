@@ -187,6 +187,7 @@ resource "null_resource" "kube" {
             "sudo chmod ugo+w /etc/kubernetes",
             "sudo mkdir -p /etc/systemd/system/flanneld.service.d",
             "sudo chmod ugo+w /etc/systemd/system/flanneld.service.d",
+            "sudo mkdir -p /etc/cni/net.d",
         ]
     }
 
