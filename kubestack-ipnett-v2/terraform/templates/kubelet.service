@@ -3,6 +3,8 @@ Environment=KUBELET_VERSION=${k8s_ver}
 Environment='RKT_OPTS= \
   --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
   --mount volume=etc-cni,target=/etc/cni \
+  --volume opt-cni,kind=host,source=/opt/cni,readOnly=true \
+  --mount volume=opt-cni,target=/opt/cni \
 '
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=${kubeconfig_path} \

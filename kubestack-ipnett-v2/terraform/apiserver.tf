@@ -212,6 +212,8 @@ resource "null_resource" "kube-apiserver" {
             "sudo mkdir /etc/kubernetes/manifests",
             "sudo chmod ugo+w /etc/kubernetes/manifests",
             "sudo mkdir -p /etc/cni/net.d",
+            "sudo mkdir -p /opt/cni/bin",
+            "curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz' | sudo tar --extract --gzip --directory /opt/cni/bin",
         ]
     }
 
