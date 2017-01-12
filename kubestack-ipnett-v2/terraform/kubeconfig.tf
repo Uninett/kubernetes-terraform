@@ -1,5 +1,5 @@
 resource "tls_private_key" "kube_admin" {
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_cert_request" "kube_admin" {

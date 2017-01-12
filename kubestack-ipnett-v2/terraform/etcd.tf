@@ -38,7 +38,7 @@ resource "openstack_compute_instance_v2" "etcd" {
 }
 
 resource "tls_private_key" "etcd_ca" {
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_self_signed_cert" "etcd_ca" {
@@ -60,7 +60,7 @@ resource "tls_self_signed_cert" "etcd_ca" {
 
 resource "tls_private_key" "etcd" {
     count = "${var.etcd_count}"
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_cert_request" "etcd" {
