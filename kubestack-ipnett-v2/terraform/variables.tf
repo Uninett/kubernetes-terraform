@@ -9,7 +9,7 @@ variable "tenant_name" {}
 variable "region" {}
 
 variable "images" { default = {
-    coreos = "0adf880a-6e50-4cf4-8d43-f61a7d2b3d62"
+    coreos = "d795bead-fa4e-4fab-954a-9c13676d4032"
 } }
 variable "ssh_key" { default = {
     name = "kube-key"
