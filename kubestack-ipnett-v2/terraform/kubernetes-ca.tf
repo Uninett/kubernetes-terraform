@@ -1,5 +1,5 @@
 resource "tls_private_key" "kubernetes_ca" {
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_self_signed_cert" "kubernetes_ca" {

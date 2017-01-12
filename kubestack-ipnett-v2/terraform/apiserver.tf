@@ -64,7 +64,7 @@ data "template_file" "dashboard-addon" {
 
 resource "tls_private_key" "apiserver_etcd_client" {
     count = "${var.apiserver_count}"
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_cert_request" "apiserver_etcd_client" {
@@ -96,7 +96,7 @@ resource "tls_locally_signed_cert" "apiserver_etcd_client" {
 
 resource "tls_private_key" "apiserver_kubernetes_server" {
     count = "${var.apiserver_count}"
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_cert_request" "apiserver_kubernetes_server" {

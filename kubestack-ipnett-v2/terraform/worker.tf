@@ -45,7 +45,7 @@ data "template_file" "haproxy-apiserver-cfg" {
 
 resource "tls_private_key" "kube_etcd_client" {
     count = "${var.worker_count}"
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_cert_request" "kube_etcd_client" {
@@ -77,7 +77,7 @@ resource "tls_locally_signed_cert" "kube_etcd_client" {
 
 resource "tls_private_key" "kube_apiserver_client" {
     count = "${var.worker_count}"
-    algorithm = "ECDSA"
+    algorithm = "RSA"
 }
 
 resource "tls_cert_request" "kube_apiserver_client" {
