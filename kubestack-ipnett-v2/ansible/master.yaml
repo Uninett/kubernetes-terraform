@@ -5,13 +5,6 @@
   vars:
     apiserver_address: http://127.0.0.1:8080
   tasks:
-    - name: Create kubernetes ssl folder
-      file:
-        path: /etc/kubernetes/ssl
-        state: directory
-        owner: root
-        group: root
-        mode: 0755
     - name: Create kubernetes manifests folder
       file:
         path: /etc/kubernetes/manifests
@@ -54,27 +47,6 @@
         owner: core
         group: core
         mode: 0644
-    - name: Copy kubernetes ca certificate
-      copy:
-        src: ../masters/kubernetes/ca.pem
-        dest: /etc/kubernetes/ssl/ca.pem
-        owner: root
-        group: root
-        mode: 0644
-    - name: Copy kubernetes node certificate
-      copy:
-        src: ../masters/kubernetes/{{inventory_hostname}}.pem
-        dest: /etc/kubernetes/ssl/apiserver.pem
-        owner: root
-        group: root
-        mode: 0644
-    - name: Copy kubernetes node key
-      copy:
-        src: ../masters/kubernetes/{{inventory_hostname}}-key.pem
-        dest: /etc/kubernetes/ssl/apiserver-key.pem
-        owner: root
-        group: root
-        mode: 0600
     - name: Copy kubernetes service account key
       copy:
         src: ../masters/service_account/{{inventory_hostname}}.pem

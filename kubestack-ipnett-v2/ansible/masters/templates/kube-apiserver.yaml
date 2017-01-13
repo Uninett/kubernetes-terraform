@@ -20,8 +20,8 @@ spec:
     - --service-cluster-ip-range={{service_ip_range}}
     - --secure-port=443
     - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota
-    - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
-    - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
+    - --tls-cert-file=/etc/kubernetes/ssl/node.pem
+    - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/service-key.pem
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true

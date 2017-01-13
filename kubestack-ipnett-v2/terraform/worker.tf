@@ -177,29 +177,28 @@ EOF
 EOC
     }
 
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../kubernetes/${var.cluster_name}-kube-${count.index}.pem <<EOF
+${element(tls_locally_signed_cert.kube_apiserver_client.*.cert_pem, count.index)}
+EOF
+EOC
+    }
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../kubernetes/${var.cluster_name}-kube-${count.index}-key.pem <<EOF
+${element(tls_private_key.kube_apiserver_client.*.private_key_pem, count.index)}
+EOF
+EOC
+    }
+
     provisioner "remote-exec" {
         inline = [
-            "sudo mkdir -p /etc/kubernetes/ssl",
             "sudo mkdir /etc/kubernetes/manifests",
             "sudo chmod -R ugo+w /etc/kubernetes",
             "sudo chmod -R ugo+w /etc/systemd",
             "sudo chmod ugo+w /etc/kubernetes",
         ]
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/ssl/ca.pem"
-        content = "${tls_self_signed_cert.kubernetes_ca.cert_pem}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/ssl/worker.pem"
-        content = "${element(tls_locally_signed_cert.kube_apiserver_client.*.cert_pem, count.index)}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/ssl/worker-key.pem"
-        content = "${element(tls_private_key.kube_apiserver_client.*.private_key_pem, count.index)}"
     }
 
     provisioner "file" {
@@ -235,11 +234,6 @@ EOC
 #   Transfer keys and config files to the workers
     provisioner "remote-exec" {
         inline = [
-            "sudo chmod 600 /etc/kubernetes/ssl/*-key.pem",
-            "sudo chown root:root /etc/kubernetes/ssl/*-key.pem",
-            "sudo ln -s kube-worker-${count.index}-worker.pem worker.pem",
-            "sudo ln -s kube-worker-${count.index}-worker-key.pem worker-key.pem",
-
             "sudo systemctl daemon-reload",
             "sudo systemctl start kubelet",
             "sudo systemctl enable kubelet"

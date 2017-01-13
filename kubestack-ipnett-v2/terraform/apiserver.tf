@@ -120,7 +120,7 @@ resource "null_resource" "kube-apiserver" {
         command = "mkdir -p  ../etcd"
     }
     provisioner "local-exec" {
-        command = "mkdir -p  ../masters/kubernetes"
+        command = "mkdir -p  ../kubernetes"
     }
     provisioner "local-exec" {
         command = "mkdir -p  ../masters/service_account"
@@ -149,21 +149,21 @@ EOC
 
     provisioner "local-exec" {
         command = <<EOC
-tee ../masters/kubernetes/ca.pem <<EOF
+tee ../kubernetes/ca.pem <<EOF
 ${tls_self_signed_cert.kubernetes_ca.cert_pem}
 EOF
 EOC
     }
     provisioner "local-exec" {
         command = <<EOC
-tee ../masters/kubernetes/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
+tee ../kubernetes/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
 ${element(tls_locally_signed_cert.apiserver_kubernetes_server.*.cert_pem, count.index)}
 EOF
 EOC
     }
     provisioner "local-exec" {
         command = <<EOC
-tee ../masters/kubernetes/${var.cluster_name}-apiserver-${count.index}-key.pem <<EOF
+tee ../kubernetes/${var.cluster_name}-apiserver-${count.index}-key.pem <<EOF
 ${element(tls_private_key.apiserver_kubernetes_server.*.private_key_pem, count.index)}
 EOF
 EOC
