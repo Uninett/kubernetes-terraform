@@ -3,7 +3,7 @@
   tasks:
     - name: Waiting for API server to become ready
       wait_for:
-        host: "{{apiserver_ip}}"
+        host: "{{hostvars[groups['master'][0]]['ansible_host']}}"
         port: 443
     - name: Heapster
       command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/files/heapster.yaml

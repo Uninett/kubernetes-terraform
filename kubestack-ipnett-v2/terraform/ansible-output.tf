@@ -34,7 +34,6 @@ data "template_file" "ansible_hosts" {
         ssh_key = "${var.ssh_key["private"]}"
         cluster_name  = "${var.cluster_name}"
         cluster_dns_domain = "${var.cluster_dns_domain}"
-        apiserver_ip = "${openstack_compute_floatingip_v2.api_flip.0.address}"
         dns_service_ip = "${var.dns_service_ip}"
         k8s_ver = "${var.k8s_version}"
         k8s_ver_kubelet = "${var.k8s_version_kubelet}"

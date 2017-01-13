@@ -25,7 +25,6 @@ coreos
 kubernetes
 
 [root:vars]
-apiserver_ip=${apiserver_ip}
 dns_service_ip=${dns_service_ip}
 cluster_dns_domain=${cluster_dns_domain}
 cluster_name=${cluster_name}
