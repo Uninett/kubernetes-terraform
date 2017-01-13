@@ -4,4 +4,16 @@
     - wait_for:
         host: "{{apiserver_ip}}"
         port: 443
-    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f ../terraform/templates/heapster-addon.yaml
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/heapster.yaml
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/nginx-lb.yaml
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/kube-lego.yaml
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/weave.yaml
+    - file: path=addons/templates/.rendered state=directory
+    - template:
+        src: addons/templates/dns.yaml
+        dest: addons/templates/.rendered/dns.yaml
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/templates/.rendered/dns.yaml
+    - template:
+        src: addons/templates/dashboard.yaml
+        dest: addons/templates/.rendered/dashboard.yaml
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/templates/.rendered/dashboard.yaml

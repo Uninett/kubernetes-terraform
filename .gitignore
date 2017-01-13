@@ -16,3 +16,4 @@ secrets
 **/ansible/inventory
 **/ansible/roles/
 /kubestack-ipnett-v2/ansible/kubeconfig
+/kubestack-ipnett-v2/ansible/addons/templates/.rendered

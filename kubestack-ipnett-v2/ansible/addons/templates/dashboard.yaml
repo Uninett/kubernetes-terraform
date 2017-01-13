@@ -65,10 +65,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - db.${cluster_dns_domain}
+    - db.{{cluster_dns_domain}}
     secretName: kubernetes-dashboard-tls
   rules:
-  - host: db.${cluster_dns_domain}
+  - host: db.{{cluster_dns_domain}}
     http:
       paths:
       - path: /

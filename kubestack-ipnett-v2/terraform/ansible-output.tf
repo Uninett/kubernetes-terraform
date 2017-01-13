@@ -33,7 +33,9 @@ data "template_file" "ansible_hosts" {
         worker_hosts = "${join("\n",data.template_file.workers_ansible.*.rendered)}"
         ssh_key = "${var.ssh_key["private"]}"
         cluster_name  = "${var.cluster_name}"
+        cluster_dns_domain = "${var.cluster_dns_domain}"
         apiserver_ip = "${openstack_compute_floatingip_v2.api_flip.0.address}"
+        dns_service_ip = "${var.dns_service_ip}"
     }
 }
 

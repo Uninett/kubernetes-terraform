@@ -48,20 +48,6 @@ data "template_file" "apiserver-kubeconfig" {
     }
 }
 
-data "template_file" "dns-addon" {
-    template = "${file("${path.module}/templates/dns-addon.yaml")}"
-    vars {
-        dns_service_ip = "${var.dns_service_ip}"
-    }
-}
-
-data "template_file" "dashboard-addon" {
-    template = "${file("${path.module}/templates/dashboard-addon.yaml")}"
-    vars {
-        cluster_dns_domain = "${var.cluster_dns_domain}"
-    }
-}
-
 resource "tls_private_key" "apiserver_etcd_client" {
     count = "${var.apiserver_count}"
     algorithm = "RSA"
