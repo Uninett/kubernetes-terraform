@@ -6,24 +6,24 @@
         host: "{{apiserver_ip}}"
         port: 443
     - name: Heapster
-      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/heapster.yaml
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/files/heapster.yaml
     - name: nginx ingress loadbalancer
-      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/nginx-lb.yaml
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/files/nginx-lb.yaml
     - name: kube-lego certificate manager
-      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/kube-lego.yaml
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/files/kube-lego.yaml
     - name: Weave network plugin
-      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/files/weave.yaml
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/files/weave.yaml
     - name: Rendered template directory
-      file: path=addons/templates/.rendered state=directory
+      file: path=configure_cluster/templates/.rendered state=directory
     - name: DNS template
       template:
-        src: addons/templates/dns.yaml
-        dest: addons/templates/.rendered/dns.yaml
+        src: configure_cluster/templates/dns.yaml
+        dest: configure_cluster/templates/.rendered/dns.yaml
     - name: DNS
-      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/templates/.rendered/dns.yaml
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/templates/.rendered/dns.yaml
     - name: Dashboard template
       template:
-        src: addons/templates/dashboard.yaml
-        dest: addons/templates/.rendered/dashboard.yaml
+        src: configure_cluster/templates/dashboard.yaml
+        dest: configure_cluster/templates/.rendered/dashboard.yaml
     - name: Dashboard
-      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f addons/templates/.rendered/dashboard.yaml
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/templates/.rendered/dashboard.yaml
