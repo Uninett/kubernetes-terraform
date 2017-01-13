@@ -32,6 +32,8 @@ data "template_file" "ansible_hosts" {
         etcd_hosts = "${join("\n",data.template_file.etcd_ansible.*.rendered)}"
         worker_hosts = "${join("\n",data.template_file.workers_ansible.*.rendered)}"
         ssh_key = "${var.ssh_key["private"]}"
+        cluster_name  = "${var.cluster_name}"
+        apiserver_ip = "${openstack_compute_floatingip_v2.api_flip.0.address}"
     }
 }
 

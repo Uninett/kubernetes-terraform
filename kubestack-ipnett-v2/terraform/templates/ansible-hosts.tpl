@@ -16,3 +16,13 @@ worker
 ansible_ssh_user=core
 ansible_python_interpreter="/home/core/bin/python"
 ansible_ssh_private_key_file="${ssh_key}"
+
+[kubernetes]
+${cluster_name} ansible_connection=local
+
+[root:children]
+coreos
+kubernetes
+
+[root:vars]
+apiserver_ip=${apiserver_ip}

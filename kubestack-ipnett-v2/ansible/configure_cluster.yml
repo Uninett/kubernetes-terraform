@@ -1,0 +1,7 @@
+- name: Configure Kubernetes
+  hosts: kubernetes
+  tasks:
+    - wait_for:
+        host: "{{apiserver_ip}}"
+        port: 443
+    - command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f ../terraform/templates/heapster-addon.yaml
