@@ -39,3 +39,24 @@ kubectl config set-context '${var.cluster_name}-admin' --cluster '${var.cluster_
 kubectl config use-context '${var.cluster_name}-admin'
 EOF
 }
+
+data "template_file" "kubeconfig" {
+    template = "${file("${path.module}/templates/kubeconfig")}"
+    vars {
+        apiserver_address = "${openstack_compute_floatingip_v2.api_flip.0.address}"
+        cluster_name = "${var.cluster_name}"
+        ca_base64 = "${base64encode(tls_self_signed_cert.kubernetes_ca.cert_pem)}"
+        kube_admin_cert_base64 = "${base64encode(tls_locally_signed_cert.kube_admin.cert_pem)}"
+        kube_admin_key_base64 = "${base64encode(tls_private_key.kube_admin.private_key_pem)}"
+    }
+}
+
+resource "null_resource" "local" {
+    triggers {
+      template = "${data.template_file.kubeconfig.rendered}"
+    }
+
+    provisioner "local-exec" {
+      command = "echo '${data.template_file.kubeconfig.rendered}' >../ansible/kubeconfig"
+    }
+}
