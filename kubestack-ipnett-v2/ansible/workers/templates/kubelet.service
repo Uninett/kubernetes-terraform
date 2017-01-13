@@ -1,5 +1,5 @@
 [Service]
-Environment=KUBELET_VERSION=${k8s_ver_kubelet}
+Environment=KUBELET_VERSION={{k8s_ver_kubelet}}
 Environment='RKT_OPTS= \
   --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
   --mount volume=etc-cni,target=/etc/cni \
@@ -7,16 +7,16 @@ Environment='RKT_OPTS= \
   --mount volume=opt-cni,target=/opt/cni \
 '
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
-  --kubeconfig=${kubeconfig_path} \
+  --kubeconfig=/etc/kubernetes/kubeconfig.yaml \
   --require-kubeconfig \
   --network-plugin-dir=/etc/cni/net.d \
-  --network-plugin=${network_plugin} \
+  --network-plugin={{network_plugin}} \
   --register-schedulable=true \
   --allow-privileged=true \
   --pod-manifest-path=/etc/kubernetes/manifests \
-  --hostname-override=${hostname_override} \
-  --cluster-dns=${dns_service_ip} \
-  --node-labels=${labels} \
+  --hostname-override={{ansible_eth0.ipv4.address}} \
+  --cluster-dns={{dns_service_ip}} \
+  --node-labels=lb={{lb}} \
   --cluster-domain=cluster.local \
   --node-status-update-frequency=4s
 Restart=always
