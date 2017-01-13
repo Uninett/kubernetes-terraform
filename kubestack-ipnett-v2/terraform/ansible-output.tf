@@ -41,6 +41,7 @@ data "template_file" "ansible_hosts" {
         network_plugin = "cni"
         service_ip_range = "${var.service_ip_range}"
         etcd_endpoints = "${join(",", formatlist("https://%s:%s", openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, var.etcd_port))}"
+        etcd_initial_cluster = "${join(",", formatlist("%s=https://%s:2380", openstack_compute_instance_v2.etcd.*.name, openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4))}"
     }
 }
 

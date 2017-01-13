@@ -94,20 +94,6 @@ resource "tls_locally_signed_cert" "etcd" {
     ]
 }
 
-data "template_file" "etcd" {
-    #   Loads a file from the given folder, inserts values where variables are specified, and returnes a complete, rendered file.
-    #   'count' makes sure that the correct number of rendered templates are being created, as 'flip' must be different for each etcd instance.
-    count = "${var.etcd_count}"
-
-    template = "${file("${path.module}/templates/etcd2.conf")}"
-    vars {
-        name = "${element(openstack_compute_instance_v2.etcd.*.name, count.index)}"
-        initial_advertise_peer_urls = "https://${element(openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, count.index)}:2380"
-        advertise_client_urls = "${join(",", formatlist("https://%s:2379", openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4))}"
-        initial_cluster = "${join(",", formatlist("%s=https://%s:2380", openstack_compute_instance_v2.etcd.*.name, openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4))}"
-    }
-}
-
 resource "null_resource" "etcd" {
     #   Creating 'count' number of etcd instances.
     count = "${var.etcd_count}"
@@ -138,26 +124,4 @@ EOF
 EOC
     }
 
-    #   Creating a configuration file for etcd based on the given template.
-    #   Give the config-file to etcd, reload and start up.
-    provisioner "remote-exec" {
-        inline = [
-            "sudo mkdir /etc/systemd/system/etcd2.service.d",
-            "cat << 'EOF' > /tmp/etcd2.conf\n${element(data.template_file.etcd.*.rendered, count.index)}\nEOF",
-            "sudo mv /tmp/etcd2.conf /etc/systemd/system/etcd2.service.d/",
-            "sudo systemctl daemon-reload",
-            "sudo systemctl enable etcd2",
-            "sudo systemctl start etcd2"
-        ]
-    }
-
-    #   Tells Terraform how to connect to instances of this type.
-    #   The floating ip is the same one given to 'network'.
-    #   'file(...)' loads the private key, and gives it to Terraform for secure connection.
-    connection {
-        user = "core"
-        host = "${element(openstack_compute_floatingip_v2.etcd_flip.*.address, count.index)}"
-        private_key = "${file(var.ssh_key["private"])}"
-        access_network = true
-    }
 }
