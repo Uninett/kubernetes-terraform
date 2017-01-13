@@ -40,10 +40,10 @@
         owner: core
         group: core
         mode: 0644
-    - name: Configure kube scheduler
+    - name: Add kubeconfig
       template:
-        src: masters/templates/apiserver-kubeconfig.yaml
-        dest: /etc/kubernetes/apiserver-kubeconfig.yaml
+        src: masters/templates/kubeconfig.yaml
+        dest: /etc/kubernetes/kubeconfig.yaml
         owner: core
         group: core
         mode: 0644
