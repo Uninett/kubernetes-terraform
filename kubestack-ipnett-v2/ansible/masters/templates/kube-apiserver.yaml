@@ -7,17 +7,17 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: gcr.io/google_containers/hyperkube-amd64:${k8s_ver}
+    image: gcr.io/google_containers/hyperkube-amd64:{{k8s_ver}}
     command:
     - /hyperkube
     - apiserver
     - --bind-address=0.0.0.0
-    - --etcd-servers=${etcd_endpoints}
+    - --etcd-servers={{etcd_endpoints}}
     - --etcd-cafile=/etc/ssl/etcd/ca.pem
     - --etcd-certfile=/etc/ssl/etcd/node.pem
     - --etcd-keyfile=/etc/ssl/etcd/node-key.pem
     - --allow-privileged=true
-    - --service-cluster-ip-range=${service_ip_range}
+    - --service-cluster-ip-range={{service_ip_range}}
     - --secure-port=443
     - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem

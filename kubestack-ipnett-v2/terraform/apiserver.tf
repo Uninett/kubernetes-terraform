@@ -1,52 +1,3 @@
-data "template_file" "kubelet-service" {
-    count = "${var.apiserver_count}"
-
-    template = "${file("${path.module}/templates/kubelet-apiserver.service")}"
-    vars {
-        k8s_ver_kubelet = "${var.k8s_version_kubelet}"
-        network_plugin = "cni"
-        dns_service_ip = "${var.dns_service_ip}"
-        hostname_override = "${element(openstack_compute_instance_v2.kube-apiserver.*.network.0.fixed_ip_v4, count.index)}"
-    }
-}
-
-data "template_file" "kube-apiserver-yaml" {
-    template = "${file("${path.module}/templates/kube-apiserver.yaml")}"
-    vars {
-        k8s_ver = "${var.k8s_version}"
-        etcd_endpoints = "${join(",", formatlist("https://%s:%s", openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, var.etcd_port))}"
-        service_ip_range = "${var.service_ip_range}"
-    }
-}
-
-data "template_file" "kube-proxy-yaml" {
-    template = "${file("${path.module}/templates/kube-proxy.yaml")}"
-    vars {
-        k8s_ver = "${var.k8s_version}"
-    }
-}
-
-data "template_file" "kube-controller-yaml" {
-    template = "${file("${path.module}/templates/kube-controller-manager.yaml")}"
-    vars {
-        k8s_ver = "${var.k8s_version}"
-    }
-}
-
-data "template_file" "kube-scheduler-yaml" {
-    template = "${file("${path.module}/templates/kube-scheduler.yaml")}"
-    vars {
-        k8s_ver = "${var.k8s_version}"
-    }
-}
-
-data "template_file" "apiserver-kubeconfig" {
-    template = "${file("${path.module}/templates/apiserver-kubeconfig.yaml")}"
-    vars {
-        apiserver_address = "http://127.0.0.1:8080"
-        cluster_name = "${var.cluster_name}"
-    }
-}
 
 resource "tls_private_key" "apiserver_etcd_client" {
     count = "${var.apiserver_count}"
@@ -165,150 +116,65 @@ resource "null_resource" "kube-apiserver" {
     count = "${var.apiserver_count}"
 
     # Add etcd certs & key
-    provisioner "remote-exec" {
-        inline = [
-            "mkdir -p /tmp/etcd",
-        ]
+    provisioner "local-exec" {
+        command = "mkdir -p  ../masters/etcd"
     }
-    provisioner "file" {
-        destination = "/tmp/etcd/ca.pem"
-        content = "${tls_self_signed_cert.etcd_ca.cert_pem}"
+    provisioner "local-exec" {
+        command = "mkdir -p  ../masters/kubernetes"
     }
-    provisioner "file" {
-        destination = "/tmp/etcd/node.pem"
-        content = "${element(tls_locally_signed_cert.apiserver_etcd_client.*.cert_pem, count.index)}"
+    provisioner "local-exec" {
+        command = "mkdir -p  ../masters/service_account"
     }
-    provisioner "file" {
-        destination = "/tmp/etcd/node-key.pem"
-        content = "${element(tls_private_key.apiserver_etcd_client.*.private_key_pem, count.index)}"
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/etcd/ca.pem <<EOF
+${tls_self_signed_cert.etcd_ca.cert_pem}
+EOF
+EOC
     }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo rm -rf /etc/ssl/etcd",
-            "sudo chown -R root:root /tmp/etcd",
-            "sudo mv /tmp/etcd /etc/ssl/",
-        ]
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/etcd/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
+${element(tls_locally_signed_cert.apiserver_etcd_client.*.cert_pem, count.index)}
+EOF
+EOC
     }
-
-    provisioner "remote-exec" {
-        inline = [
-            "sudo mkdir -p /etc/kubernetes/ssl",
-            "sudo chmod -R ugo+w /etc/kubernetes",
-            "sudo chmod ugo+w /etc/systemd/system",
-            "sudo mkdir /etc/kubernetes/manifests",
-            "sudo chmod ugo+w /etc/kubernetes/manifests",
-            "sudo mkdir -p /etc/cni/net.d",
-            "sudo mkdir -p /opt/cni/bin",
-            "curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz' | sudo tar --extract --gzip --directory /opt/cni/bin",
-        ]
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/etcd/${var.cluster_name}-apiserver-${count.index}-key.pem <<EOF
+${element(tls_private_key.apiserver_etcd_client.*.private_key_pem, count.index)}
+EOF
+EOC
     }
 
-    provisioner "file" {
-        destination = "/etc/kubernetes/ssl/ca.pem"
-        content = "${tls_self_signed_cert.kubernetes_ca.cert_pem}"
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/kubernetes/ca.pem <<EOF
+${tls_self_signed_cert.kubernetes_ca.cert_pem}
+EOF
+EOC
+    }
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/kubernetes/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
+${element(tls_locally_signed_cert.apiserver_kubernetes_server.*.cert_pem, count.index)}
+EOF
+EOC
+    }
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/kubernetes/${var.cluster_name}-apiserver-${count.index}-key.pem <<EOF
+${element(tls_private_key.apiserver_kubernetes_server.*.private_key_pem, count.index)}
+EOF
+EOC
     }
 
-    provisioner "file" {
-        destination = "/etc/kubernetes/ssl/apiserver.pem"
-        content = "${element(tls_locally_signed_cert.apiserver_kubernetes_server.*.cert_pem, count.index)}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/ssl/apiserver-key.pem"
-        content = "${element(tls_private_key.apiserver_kubernetes_server.*.private_key_pem, count.index)}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/systemd/system/kubelet.service"
-        content = "${element(data.template_file.kubelet-service.*.rendered, count.index)}\n"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/manifests/kube-apiserver.yaml"
-        content = "${data.template_file.kube-apiserver-yaml.rendered}\n"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/manifests/kube-proxy.yaml"
-        content = "${data.template_file.kube-proxy-yaml.rendered}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
-        content = "${data.template_file.kube-controller-yaml.rendered}\n"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/manifests/kube-scheduler.yaml"
-        content = "${data.template_file.kube-scheduler-yaml.rendered}\n"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/apiserver-kubeconfig.yaml"
-        content = "${data.template_file.apiserver-kubeconfig.rendered}"
-    }
-
-    provisioner "file" {
-        destination = "/etc/kubernetes/service-key.pem"
-        content = "${tls_private_key.apiserver_service_account.private_key_pem}"
-    }
-
-    #   Transfer keys and config files to the api-server
-    provisioner "remote-exec" {
-        inline = [
-            "sudo chmod 600 /etc/kubernetes/ssl/*-key.pem",
-            "sudo chown root:root /etc/kubernetes/ssl/*-key.pem",
-            "sudo chmod 600 /etc/kubernetes/service-key.pem",
-            "sudo chown root:root /etc/kubernetes/service-key.pem",
-
-            "sudo systemctl daemon-reload",
-            "sudo systemctl start docker",
-            "sudo systemctl enable docker",
-            "sudo systemctl start kubelet",
-            "sudo systemctl enable kubelet",
-        ]
-    }
-
-    # Configure locksmithd for coordinated reboot of the nodes.
-    provisioner "file" {
-        destination = "/tmp/locksmithd.conf"
-        content = "${data.template_file.locksmithd.rendered}"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo mkdir -p /etc/systemd/system/locksmithd.service.d",
-            "sudo chown -R root:root /tmp/locksmithd.conf",
-            "sudo mv /tmp/locksmithd.conf /etc/systemd/system/locksmithd.service.d/",
-            "sudo systemctl daemon-reload",
-            "sudo systemctl restart locksmithd",
-        ]
-    }
-
-    # Work around CoreOS breaking weave network configuration
-    # See: https://github.com/weaveworks/weave/issues/2601
-    # The difference between our zz-default.network and the standard is that we
-    # limit it to only "physical" network devices by specifying a path.
-    provisioner "file" {
-        destination = "/tmp/zz-default.network"
-        content = "[Match]\nPath=*\n[Network]\nDHCP=yes\n[DHCP]\nUseMTU=true\nUseDomains=true\n"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo ln -sf /dev/null /etc/systemd/network/50-docker-veth.network",
-            "sudo mv /tmp/zz-default.network /etc/systemd/network/zz-default.network",
-            "sudo chown -R root:root /etc/systemd/network/zz-default.network",
-            "sudo systemctl restart systemd-networkd",
-        ]
-    }
-
-    #   Tells Terraform how to connect to instances of this type.
-    #   The floating ip is the same one given to 'network'.
-    #   'file(...)' loads the private key, and gives it to Terraform for secure connection.
-    connection {
-        user = "core"
-        host = "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}"
-        private_key = "${file(var.ssh_key["private"])}"
-        access_network = true
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../masters/service_account/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
+${tls_private_key.apiserver_service_account.private_key_pem}
+EOF
+EOC
     }
 
     #   This resource can't be initialized until the given resources has completed.

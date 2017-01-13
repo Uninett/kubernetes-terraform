@@ -28,3 +28,9 @@ kubernetes
 apiserver_ip=${apiserver_ip}
 dns_service_ip=${dns_service_ip}
 cluster_dns_domain=${cluster_dns_domain}
+cluster_name=${cluster_name}
+k8s_ver=${k8s_ver}
+k8s_ver_kubelet=${k8s_ver_kubelet}
+network_plugin=${network_plugin}
+service_ip_range=${service_ip_range}
+etcd_endpoints=${etcd_endpoints}

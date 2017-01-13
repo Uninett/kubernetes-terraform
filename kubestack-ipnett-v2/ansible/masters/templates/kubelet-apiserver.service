@@ -1,5 +1,5 @@
 [Service]
-Environment=KUBELET_VERSION=${k8s_ver_kubelet}
+Environment=KUBELET_VERSION={{k8s_ver_kubelet}}
 Environment='RKT_OPTS= \
   --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
   --mount volume=etc-cni,target=/etc/cni \
@@ -10,12 +10,12 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/etc/kubernetes/apiserver-kubeconfig.yaml \
   --require-kubeconfig \
   --network-plugin-dir=/etc/cni/net.d \
-  --network-plugin=${network_plugin} \
+  --network-plugin={{network_plugin}} \
   --register-schedulable=false \
   --allow-privileged=true \
   --pod-manifest-path=/etc/kubernetes/manifests \
-  --hostname-override=${hostname_override} \
-  --cluster-dns=${dns_service_ip} \
+  --hostname-override={{ansible_eth0.ipv4.address}} \
+  --cluster-dns={{dns_service_ip}} \
   --cluster-domain=cluster.local
 Restart=always
 RestartSec=10

@@ -36,6 +36,11 @@ data "template_file" "ansible_hosts" {
         cluster_dns_domain = "${var.cluster_dns_domain}"
         apiserver_ip = "${openstack_compute_floatingip_v2.api_flip.0.address}"
         dns_service_ip = "${var.dns_service_ip}"
+        k8s_ver = "${var.k8s_version}"
+        k8s_ver_kubelet = "${var.k8s_version_kubelet}"
+        network_plugin = "cni"
+        service_ip_range = "${var.service_ip_range}"
+        etcd_endpoints = "${join(",", formatlist("https://%s:%s", openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, var.etcd_port))}"
     }
 }
 

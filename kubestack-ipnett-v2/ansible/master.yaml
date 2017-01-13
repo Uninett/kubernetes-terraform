@@ -1,0 +1,185 @@
+- name: configure master nodes
+  hosts: master
+  remote_user: root
+  become: yes
+  vars:
+    apiserver_address: http://127.0.0.1:8080
+  tasks:
+    - name: Make folder for etcd certificates
+      file:
+        state: directory
+        path: /etc/ssl/etcd
+        owner: root
+        group: root
+        mode: 0755
+    - name: Copy etcd ca certificate
+      copy:
+        src: ../masters/etcd/ca.pem
+        dest: /etc/ssl/etcd/ca.pem
+        owner: root
+        group: root
+        mode: 0644
+    - name: Copy etcd node certificate
+      copy:
+        src: ../masters/etcd/{{inventory_hostname}}.pem
+        dest: /etc/ssl/etcd/node.pem
+        owner: root
+        group: root
+        mode: 0644
+    - name: Copy etcd node key
+      copy:
+        src: ../masters/etcd/{{inventory_hostname}}-key.pem
+        dest: /etc/ssl/etcd/node-key.pem
+        owner: root
+        group: root
+        mode: 0600
+    - name: Create kubernetes ssl folder
+      file:
+        path: /etc/kubernetes/ssl
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Create kubernetes manifests folder
+      file:
+        path: /etc/kubernetes/manifests
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Create cni config folder
+      file:
+        path: /etc/cni/net.d
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Create cni binary folder
+      file:
+        path: /opt/cni/bin
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Install CNI
+      shell: curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz' | tar --extract --gzip --directory /opt/cni/bin
+      args:
+        creates: /opt/cni/bin/loopback
+    - name: Configure kube apiserver
+      template:
+        src: masters/templates/kube-apiserver.yaml
+        dest: /etc/kubernetes/manifests/kube-apiserver.yaml
+        owner: core
+        group: core
+        mode: 0644
+    - name: Configure kube proxy
+      template:
+        src: masters/templates/kube-proxy.yaml
+        dest: /etc/kubernetes/manifests/kube-proxy.yaml
+        owner: core
+        group: core
+        mode: 0644
+    - name: Configure kube controller manager
+      template:
+        src: masters/templates/kube-controller-manager.yaml
+        dest: /etc/kubernetes/manifests/kube-controller-manager.yaml
+        owner: core
+        group: core
+        mode: 0644
+    - name: Configure kube scheduler
+      template:
+        src: masters/templates/kube-scheduler.yaml
+        dest: /etc/kubernetes/manifests/kube-scheduler.yaml
+        owner: core
+        group: core
+        mode: 0644
+    - name: Configure kube scheduler
+      template:
+        src: masters/templates/apiserver-kubeconfig.yaml
+        dest: /etc/kubernetes/apiserver-kubeconfig.yaml
+        owner: core
+        group: core
+        mode: 0644
+    - name: Copy kubernetes ca certificate
+      copy:
+        src: ../masters/kubernetes/ca.pem
+        dest: /etc/kubernetes/ssl/ca.pem
+        owner: root
+        group: root
+        mode: 0644
+    - name: Copy kubernetes node certificate
+      copy:
+        src: ../masters/kubernetes/{{inventory_hostname}}.pem
+        dest: /etc/kubernetes/ssl/apiserver.pem
+        owner: root
+        group: root
+        mode: 0644
+    - name: Copy kubernetes node key
+      copy:
+        src: ../masters/kubernetes/{{inventory_hostname}}-key.pem
+        dest: /etc/kubernetes/ssl/apiserver-key.pem
+        owner: root
+        group: root
+        mode: 0600
+    - name: Copy kubernetes service account key
+      copy:
+        src: ../masters/service_account/{{inventory_hostname}}.pem
+        dest: /etc/kubernetes/service-key.pem
+        owner: root
+        group: root
+        mode: 0600
+    - name: Configure kubelet
+      template:
+        dest: /etc/systemd/system/kubelet.service
+        src: masters/templates/kubelet-apiserver.service
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - reload systemd
+    - name: Create overrides folder for locksmithd
+      file:
+        path: /etc/systemd/system/locksmithd.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Configure locksmithd
+      template:
+        dest: /etc/systemd/system/locksmithd.service.d/locksmithd.conf
+        src: shared/templates/locksmithd.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - reload systemd
+        - restart locksmithd
+    - name: run docker
+      service: name=docker state=started enabled=yes
+    - name: run kubelet
+      service: name=kubelet state=started enabled=yes
+    # Work around CoreOS breaking weave network configuration
+    # See: https://github.com/weaveworks/weave/issues/2601
+    # The difference between our zz-default.network and the standard is that we
+    # limit it to only "physical" network devices by specifying a path.
+    - name: Hmm?
+      file:
+        path: /etc/systemd/network/50-docker-veth.network
+        src: /dev/null
+        state: link
+    - name: networkd default config
+      copy:
+        dest: /etc/systemd/network/zz-default.network
+        content: "[Match]\nPath=*\n[Network]\nDHCP=yes\n[DHCP]\nUseMTU=true\nUseDomains=true\n"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart systemd-networkd
+  handlers:
+    - name: reload systemd
+      command: systemctl daemon-reload
+    - name: restart locksmithd
+      service: name=locksmithd state=restarted
+    - name: restart systemd-networkd
+      service: name=systemd-networkd state=restarted
