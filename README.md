@@ -62,11 +62,39 @@ Created and used by `terraform [plan|apply|destroy]` to keep track of the curren
 This folder contains default configuration values for various providers
 
 ### secrets/
-This folder, and the file within it, must be present before the first run:
+This folder, must contain a set of required files before the first run.
 
-- ***os-secrets.tfvars***</br>
-Must contain two key/value pairs: `user_name = "MYUSERNAME"` and `password = "MYPASSWORD"`.</br>
-These are required to be able to connect to the OpenStack service. If these values are not present, Terraform will ask for the user to type them in each time `terraform [plan|apply|destroy]` is called.
+- `ssh-key` and `ssh-key.pub`:
+  A SSH keys with its associated private key.
+  These will be used to access the nodes in the cluster.
+  The files can be generated with: `ssh-keygen -t rsa -N '' -C 'kubernetes_key' -f ssh-key`
+
+- `os-secrets.tfvars`:
+  Contains configuration for accessing the OpenStack environment and configuration for the Kubernetes cluster.
+  The file will contain something like:
+
+  ```
+  user_name = "paastest"
+  password = "<SECRET>"
+  cluster_name = "examplekube"
+  cluster_dns_domain = "examplekube.paas2-dev.uninett.no"
+  cluster_network = "00010203-0405-0607-0809-0a0b0c0d0e0f"
+  ssh_key = {
+    name = "examplecluster"
+    private = "../secrets/ssh-key"
+  }
+  ```
+
+  You must replace `example` in the text with something unique for your cluster.
+  The `cluster_network` option must be replaced with a UUID for a network that you have created for the cluster.
+  To create the network, you can run the following openstack commands:
+
+  ```
+  openstack --os-cloud paastest network create examplekube
+  openstack --os-cloud paastest subnet create --network 00010203-0405-0607-0809-0a0b0c0d0e0f --subnet-range 10.100.0.0/24 examplekube-ipv4
+  ```
+
+  (The UUID of the cluster will be printed when running the `network create` command.)
 
 ### Uploading files to instances
 
