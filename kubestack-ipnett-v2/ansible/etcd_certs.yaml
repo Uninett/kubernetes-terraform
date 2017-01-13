@@ -1,0 +1,33 @@
+- name: configure etcd certificates
+  hosts: coreos
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Make folder for etcd certificates
+      file:
+        state: directory
+        path: /etc/ssl/etcd
+        owner: root
+        group: root
+        mode: 0755
+    - name: Copy etcd ca certificate
+      copy:
+        src: ../etcd/ca.pem
+        dest: /etc/ssl/etcd/ca.pem
+        owner: root
+        group: root
+        mode: 0644
+    - name: Copy etcd node certificate
+      copy:
+        src: ../etcd/{{inventory_hostname}}.pem
+        dest: /etc/ssl/etcd/node.pem
+        owner: root
+        group: root
+        mode: 0644
+    - name: Copy etcd node key
+      copy:
+        src: ../etcd/{{inventory_hostname}}-key.pem
+        dest: /etc/ssl/etcd/node-key.pem
+        owner: root
+        group: root
+        mode: 0600

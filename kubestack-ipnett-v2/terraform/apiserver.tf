@@ -117,7 +117,7 @@ resource "null_resource" "kube-apiserver" {
 
     # Add etcd certs & key
     provisioner "local-exec" {
-        command = "mkdir -p  ../masters/etcd"
+        command = "mkdir -p  ../etcd"
     }
     provisioner "local-exec" {
         command = "mkdir -p  ../masters/kubernetes"
@@ -127,21 +127,21 @@ resource "null_resource" "kube-apiserver" {
     }
     provisioner "local-exec" {
         command = <<EOC
-tee ../masters/etcd/ca.pem <<EOF
+tee ../etcd/ca.pem <<EOF
 ${tls_self_signed_cert.etcd_ca.cert_pem}
 EOF
 EOC
     }
     provisioner "local-exec" {
         command = <<EOC
-tee ../masters/etcd/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
+tee ../etcd/${var.cluster_name}-apiserver-${count.index}.pem <<EOF
 ${element(tls_locally_signed_cert.apiserver_etcd_client.*.cert_pem, count.index)}
 EOF
 EOC
     }
     provisioner "local-exec" {
         command = <<EOC
-tee ../masters/etcd/${var.cluster_name}-apiserver-${count.index}-key.pem <<EOF
+tee ../etcd/${var.cluster_name}-apiserver-${count.index}-key.pem <<EOF
 ${element(tls_private_key.apiserver_etcd_client.*.private_key_pem, count.index)}
 EOF
 EOC

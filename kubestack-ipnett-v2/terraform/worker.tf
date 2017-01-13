@@ -151,29 +151,30 @@ resource "null_resource" "kube" {
     count = "${var.worker_count}"
 
     # Add etcd certs & key
-    provisioner "remote-exec" {
-        inline = [
-            "mkdir -p /tmp/etcd",
-        ]
+    provisioner "local-exec" {
+        command = "mkdir -p  ../etcd"
     }
-    provisioner "file" {
-        destination = "/tmp/etcd/ca.pem"
-        content = "${tls_self_signed_cert.etcd_ca.cert_pem}"
+
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../etcd/ca.pem <<EOF
+${tls_self_signed_cert.etcd_ca.cert_pem}
+EOF
+EOC
     }
-    provisioner "file" {
-        destination = "/tmp/etcd/node.pem"
-        content = "${element(tls_locally_signed_cert.kube_etcd_client.*.cert_pem, count.index)}"
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../etcd/${var.cluster_name}-kube-${count.index}.pem <<EOF
+${element(tls_locally_signed_cert.kube_etcd_client.*.cert_pem, count.index)}
+EOF
+EOC
     }
-    provisioner "file" {
-        destination = "/tmp/etcd/node-key.pem"
-        content = "${element(tls_private_key.kube_etcd_client.*.private_key_pem, count.index)}"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo rm -rf /etc/ssl/etcd",
-            "sudo chown -R root:root /tmp/etcd",
-            "sudo mv /tmp/etcd /etc/ssl/",
-        ]
+    provisioner "local-exec" {
+        command = <<EOC
+tee ../etcd/${var.cluster_name}-kube-${count.index}-key.pem <<EOF
+${element(tls_private_key.kube_etcd_client.*.private_key_pem, count.index)}
+EOF
+EOC
     }
 
     provisioner "remote-exec" {
