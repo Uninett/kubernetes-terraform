@@ -57,7 +57,7 @@
     - name: Configure kubelet
       template:
         dest: /etc/systemd/system/kubelet.service
-        src: masters/templates/kubelet-apiserver.service
+        src: masters/templates/kubelet.service
         owner: root
         group: root
         mode: 0644
