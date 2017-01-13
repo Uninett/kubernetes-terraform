@@ -11,3 +11,7 @@ output.png
 secrets
 **/openssl/*
 !**/openssl/create-ca/*
+
+**/ansible/*.retry
+**/ansible/inventory
+**/ansible/roles/
