@@ -1,3 +1,7 @@
+- name: Gather addresses for masters by pinging them
+  hosts: master
+  tasks:
+    - ping:
 - name: configure worker nodes
   hosts: worker
   remote_user: root
@@ -27,7 +31,7 @@
         group: core
         mode: 0644
     - name: Configure haproxy apiserver
-      copy:
+      template:
         src: workers/templates/haproxy-apiserver.cfg
         dest: /etc/kubernetes/haproxy-apiserver.cfg
         owner: core
