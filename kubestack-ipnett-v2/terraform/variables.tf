@@ -7,6 +7,7 @@ variable "password" {}
 variable "domain_name" {}
 variable "tenant_name" {}
 variable "region" {}
+variable "cluster_network" {}
 
 variable "images" { default = {
     coreos = "d795bead-fa4e-4fab-954a-9c13676d4032"

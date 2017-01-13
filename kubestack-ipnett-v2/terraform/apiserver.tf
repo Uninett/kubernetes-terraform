@@ -170,7 +170,7 @@ resource "openstack_compute_instance_v2" "kube-apiserver" {
 
     #   Connecting to the set network with the provided floating ip.
     network {
-        name = "kubes"
+        uuid = "${var.cluster_network}"
         floating_ip = "${element(openstack_compute_floatingip_v2.api_flip.*.address, count.index)}"
     }
 }
