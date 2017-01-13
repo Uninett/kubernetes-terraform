@@ -184,9 +184,6 @@ EOC
             "sudo chmod -R ugo+w /etc/kubernetes",
             "sudo chmod -R ugo+w /etc/systemd",
             "sudo chmod ugo+w /etc/kubernetes",
-            "sudo mkdir -p /etc/cni/net.d",
-            "sudo mkdir -p /opt/cni/bin",
-            "curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz' | sudo tar --extract --gzip --directory /opt/cni/bin",
         ]
     }
 
@@ -246,23 +243,6 @@ EOC
             "sudo systemctl daemon-reload",
             "sudo systemctl start kubelet",
             "sudo systemctl enable kubelet"
-        ]
-    }
-
-    # Work around CoreOS breaking weave network configuration
-    # See: https://github.com/weaveworks/weave/issues/2601
-    # The difference between our zz-default.network and the standard is that we
-    # limit it to only "physical" network devices by specifying a path.
-    provisioner "file" {
-        destination = "/tmp/zz-default.network"
-        content = "[Match]\nPath=*\n[Network]\nDHCP=yes\n[DHCP]\nUseMTU=true\nUseDomains=true\n"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo ln -sf /dev/null /etc/systemd/network/50-docker-veth.network",
-            "sudo mv /tmp/zz-default.network /etc/systemd/network/zz-default.network",
-            "sudo chown -R root:root /etc/systemd/network/zz-default.network",
-            "sudo systemctl restart systemd-networkd",
         ]
     }
 

@@ -1,0 +1,44 @@
+- name: configure kubernetes networking
+  hosts: master:worker
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Create cni config folder
+      file:
+        path: /etc/cni/net.d
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Create cni binary folder
+      file:
+        path: /opt/cni/bin
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Install CNI
+      shell: curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.3.0/cni-v0.3.0.tgz' | tar --extract --gzip --directory /opt/cni/bin
+      args:
+        creates: /opt/cni/bin/loopback
+    # Work around CoreOS breaking weave network configuration
+    # See: https://github.com/weaveworks/weave/issues/2601
+    # The difference between our zz-default.network and the standard is that we
+    # limit it to only "physical" network devices by specifying a path.
+    - name: Disable built in docker network override
+      file:
+        path: /etc/systemd/network/50-docker-veth.network
+        src: /dev/null
+        state: link
+    - name: networkd default config
+      copy:
+        dest: /etc/systemd/network/zz-default.network
+        content: "[Match]\nPath=*\n[Network]\nDHCP=yes\n[DHCP]\nUseMTU=true\nUseDomains=true\n"
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - restart systemd-networkd
+  handlers:
+    - name: restart systemd-networkd
+      service: name=systemd-networkd state=restarted
