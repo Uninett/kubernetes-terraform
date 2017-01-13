@@ -27,3 +27,9 @@
         dest: configure_cluster/templates/.rendered/dashboard.yaml
     - name: Dashboard
       command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/templates/.rendered/dashboard.yaml
+    - name: Fetch RBAC policies from Git
+      git:
+        repo: ssh://git@scm.uninett.no/system/kubernetes-rbac-policies.git
+        dest: configure_cluster/.kubernetes-rbac-policies
+    - name: Apply RBAC policies
+      command: kubectl --kubeconfig kubeconfig --namespace kube-system apply -f configure_cluster/.kubernetes-rbac-policies/pilot
