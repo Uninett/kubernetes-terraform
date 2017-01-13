@@ -63,6 +63,7 @@
         mode: 0644
       notify:
         - reload systemd
+        - restart kubelet
     - name: run docker
       service: name=docker state=started enabled=yes
     - name: run kubelet
@@ -72,3 +73,5 @@
       command: systemctl daemon-reload
     - name: restart systemd-networkd
       service: name=systemd-networkd state=restarted
+    - name: restart kubelet
+      service: name=kubelet state=restarted
