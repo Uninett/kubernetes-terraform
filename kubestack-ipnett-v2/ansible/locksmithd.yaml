@@ -1,0 +1,27 @@
+- name: configure locksmithd
+  hosts: coreos
+  remote_user: root
+  become: yes
+  tasks:
+    - name: Create overrides folder for locksmithd
+      file:
+        path: /etc/systemd/system/locksmithd.service.d
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+    - name: Configure locksmithd
+      template:
+        dest: /etc/systemd/system/locksmithd.service.d/locksmithd.conf
+        src: shared/templates/locksmithd.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - reload systemd
+        - restart locksmithd
+  handlers:
+    - name: reload systemd
+      command: systemctl daemon-reload
+    - name: restart locksmithd
+      service: name=locksmithd state=restarted

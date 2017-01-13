@@ -154,21 +154,6 @@ resource "null_resource" "etcd" {
         ]
     }
 
-    # Configure locksmithd for coordinated reboot of the nodes.
-    provisioner "file" {
-        destination = "/tmp/locksmithd.conf"
-        content = "${data.template_file.locksmithd.rendered}"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo mkdir -p /etc/systemd/system/locksmithd.service.d",
-            "sudo chown -R root:root /tmp/locksmithd.conf",
-            "sudo mv /tmp/locksmithd.conf /etc/systemd/system/locksmithd.service.d/",
-            "sudo systemctl daemon-reload",
-            "sudo systemctl restart locksmithd",
-        ]
-    }
-
     #   Tells Terraform how to connect to instances of this type.
     #   The floating ip is the same one given to 'network'.
     #   'file(...)' loads the private key, and gives it to Terraform for secure connection.

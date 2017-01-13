@@ -248,21 +248,6 @@ resource "null_resource" "kube" {
         ]
     }
 
-    # Configure locksmithd for coordinated reboot of the nodes.
-    provisioner "file" {
-        destination = "/tmp/locksmithd.conf"
-        content = "${data.template_file.locksmithd.rendered}"
-    }
-    provisioner "remote-exec" {
-        inline = [
-            "sudo mkdir -p /etc/systemd/system/locksmithd.service.d",
-            "sudo chown -R root:root /tmp/locksmithd.conf",
-            "sudo mv /tmp/locksmithd.conf /etc/systemd/system/locksmithd.service.d/",
-            "sudo systemctl daemon-reload",
-            "sudo systemctl restart locksmithd",
-        ]
-    }
-
     # Work around CoreOS breaking weave network configuration
     # See: https://github.com/weaveworks/weave/issues/2601
     # The difference between our zz-default.network and the standard is that we
