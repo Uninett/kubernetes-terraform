@@ -1,0 +1,3 @@
+---
+- src: defunctzombie.coreos-bootstrap
+- src: jdauphant.ssl-certs

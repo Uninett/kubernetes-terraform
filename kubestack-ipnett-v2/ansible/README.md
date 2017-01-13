@@ -9,9 +9,9 @@ We assume that cluster already has been brought up by terraform.
     terraform output ansible_hosts > ../ansible/inventory
     cd -
 
-## Install coreos bootstrap role from community repo
+## Install roles from community
 
-	ansible-galaxy install defunctzombie.coreos-bootstrap -p ./roles
+	ansible-galaxy install -r requirements.yml
 
 ## Bootstrap ansible on nodes
 
