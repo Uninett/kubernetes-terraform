@@ -1,0 +1,5 @@
+- include: bootstrap.yaml
+- include: etcd.yaml
+- include: master.yaml
+- include: worker.yaml
+- include: configure_cluster.yaml
