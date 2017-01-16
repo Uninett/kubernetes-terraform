@@ -1,5 +1,10 @@
 - name: bootstrap coreos hosts
   hosts: coreos
   gather_facts: False
+  pre_tasks:
+    - name: Waiting for hosts to come online
+      wait_for:
+        host: "{{hostvars[inventory_hostname]['ansible_host']}}"
+        port: 22
   roles:
     - defunctzombie.coreos-bootstrap
