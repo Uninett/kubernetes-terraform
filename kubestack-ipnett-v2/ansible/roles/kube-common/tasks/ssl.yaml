@@ -1,5 +1,3 @@
-- name: restart systemd-networkd
-  service: name=systemd-networkd state=restarted
 - name: Create kubernetes ssl folder
   file:
     path: /etc/kubernetes/ssl
