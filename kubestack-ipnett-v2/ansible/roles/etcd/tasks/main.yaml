@@ -1,0 +1,17 @@
+- name: Make etcd service override folder
+  file:
+    state: directory
+    path: /etc/systemd/system/etcd2.service.d
+    owner: root
+    group: root
+    mode: 0755
+- name: Configure etcd service
+  template:
+    src: etcd/templates/etcd2.conf
+    dest: /etc/systemd/system/etcd2.service.d/etcd2.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd
+- name: run etcd
+  service: name=etcd2 state=started enabled=yes
