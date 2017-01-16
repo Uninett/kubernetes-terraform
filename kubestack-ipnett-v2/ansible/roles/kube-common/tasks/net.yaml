@@ -25,6 +25,8 @@
     path: /etc/systemd/network/50-docker-veth.network
     src: /dev/null
     state: link
+  notify:
+    - restart systemd-networkd
 - name: networkd default config
   copy:
     dest: /etc/systemd/network/zz-default.network
