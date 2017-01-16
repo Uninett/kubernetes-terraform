@@ -1,0 +1,49 @@
+- name: Create kubernetes manifests folder
+  file:
+    path: /etc/kubernetes/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Configure kube proxy
+  template:
+    src: kube-proxy.yaml
+    dest: /etc/kubernetes/manifests/kube-proxy.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Configure haproxy apiserver
+  copy:
+    src: haproxy-apiserver.yaml
+    dest: /etc/kubernetes/manifests/haproxy-apiserver.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Configure haproxy apiserver
+  template:
+    src: haproxy-apiserver.cfg
+    dest: /etc/kubernetes/haproxy-apiserver.cfg
+    owner: core
+    group: core
+    mode: 0644
+- name: Add kubeconfig
+  template:
+    dest: /etc/kubernetes/kubeconfig.yaml
+    src: kubeconfig.yaml
+    owner: root
+    group: root
+    mode: 0644
+- name: Configure kubelet
+  template:
+    dest: /etc/systemd/system/kubelet.service
+    src: kubelet.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart kubelet
+- name: run docker
+  service: name=docker state=started enabled=yes
+- name: run kubelet
+  service: name=kubelet state=started enabled=yes

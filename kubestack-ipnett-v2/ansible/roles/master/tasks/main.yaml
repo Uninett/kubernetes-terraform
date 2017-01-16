@@ -1,0 +1,63 @@
+- name: Create kubernetes manifests folder
+  file:
+    path: /etc/kubernetes/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Configure kube apiserver
+  template:
+    src: kube-apiserver.yaml
+    dest: /etc/kubernetes/manifests/kube-apiserver.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Configure kube proxy
+  template:
+    src: kube-proxy.yaml
+    dest: /etc/kubernetes/manifests/kube-proxy.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Configure kube controller manager
+  template:
+    src: kube-controller-manager.yaml
+    dest: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Configure kube scheduler
+  template:
+    src: kube-scheduler.yaml
+    dest: /etc/kubernetes/manifests/kube-scheduler.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Add kubeconfig
+  template:
+    src: kubeconfig.yaml
+    dest: /etc/kubernetes/kubeconfig.yaml
+    owner: core
+    group: core
+    mode: 0644
+- name: Copy kubernetes service account key
+  copy:
+    src: ../masters/service_account/{{inventory_hostname}}.pem
+    dest: /etc/kubernetes/service-key.pem
+    owner: root
+    group: root
+    mode: 0600
+- name: Configure kubelet
+  template:
+    dest: /etc/systemd/system/kubelet.service
+    src: kubelet.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart kubelet
+- name: run docker
+  service: name=docker state=started enabled=yes
+- name: run kubelet
+  service: name=kubelet state=started enabled=yes

@@ -1,6 +1,0 @@
-- name: configure etcd certificates
-  hosts: coreos
-  remote_user: root
-  become: yes
-  roles:
-    - etcd_certs
