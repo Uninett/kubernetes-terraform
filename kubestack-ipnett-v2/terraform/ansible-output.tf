@@ -47,3 +47,9 @@ data "template_file" "ansible_hosts" {
 output "ansible_hosts" {
     value = "${data.template_file.ansible_hosts.rendered}"
 }
+
+resource "null_resource" "ansible_inventory" {
+    provisioner "local-exec" {
+        command = "echo '${data.template_file.ansible_hosts.rendered}' > ../ansible/inventory"
+    }
+}

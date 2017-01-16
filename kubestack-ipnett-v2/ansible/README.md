@@ -1,13 +1,7 @@
 Boostrapping Ansible on the cluster
 -----------------------------------
 
-We assume that cluster already has been brought up by terraform.
-
-## Generate node inventory
-
-    cd ../terraform
-    terraform output ansible_hosts > ../ansible/inventory
-    cd -
+We assume that cluster already has been brought up by terraform. Terraform will write a inventory file when bringing up cluster
 
 ## Install roles from community
 
