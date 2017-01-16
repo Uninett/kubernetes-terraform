@@ -1,3 +1,7 @@
+- name: Gather addresses for etcd by pinging them
+  hosts: etcd
+  tasks:
+    - ping:
 - name: configure master nodes
   hosts: master
   remote_user: root

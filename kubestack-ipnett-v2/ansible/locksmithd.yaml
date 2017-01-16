@@ -1,3 +1,7 @@
+- name: Gather addresses for etcd by pinging them
+  hosts: etcd
+  tasks:
+    - ping:
 - name: configure locksmithd
   hosts: coreos
   remote_user: root
