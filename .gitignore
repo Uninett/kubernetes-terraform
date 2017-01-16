@@ -14,7 +14,7 @@ secrets
 
 **/ansible/*.retry
 **/ansible/inventory
-**/ansible/roles/
+**/ansible/roles/defunctzombie.coreos-bootstrap
 /kubestack-ipnett-v2/ansible/kubeconfig
 /kubestack-ipnett-v2/ansible/configure_cluster/templates/.rendered
 /kubestack-ipnett-v2/ansible/configure_cluster/.kubernetes-rbac-policies
