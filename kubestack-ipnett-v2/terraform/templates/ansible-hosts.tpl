@@ -32,3 +32,5 @@ k8s_ver=${k8s_ver}
 k8s_ver_kubelet=${k8s_ver_kubelet}
 network_plugin=${network_plugin}
 service_ip_range=${service_ip_range}
+graphite_server=${graphite_server}
+zabbix_server=${zabbix_server}

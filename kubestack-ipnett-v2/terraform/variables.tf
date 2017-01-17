@@ -39,6 +39,8 @@ variable "apiserver_count" { default = 3 }
 variable "etcd_count" { default = 3 }
 variable "worker_count" { default = 4 }
 variable "lb_count" { default = 3 }
+variable "graphite_server" { default = "graphite-input.uninett.no" }
+variable "zabbix_server" { default = "zabbix-backend.uninett.no" }
 
 
 variable "k8s_version" { default = "v1.4.3" }

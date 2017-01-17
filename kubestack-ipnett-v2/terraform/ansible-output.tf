@@ -39,6 +39,8 @@ data "template_file" "ansible_hosts" {
         k8s_ver_kubelet = "${var.k8s_version_kubelet}"
         network_plugin = "cni"
         service_ip_range = "${var.service_ip_range}"
+        graphite_server = "${var.graphite_server}"
+        zabbix_server = "${var.zabbix_server}"
     }
 }
 
