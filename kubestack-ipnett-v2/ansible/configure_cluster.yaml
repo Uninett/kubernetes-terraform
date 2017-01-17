@@ -4,6 +4,7 @@
     template_addons:
       - dns
       - dashboard
+      - collectd
     file_addons:
       - heapster
       - kube-state-metrics

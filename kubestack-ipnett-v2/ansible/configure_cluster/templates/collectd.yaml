@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: collectd
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        name: collectd
+    spec:
+      terminationGracePeriodSeconds: 60
+      hostNetwork: true
+      hostPID: true
+      containers:
+      - image: uninett-docker-uninett.bintray.io/paas2/collectd
+        name: collectd
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        env:
+          - name: GRAPHITESERVER
+            value: {{ graphite_server }}
+          - name: GRAPHITE_PREFIX
+            value: collectd.kubernetes-{{ cluster_name }}
