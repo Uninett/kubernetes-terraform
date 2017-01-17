@@ -110,6 +110,11 @@ resource "null_resource" "kube" {
         command = "mkdir -p  ../etcd"
     }
 
+    # Add etcd certs & key
+    provisioner "local-exec" {
+        command = "mkdir -p  ../kubernetes"
+    }
+
     provisioner "local-exec" {
         command = <<EOC
 tee ../etcd/ca.pem <<EOF
