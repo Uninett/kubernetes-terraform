@@ -18,3 +18,6 @@ secrets
 /kubestack-ipnett-v2/ansible/kubeconfig
 /kubestack-ipnett-v2/ansible/configure_cluster/templates/.rendered
 /kubestack-ipnett-v2/ansible/configure_cluster/.kubernetes-rbac-policies
+/kubestack-ipnett-v2/etcd/*
+/kubestack-ipnett-v2/kubernetes/*
+/kubestack-ipnett-v2/masters/*
