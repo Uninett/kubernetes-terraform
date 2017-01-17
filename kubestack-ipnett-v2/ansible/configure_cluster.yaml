@@ -5,6 +5,7 @@
       - dns
       - dashboard
       - collectd
+      - metrics-scraper
     file_addons:
       - heapster
       - kube-state-metrics
