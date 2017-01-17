@@ -6,6 +6,7 @@
       - dashboard
       - collectd
       - metrics-scraper
+      - zabbix-monitor
     file_addons:
       - heapster
       - kube-state-metrics

@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kube-zabbix-monitor
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kube-zabbix-monitor
+    spec:
+      containers:
+      - name: kube-zabbix-monitor
+        image: uninett-docker-uninett.bintray.io/paas2/zabbix-monitor
+        command: ["/app/monitor.py"]
+        args:
+          - --zabbix-server
+          - {{ zabbix_server }}
+          - --zabbix-host
+          - {{ cluster_dns_domain }}
