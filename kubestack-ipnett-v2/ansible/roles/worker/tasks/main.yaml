@@ -9,22 +9,22 @@
   template:
     src: kube-proxy.yaml
     dest: /etc/kubernetes/manifests/kube-proxy.yaml
-    owner: core
-    group: core
+    owner: root
+    group: root
     mode: 0644
 - name: Configure haproxy apiserver
   copy:
     src: haproxy-apiserver.yaml
     dest: /etc/kubernetes/manifests/haproxy-apiserver.yaml
-    owner: core
-    group: core
+    owner: root
+    group: root
     mode: 0644
 - name: Configure haproxy apiserver
   template:
     src: haproxy-apiserver.cfg
     dest: /etc/kubernetes/haproxy-apiserver.cfg
-    owner: core
-    group: core
+    owner: root
+    group: root
     mode: 0644
 - name: Add kubeconfig
   template:
