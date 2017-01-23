@@ -52,9 +52,13 @@
       owner: root
       group: root
       mode: 0644
+    register: gpfs_build_svc
   - name: Reloading systemd
     command: systemctl daemon-reload
+    when: gpfs_build_svc.changed
   - name: Enabling GPFS driver build service
-    command: systemctl enable gpfs-build.service
+    service: name=gpfs-build.service enabled=yes
   - name: Building GPFS driver
     command: systemctl start gpfs-build.service
+    args:
+      creates: /lib/modules/{{ ansible_kernel }}/extra/mmfslinux.ko
