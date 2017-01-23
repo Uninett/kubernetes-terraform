@@ -12,39 +12,23 @@
     command: /root/Spectrum_Scale_Advanced-4.2.2.1-x86_64-Linux-install --silent --text-only
     args:
       creates: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms
-  - name: Installing gpfs.base
-    yum:
-      name: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms/gpfs.base-4.2.2-1.x86_64.rpm
-  - name: Installing gpfs.gpl
-    yum:
-      name: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms/gpfs.gpl-4.2.2-1.noarch.rpm
-  - name: Installing gpfs.msg
-    yum:
-      name: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms/gpfs.msg.en_US-4.2.2-1.noarch.rpm
-  - name: Installing gpfs.gskit
-    yum:
-      name: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms/gpfs.gskit-8.0.50-57.x86_64.rpm
-  - name: Installing gpfs.ext
-    yum:
-      name: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms/gpfs.ext-4.2.2-1.x86_64.rpm
-  - name: Installing gpfs.crypto
-    yum:
-      name: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms/gpfs.crypto-4.2.2-1.x86_64.rpm
-  - name: Installing prerequisite -- kernel-devel
-    yum:
-      name: kernel-devel-{{ansible_kernel}}
-  - name: Installing prerequisite -- cpp
-    yum:
-      name: cpp
-  - name: Installing prerequisite -- gcc
-    yum:
-      name: gcc
-  - name: Installing prerequisite -- gcc-c++
-    yum:
-      name: gcc-c++
-  - name: Installing prerequisite -- kernel-headers
-    yum:
-      name: kernel-headers
+  - name: Installing GPFS packages
+    yum: name=/usr/lpp/mmfs/4.2.2.1/gpfs_rpms/{{ item }}.rpm
+    with_items:
+    - gpfs.base-4.2.2-1.x86_64
+    - gpfs.gpl-4.2.2-1.noarch
+    - gpfs.msg.en_US-4.2.2-1.noarch
+    - gpfs.gskit-8.0.50-57.x86_64
+    - gpfs.ext-4.2.2-1.x86_64
+    - gpfs.crypto-4.2.2-1.x86_64
+  - name: Installing prerequisites
+    yum: name={{ item }}
+    with_items:
+    - kernel-devel-{{ ansible_kernel }}
+    - cpp
+    - gcc
+    - gcc-c++
+    - kernel-headers
   - name: Adding service for building GPFS kernel module
     copy:
       src: gpfs/files/gpfs-build.service
