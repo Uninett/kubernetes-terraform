@@ -1,0 +1,15 @@
+
+[masters]
+olavnirdtest-master-0 ansible_host=193.156.26.41
+olavnirdtest-master-1 ansible_host=193.156.26.45
+olavnirdtest-master-2 ansible_host=193.156.26.148
+[workers]
+olavnirdtest-worker-0 ansible_host=193.156.26.149
+olavnirdtest-worker-1 ansible_host=193.156.26.147
+olavnirdtest-worker-2 ansible_host=193.156.26.72
+olavnirdtest-worker-3 ansible_host=193.156.26.145
+[servers:children]
+masters
+workers
+[servers:vars]
+ansible_ssh_user=centos

@@ -1,0 +1,11 @@
+[Unit]
+Description=Build GPFS kernel module
+Before=gpfs.service
+
+[Service]
+Type=oneshot
+Environment=LINUX_DISTRIBUTION=REDHAT_AS_LINUX
+ExecStart=/usr/lpp/mmfs/bin/mmbuildgpl
+
+[Install]
+WantedBy=multi-user.target
