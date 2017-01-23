@@ -85,11 +85,20 @@ data "template_file" "workers_ansible" {
     }
 }
 
+data "template_file" "inventory_tail" {
+    template = "$${section_children}\n$${section_vars}"
+    vars = {
+        section_children = "[centos:children]\nmasters\nworkers"
+        section_vars = "[centos:vars]\nansible_ssh_user=centos"
+    }
+}
+
 data "template_file" "inventory" {
-    template = "\n[masters]\n$${master_hosts}\n[workers]\n$${worker_hosts}"
+    template = "\n[masters]\n$${master_hosts}\n[workers]\n$${worker_hosts}\n$${inventory_tail}"
     vars {
         master_hosts = "${join("\n",data.template_file.masters_ansible.*.rendered)}"
         worker_hosts = "${join("\n",data.template_file.workers_ansible.*.rendered)}"
+        inventory_tail = "${data.template_file.inventory_tail.rendered}"
     }
 }
 
