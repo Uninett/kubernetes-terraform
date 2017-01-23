@@ -1,0 +1,5 @@
+user_name = ""
+password = ""
+
+cluster_name = "someirdtest"
+cluster_network = "11223344-5566-7788-9900-aabbccddeeff"

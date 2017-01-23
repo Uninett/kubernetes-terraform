@@ -1,0 +1,6 @@
+auth_url = "https://keystone.api.cloud.ipnett.no/v3"
+domain_name = "uninett.no"
+tenant_name = "paastest.uninett.no"
+region = "no-south-1"
+node_flavor = "b.small"
+centos_image = "f0601d48-2e46-49a0-83af-42c6bb6c4009"
