@@ -5,7 +5,7 @@ Before=gpfs.service
 [Service]
 Type=oneshot
 Environment=LINUX_DISTRIBUTION=REDHAT_AS_LINUX
-ExecStart=/usr/lpp/mmfs/bin/mmbuildgpl
+ExecStart=/bin/sh -c 'test -f "/lib/modules/$(uname -r)/extra/mmfslinux.ko" || /usr/lpp/mmfs/bin/mmbuildgpl'
 
 [Install]
 WantedBy=multi-user.target
