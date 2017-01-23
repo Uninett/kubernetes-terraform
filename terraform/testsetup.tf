@@ -88,8 +88,8 @@ data "template_file" "workers_ansible" {
 data "template_file" "inventory_tail" {
     template = "$${section_children}\n$${section_vars}"
     vars = {
-        section_children = "[centos:children]\nmasters\nworkers"
-        section_vars = "[centos:vars]\nansible_ssh_user=centos"
+        section_children = "[servers:children]\nmasters\nworkers"
+        section_vars = "[servers:vars]\nansible_ssh_user=centos"
     }
 }
 
