@@ -33,15 +33,6 @@ if [ -f "${CA}/${NAME}.names" ]; then
     fi
 fi
 
-if [ ! -d "${CA}" ]; then
-    mkdir "${CA}"
-fi
-
-if [ ! -f "${CA}/ca.pem" ]; then
-    echo "Generating CA certificate & key for ${CA}" >&2
-    ./bin/cfssl gencert -initca "${CA}-ca.json" | ./bin/cfssljson -bare "${WORKDIR}/ca"
-fi
-
 # From http://stackoverflow.com/a/8088167/1954565
 define(){
     IFS='\n'

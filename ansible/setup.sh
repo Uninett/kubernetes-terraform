@@ -27,3 +27,5 @@ if [ ! -x ./tls/bin/cfssl -o ! -x ./tls/bin/cfssljson ]; then
     curl -sSL -o "./tls/bin/cfssljson" "https://pkg.cfssl.org/R1.2/cfssljson_${variant}"
     chmod +x "./tls/bin/cfssljson"
 fi
+
+./tls/init_cas.sh
