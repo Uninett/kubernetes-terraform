@@ -3,3 +3,6 @@
   roles:
     - etcd
     - docker
+    - kubelet
+  vars_files:
+  - vars.yaml
