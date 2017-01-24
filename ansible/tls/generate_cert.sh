@@ -33,29 +33,13 @@ if [ -f "${CA}/${NAME}.names" ]; then
     fi
 fi
 
-if [ ! -x .cfssljson ]; then
-    echo "Fetching cfssl binaries" >&2
-    if [ "$(uname -sp)" = "Linux x86_64" ]; then
-	variant=linux-amd64
-    elif [ "$(uname -sp)" = "Darwin i386" ]; then
-	variant=darwin-amd64
-    else
-	echo "Unknown OS variant: $(uname -sp)" >&2
-	exit 1
-    fi
-    curl -sSL -o .cfssl "https://pkg.cfssl.org/R1.2/cfssl_${variant}"
-    chmod +x .cfssl
-    curl -sSL -o .cfssljson "https://pkg.cfssl.org/R1.2/cfssljson_${variant}"
-    chmod +x .cfssljson
-fi
-
 if [ ! -d "${CA}" ]; then
     mkdir "${CA}"
 fi
 
 if [ ! -f "${CA}/ca.pem" ]; then
     echo "Generating CA certificate & key for ${CA}" >&2
-    ./.cfssl gencert -initca "${CA}-ca.json" | ./.cfssljson -bare "${CA}/ca"
+    ./bin/cfssl gencert -initca "${CA}-ca.json" | ./bin/cfssljson -bare "${WORKDIR}/ca"
 fi
 
 # From http://stackoverflow.com/a/8088167/1954565
@@ -74,5 +58,5 @@ define REQUEST <<EOF
 }
 EOF
 
-echo "$REQUEST" | ./.cfssl gencert -ca="${CA}/ca.pem" -ca-key="${CA}/ca-key.pem" -config=ca-config.json -profile="${PROFILE}" -hostname="${NAMES}" - | ./.cfssljson -bare "${CA}/${NAME}"
+echo "$REQUEST" | ./bin/cfssl gencert -ca="${CA}/ca.pem" -ca-key="${CA}/ca-key.pem" -config=ca-config.json -profile="${PROFILE}" -hostname="${NAMES}" - | ./bin/cfssljson -bare "${CA}/${NAME}"
 echo "${NAMES}" >"${CA}/${NAME}.names"

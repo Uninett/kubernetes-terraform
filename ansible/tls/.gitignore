@@ -1,4 +1,3 @@
-/.cfssl
-/.cfssljson
+/bin/
 /etcd/
 /kubernetes/
