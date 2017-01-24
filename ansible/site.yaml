@@ -1,2 +1,3 @@
+- include: setup.yaml
 - include: gpfs.yaml
 
