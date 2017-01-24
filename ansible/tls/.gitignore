@@ -1,3 +1,4 @@
 /.cfssl
 /.cfssljson
-/output/
+/etcd/
+/kubernetes/

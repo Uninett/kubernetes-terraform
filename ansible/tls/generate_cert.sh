@@ -26,8 +26,8 @@ if [ ! -f "${CA}-ca.json" ]; then
 fi
 
 
-if [ -f "output/${NAME}.names" ]; then
-    if [ "$(<"output/${NAME}.names")" = "${NAMES}" ]; then
+if [ -f "${CA}/${NAME}.names" ]; then
+    if [ "$(<"${CA}/${NAME}.names")" = "${NAMES}" ]; then
 	echo "Certificate for ${NAME} already exists -- skipping" >&2
 	exit 0
     fi
@@ -49,13 +49,13 @@ if [ ! -x .cfssljson ]; then
     chmod +x .cfssljson
 fi
 
-if [ ! -d 'output' ]; then
-    mkdir 'output'
+if [ ! -d "${CA}" ]; then
+    mkdir "${CA}"
 fi
 
-if [ ! -f "output/${CA}-ca.pem" ]; then
+if [ ! -f "${CA}/ca.pem" ]; then
     echo "Generating CA certificate & key for ${CA}" >&2
-    ./.cfssl gencert -initca "${CA}-ca.json" | ./.cfssljson -bare "output/${CA}-ca"
+    ./.cfssl gencert -initca "${CA}-ca.json" | ./.cfssljson -bare "${CA}/ca"
 fi
 
 # From http://stackoverflow.com/a/8088167/1954565
@@ -74,5 +74,5 @@ define REQUEST <<EOF
 }
 EOF
 
-echo "$REQUEST" | ./.cfssl gencert -ca="output/${CA}-ca.pem" -ca-key="output/${CA}-ca-key.pem" -config=ca-config.json -profile="${PROFILE}" -hostname="${NAMES}" - | ./.cfssljson -bare "output/${NAME}"
-echo "${NAMES}" >"output/${NAME}.names"
+echo "$REQUEST" | ./.cfssl gencert -ca="${CA}/ca.pem" -ca-key="${CA}/ca-key.pem" -config=ca-config.json -profile="${PROFILE}" -hostname="${NAMES}" - | ./.cfssljson -bare "${CA}/${NAME}"
+echo "${NAMES}" >"${CA}/${NAME}.names"
