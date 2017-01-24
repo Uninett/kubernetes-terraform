@@ -1,0 +1,48 @@
+- name: Generate node Kubernetes certificates
+  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} {{ apiserver_service_ip }}
+  args:
+    creates: tls/kubernetes/{{ ansible_fqdn }}.pem
+  delegate_to: localhost
+  become: false
+- name: Make Kubernetes certificate folder
+  file:
+    state: directory
+    path: /etc/kubernetes/ssl
+    owner: root
+    group: root
+    mode: 0755
+- name: Copy Kubernetes CA certificate
+  copy:
+    src: tls/kubernetes/ca.pem
+    dest: /etc/kubernetes/ssl/ca.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy Kubernetes node certificate
+  copy:
+    src: tls/kubernetes/{{ ansible_fqdn }}.pem
+    dest: /etc/kubernetes/ssl/node.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy Kubernetes node private key
+  copy:
+    src: tls/kubernetes/{{ ansible_fqdn }}-key.pem
+    dest: /etc/kubernetes/ssl/node-key.pem
+    owner: root
+    group: root
+    mode: 0600
+- name: Copy Kubernetes service key
+  copy:
+    src: tls/kubernetes-service-key.pem
+    dest: /etc/kubernetes/service-key.pem
+    owner: root
+    group: root
+    mode: 0600
+- name: Add apiserver manifest
+  template:
+    src: kube-apiserver.yaml.j2
+    dest: /etc/kubernetes/manifests/kube-apiserver.yaml
+    owner: root
+    group: root
+    mode: 0644

@@ -1,2 +1,4 @@
 k8s_ver: 1.4.1
 dns_service_ip: 10.3.0.10
+service_ip_range: 10.3.0.0/16
+apiserver_service_ip: 10.3.0.1

@@ -4,5 +4,6 @@
     - etcd
     - docker
     - kubelet
+    - kube_master_components
   vars_files:
   - vars.yaml
