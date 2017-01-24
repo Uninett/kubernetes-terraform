@@ -2,3 +2,4 @@
   hosts: masters
   roles:
     - etcd
+    - docker

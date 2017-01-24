@@ -1,0 +1,15 @@
+- name: Set up Docker YUM repository
+  yum_repository:
+    name: dockerrepo
+    description: Docker Repository
+    baseurl: https://yum.dockerproject.org/repo/main/centos/7/
+    gpgcheck: yes
+    gpgkey: https://yum.dockerproject.org/gpg
+- name: Install Docker
+  yum:
+    name: docker-engine
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: true
