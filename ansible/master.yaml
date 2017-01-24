@@ -1,0 +1,4 @@
+- name: Install master nodes
+  hosts: masters
+  roles:
+    - etcd

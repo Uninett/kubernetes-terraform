@@ -1,0 +1,57 @@
+- name: Generate node etcd certificates
+  command: ./tls/generate_cert.sh etcd peer {{ ansible_fqdn }}
+  args:
+    creates: tls/etcd/{{ ansible_fqdn }}.pem
+  delegate_to: localhost
+  become: false
+- name: Create etcd group
+  group:
+    name: etcd
+    system: yes
+- name: Make etcd certificate folder
+  file:
+    state: directory
+    path: /etc/ssl/etcd
+    owner: root
+    group: root
+    mode: 0755
+- name: Copy etcd CA certificate
+  copy:
+    src: tls/etcd/ca.pem
+    dest: /etc/ssl/etcd/ca.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy etcd node certificate
+  copy:
+    src: tls/etcd/{{ ansible_fqdn }}.pem
+    dest: /etc/ssl/etcd/node.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy etcd node private key
+  copy:
+    src: tls/etcd/{{ ansible_fqdn }}-key.pem
+    dest: /etc/ssl/etcd/node-key.pem
+    owner: root
+    group: etcd
+    mode: 0640
+- name: Make etcd configuration folder
+  file:
+    state: directory
+    path: /etc/etcd
+    owner: root
+    group: root
+    mode: 0755
+- name: Configure etcd service
+  template:
+    src: etcd.conf.j2
+    dest: /etc/etcd/etcd.conf
+    owner: root
+    group: root
+    mode: 0644
+- name: Install etcd
+  yum:
+    name: etcd
+- name: run etcd
+  service: name=etcd state=started enabled=yes

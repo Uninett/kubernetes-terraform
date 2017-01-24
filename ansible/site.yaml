@@ -1,3 +1,3 @@
 - include: setup.yaml
 - include: gpfs.yaml
-
+- include: master.yaml
