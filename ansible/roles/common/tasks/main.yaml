@@ -1,1 +1,2 @@
 - include: hosts.yaml
+- include: hostname.yaml
