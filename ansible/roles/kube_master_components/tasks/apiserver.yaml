@@ -1,5 +1,5 @@
 - name: Generate node Kubernetes certificates
-  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} {{ apiserver_service_ip }}
+  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} {{ apiserver_service_ip }} {{ public_ip }}
   args:
     creates: tls/kubernetes/{{ ansible_fqdn }}.pem
   delegate_to: localhost

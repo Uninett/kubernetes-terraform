@@ -68,7 +68,7 @@ resource "openstack_compute_instance_v2" "worker" {
 
 
 data "template_file" "masters_ansible" {
-    template = "$${name} ansible_host=$${ip}"
+    template = "$${name} ansible_host=$${ip} public_ip=$${ip}"
     count = "${var.master_count}"
     vars {
         name  = "${element(openstack_compute_instance_v2.master.*.name, count.index)}"
