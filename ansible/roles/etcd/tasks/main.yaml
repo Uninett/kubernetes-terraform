@@ -1,7 +1,8 @@
 - name: Generate node etcd certificates
   command: ./tls/generate_cert.sh etcd peer {{ ansible_fqdn }}
-  args:
-    creates: tls/etcd/{{ ansible_fqdn }}.pem
+  register: create_etcd_cert
+  changed_when: "create_etcd_cert.rc != 2"
+  failed_when: "create_etcd_cert.rc not in (0, 2)"
   delegate_to: localhost
   become: false
 - name: Create etcd group

@@ -29,7 +29,7 @@ fi
 if [ -f "${CA}/${NAME}.names" ]; then
     if [ "$(<"${CA}/${NAME}.names")" = "${NAMES}" ]; then
 	echo "Certificate for ${NAME} already exists -- skipping" >&2
-	exit 0
+	exit 2
     fi
 fi
 

@@ -1,7 +1,8 @@
 - name: Generate node Kubernetes certificates
   command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} {{ apiserver_service_ip }} {{ public_ip }}
-  args:
-    creates: tls/kubernetes/{{ ansible_fqdn }}.pem
+  register: create_kubernetes_cert
+  changed_when: "create_kubernetes_cert.rc != 2"
+  failed_when: "create_kubernetes_cert.rc not in (0, 2)"
   delegate_to: localhost
   become: false
 - name: Make Kubernetes certificate folder
