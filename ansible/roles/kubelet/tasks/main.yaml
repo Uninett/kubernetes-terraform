@@ -38,6 +38,14 @@
     owner: root
     group: root
     mode: 0755
+- name: Add kube-proxy
+  template:
+    dest: /etc/kubernetes/manifests/kube-proxy.yaml
+    src: kube-proxy.yaml.j2
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
 - name: Configure kubelet
   template:
     dest: /etc/systemd/system/kubelet.service
