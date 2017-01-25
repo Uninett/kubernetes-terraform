@@ -11,3 +11,21 @@
   wait_for:
     host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"
     port: 443
+- name: Prepare Kubernetes configuration directory
+  file:
+    dest: ./cluster_config
+    state: directory
+- name: Copy configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./cluster_config/{{ item | basename }}"
+  with_fileglob:
+  - '*.yaml'
+- name: Initialize templated configuration files
+  template:
+    src: "{{ item }}"
+    dest: "./cluster_config/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/*.yaml.j2'
+- name: Apply configuration files
+  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config

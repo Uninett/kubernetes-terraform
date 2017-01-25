@@ -2,3 +2,4 @@
 /*.retry
 /inventory
 /kubeconfig
+/cluster_config
