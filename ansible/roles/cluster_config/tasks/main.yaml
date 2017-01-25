@@ -7,6 +7,10 @@
     src: kubeconfig.j2
     dest: ./kubeconfig
     mode: 0600
+- name: Generate calico etcd certificate & keu
+  command: ./tls/generate_cert.sh etcd client calico
+  args:
+    creates: tls/etcd/calico.pem
 - name: Waiting for API server to become ready
   wait_for:
     host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"
