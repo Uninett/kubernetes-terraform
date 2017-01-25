@@ -4,17 +4,5 @@
   become: false
   vars_files:
   - vars.yaml
-  tasks:
-  - name: Generate node Kubernetes certificates
-    command: ./tls/generate_cert.sh kubernetes client kube-admin
-    args:
-      creates: tls/kubernetes/kube-admin.pem
-  - name: Generating kubeconfig
-    template:
-      src: kubeconfig.j2
-      dest: ./kubeconfig
-      mode: 0600
-  - name: Waiting for API server to become ready
-    wait_for:
-      host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"
-      port: 443
+  roles:
+  - cluster_config
