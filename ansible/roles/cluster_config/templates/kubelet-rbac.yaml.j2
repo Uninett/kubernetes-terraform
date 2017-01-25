@@ -1,0 +1,23 @@
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kubelet
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["*"]
+    nonResourceURLs: []
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kubelet
+subjects:
+{% for host in groups['workers'] %}
+  - kind: User
+    name: "{{ host }}"
+{% endfor %}
+roleRef:
+  kind: ClusterRole
+  name: kubelet
