@@ -1,0 +1,45 @@
+- name: Copy GPFS installer to node
+  copy:
+    src: Spectrum_Scale_Advanced-4.2.2.1-x86_64-Linux-install
+    dest: /root/Spectrum_Scale_Advanced-4.2.2.1-x86_64-Linux-install
+    owner: root
+    group: root
+    mode: 0755
+- name: Extract GPFS packages
+  command: /root/Spectrum_Scale_Advanced-4.2.2.1-x86_64-Linux-install --silent --text-only
+  args:
+    creates: /usr/lpp/mmfs/4.2.2.1/gpfs_rpms
+- name: Installing GPFS packages
+  yum: name=/usr/lpp/mmfs/4.2.2.1/gpfs_rpms/{{ item }}.rpm
+  with_items:
+  - gpfs.base-4.2.2-1.x86_64
+  - gpfs.gpl-4.2.2-1.noarch
+  - gpfs.msg.en_US-4.2.2-1.noarch
+  - gpfs.gskit-8.0.50-57.x86_64
+  - gpfs.ext-4.2.2-1.x86_64
+  - gpfs.crypto-4.2.2-1.x86_64
+- name: Installing prerequisites
+  yum: name={{ item }}
+  with_items:
+  - kernel-devel-{{ ansible_kernel }}
+  - cpp
+  - gcc
+  - gcc-c++
+  - kernel-headers
+- name: Adding service for building GPFS kernel module
+  copy:
+    src: gpfs-build.service
+    dest: /etc/systemd/system/gpfs-build.service
+    owner: root
+    group: root
+    mode: 0644
+  register: gpfs_build_svc
+- name: Reloading systemd
+  command: systemctl daemon-reload
+  when: gpfs_build_svc.changed
+- name: Enabling GPFS driver build service
+  service: name=gpfs-build.service enabled=yes
+- name: Building GPFS driver
+  command: systemctl start gpfs-build.service
+  args:
+    creates: /lib/modules/{{ ansible_kernel }}/extra/mmfslinux.ko
