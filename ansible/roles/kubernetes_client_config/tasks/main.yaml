@@ -1,0 +1,21 @@
+- name: Create kubernetes config directory
+  file:
+    path: /etc/kubernetes
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Generate client SSL keys
+  command: ./tls/generate_cert.sh kubernetes client {{ inventory_hostname }}
+  register: create_kubernetes_cert
+  changed_when: "create_kubernetes_cert.rc != 2"
+  failed_when: "create_kubernetes_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+- name: kubeconfig.yaml
+  template:
+    dest: /etc/kubernetes/kubeconfig.yaml
+    src: kubeconfig.yaml.j2
+    owner: root
+    group: root
+    mode: 0600
