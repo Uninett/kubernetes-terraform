@@ -11,9 +11,3 @@ example, check your setup with `terraform plan --var-file=local.tfvars
 `terraform apply --var-file=local.tfvars
 --var-file=ipnett.tfvars`. The job prints out an ansible inventory at
 the end.
-
-## Running ansible
-
-The first time you run ansible on the new cluser, set the env variable
-`ANSIBLE_HOST_KEY_CHECKING` to `False`. Otherwise, ansible gets stuck
-on unknown host keys.
