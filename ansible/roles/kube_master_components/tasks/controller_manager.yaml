@@ -1,0 +1,7 @@
+- name: Add kube-controller-manager manifest
+  template:
+    src: kube-controller-manager.yaml.j2
+    dest: /etc/kubernetes/manifests/kube-controller-manager.yaml
+    owner: root
+    group: root
+    mode: 0644

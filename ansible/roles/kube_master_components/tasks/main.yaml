@@ -1,1 +1,2 @@
 - include: apiserver.yaml
+- include: controller_manager.yaml
