@@ -1,4 +1,0 @@
-- name: Set up GPFS
-  hosts: servers
-  roles:
-    - gpfs

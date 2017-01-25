@@ -1,6 +1,7 @@
 - name: Install worker nodes
   hosts: workers
   roles:
+    - gpfs
     - docker
     - kubelet
   vars_files:
