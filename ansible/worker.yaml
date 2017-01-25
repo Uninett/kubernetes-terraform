@@ -1,0 +1,7 @@
+- name: Install worker nodes
+  hosts: workers
+  roles:
+    - docker
+    - kubelet
+  vars_files:
+  - vars.yaml
