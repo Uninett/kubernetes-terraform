@@ -30,3 +30,11 @@ fi
 
 ./tls/init_cas.sh
 ./tls/init_kubernetes_service_key.sh
+
+gpfs_installer="Spectrum_Scale_Advanced-4.2.2.1-x86_64-Linux-install"
+gpfs_dir="roles/gpfs/files"
+if [ ! -f $gpfs_dir/$gpfs_installer ]
+then
+    echo "$gpfs_installer not found in $gpfs_dir"
+    exit 1
+fi
