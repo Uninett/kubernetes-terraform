@@ -91,3 +91,23 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           timeoutSeconds: 1
+
+---
+
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: kube-lego-backend
+  namespace: kube-system
+spec:
+  podSelector:
+    matchLabels:
+      app: kube-lego
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: nginx-ingress-lb
+      ports:
+        - protocol: tcp
+          port: 8080
