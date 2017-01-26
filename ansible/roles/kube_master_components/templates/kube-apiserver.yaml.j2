@@ -22,7 +22,7 @@ spec:
     - --etcd-keyfile=/etc/ssl/etcd/node-key.pem
     - --allow-privileged=true
     - --service-cluster-ip-range={{ service_ip_range }}
-    - --secure-port=443
+    - --secure-port=8443
     - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem

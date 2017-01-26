@@ -14,7 +14,7 @@
 - name: Waiting for API server to become ready
   wait_for:
     host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"
-    port: 443
+    port: 8443
 - name: Prepare Kubernetes configuration directory
   file:
     dest: ./cluster_config

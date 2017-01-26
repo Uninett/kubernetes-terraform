@@ -313,7 +313,7 @@ spec:
             # The location of the Kubernetes API.  Use the default Kubernetes
             # service for API access.
             - name: K8S_API
-              value: "https://{{ groups['masters'][0] }}.node.cluster.local"
+              value: "https://{{ groups['masters'][0] }}.node.cluster.local:8443"
             # Since we're running in the host namespace and might not have KubeDNS
             # access, configure the container's /etc/hosts to resolve
             # kubernetes.default to the correct service clusterIP.

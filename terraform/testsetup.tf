@@ -29,7 +29,7 @@ resource "openstack_compute_instance_v2" "master" {
     security_groups = [
         "default",
         "ssh-uninett",
-        "kube-api",
+        "nird-master",
     ]
 
     #   Connecting to the set network with the provided floating ip.
