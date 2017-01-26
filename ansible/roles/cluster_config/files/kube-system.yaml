@@ -9,3 +9,5 @@ metadata:
           "isolation": "DefaultDeny"
         }
       }
+  labels:
+    name: kube-system
