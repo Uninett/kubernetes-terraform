@@ -1,3 +1,8 @@
+- name: Work arond docker blocking IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    sysctl_file: /etc/sysctl.d/00-forwarding.conf
 - name: Set up Docker YUM repository
   yum_repository:
     name: dockerrepo
