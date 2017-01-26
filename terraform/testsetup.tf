@@ -77,11 +77,12 @@ data "template_file" "masters_ansible" {
 }
 
 data "template_file" "workers_ansible" {
-    template = "$${name} ansible_host=$${ip}"
+    template = "$${name} ansible_host=$${ip} lb=$${lb_flag}"
     count = "${var.worker_count}"
     vars {
         name  = "${element(openstack_compute_instance_v2.worker.*.name, count.index)}"
         ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
+        lb_flag = "${count.index < 3 ? "true" : "false"}"
     }
 }
 
