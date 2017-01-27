@@ -31,6 +31,7 @@ spec:
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true
     - --authorization-mode=RBAC
     - --authorization-rbac-super-user=kube-admin
+    - --service-node-port-range=30-32767
     volumeMounts:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
