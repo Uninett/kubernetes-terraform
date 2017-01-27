@@ -15,6 +15,10 @@
   wait_for:
     host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"
     port: 8443
+- name: Clear Kubernetes configuration directory
+  file:
+    dest: ./cluster_config
+    state: absent
 - name: Prepare Kubernetes configuration directory
   file:
     dest: ./cluster_config
