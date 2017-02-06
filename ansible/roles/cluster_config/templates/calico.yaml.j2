@@ -78,7 +78,7 @@ data:
       apiVersion: v1
       kind: ipPool
       metadata:
-        cidr: 192.168.0.0/16
+        cidr: {{ pod_ip_range }}
       spec:
         nat-outgoing: true
         ipip:
