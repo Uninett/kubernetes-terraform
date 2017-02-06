@@ -1,5 +1,5 @@
 k8s_ver: 1.5.2
 dns_service_ip: 172.16.0.10
 service_ip_range: 172.16.0.0/16
-apiserver_service_ip: 172.16.3.1
+apiserver_service_ip: 172.16.0.1
 pod_ip_range: 10.11.0.0/16
