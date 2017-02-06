@@ -1,3 +1,4 @@
+- include: etcd.yaml
 - include: apiserver.yaml
 - include: controller_manager.yaml
 - include: scheduler.yaml

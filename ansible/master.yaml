@@ -1,7 +1,6 @@
 - name: Install master nodes
   hosts: masters
   roles:
-    - etcd
     - docker
     - kubelet
     - kube_master_components

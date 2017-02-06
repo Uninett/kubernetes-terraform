@@ -40,6 +40,10 @@
     owner: root
     group: root
     mode: 0600
+- name: Waiting for Etcd to become ready
+  wait_for:
+    host: "{{ ansible_default_ipv4['address'] }}"
+    port: 2379
 - name: Add apiserver manifest
   template:
     src: kube-apiserver.yaml.j2
