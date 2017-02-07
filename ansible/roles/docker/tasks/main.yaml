@@ -12,7 +12,7 @@
     gpgkey: https://yum.dockerproject.org/gpg
 - name: Install Docker
   yum:
-    name: docker-engine
+    name: "{{ docker_ver }}"
 - name: Start Docker service
   service:
     name: docker

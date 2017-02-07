@@ -1,5 +1,6 @@
 k8s_ver: 1.5.2
 etcd_ver: 3.1.0
+docker_ver: docker-engine-1.13.0-1.el7.centos
 apiserver_count: 3
 dns_service_ip: 172.16.0.10
 service_ip_range: 172.16.0.0/16
