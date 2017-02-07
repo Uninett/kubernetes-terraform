@@ -45,7 +45,7 @@
     host: "{{ ansible_default_ipv4['address'] }}"
     port: 2379
 - name: Generate kubelet client certificates
-  command: ./tls/generate_cert.sh kubelet client {{ ansible_fqdn }}-client
+  command: ./tls/generate_cert.sh kubelet client {{ inventory_hostname }}-client
   register: create_kubelet_cert
   changed_when: "create_kubelet_cert.rc != 2"
   failed_when: "create_kubelet_cert.rc not in (0, 2)"
@@ -53,14 +53,14 @@
   become: false
 - name: Copy kubelet client certificate
   copy:
-    src: tls/kubelet/{{ ansible_fqdn }}-client.pem
+    src: tls/kubelet/{{ inventory_hostname }}-client.pem
     dest: /etc/ssl/kubelet/node-client.pem
     owner: root
     group: root
     mode: 0644
 - name: Copy kubelet client private key
   copy:
-    src: tls/kubelet/{{ ansible_fqdn }}-client-key.pem
+    src: tls/kubelet/{{ inventory_hostname }}-client-key.pem
     dest: /etc/ssl/kubelet/node-client-key.pem
     owner: root
     group: kubelet

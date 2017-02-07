@@ -18,7 +18,7 @@
     name: kubelet
     system: yes
 - name: Generate node kubelet master certificates
-  command: ./tls/generate_cert.sh kubelet server {{ ansible_fqdn }}
+  command: ./tls/generate_cert.sh kubelet server {{ inventory_hostname }}
   register: create_kubelet_cert
   changed_when: "create_kubelet_cert.rc != 2"
   failed_when: "create_kubelet_cert.rc not in (0, 2)"
@@ -38,20 +38,23 @@
     owner: root
     group: root
     mode: 0644
+  register: kubelet_svc
 - name: Copy kubelet node certificate
   copy:
-    src: tls/kubelet/{{ ansible_fqdn }}.pem
+    src: tls/kubelet/{{ inventory_hostname }}.pem
     dest: /etc/ssl/kubelet/node.pem
     owner: root
     group: root
     mode: 0644
+  register: kubelet_svc
 - name: Copy kubelet node private key
   copy:
-    src: tls/kubelet/{{ ansible_fqdn }}-key.pem
+    src: tls/kubelet/{{ inventory_hostname }}-key.pem
     dest: /etc/ssl/kubelet/node-key.pem
     owner: root
     group: kubelet
     mode: 0640
+  register: kubelet_svc
 - name: Add kube-proxy
   template:
     dest: /etc/kubernetes/manifests/kube-proxy.yaml
