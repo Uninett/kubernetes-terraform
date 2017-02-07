@@ -33,6 +33,7 @@ spec:
     - --authorization-rbac-super-user=kube-admin
     - --service-node-port-range=30-32767
     - --storage-backend=etcd3
+    - --apiserver-count={{ apiserver_count }}
     volumeMounts:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
