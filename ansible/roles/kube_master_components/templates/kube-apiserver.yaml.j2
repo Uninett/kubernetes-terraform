@@ -34,6 +34,10 @@ spec:
     - --service-node-port-range=30-32767
     - --storage-backend=etcd3
     - --apiserver-count={{ apiserver_count }}
+    - --anonymous-auth=false
+    - --kubelet-certificate-authority=/etc/ssl/kubelet/ca.pem
+    - --kubelet-client-certificate=/etc/ssl/kubelet/node-client.pem
+    - --kubelet-client-key=/etc/ssl/kubelet/node-client-key.pem
     volumeMounts:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
@@ -49,6 +53,9 @@ spec:
       readOnly: true
     - mountPath: /etc/hosts
       name: hosts
+      readOnly: true
+    - mountPath: /etc/ssl/kubelet
+      name: ssl-certs-kubelet
       readOnly: true
   volumes:
   - hostPath:
@@ -66,3 +73,6 @@ spec:
   - hostPath:
       path: /etc/hosts
     name: hosts
+  - hostPath:
+      path: /etc/ssl/kubelet
+    name: ssl-certs-kubelet

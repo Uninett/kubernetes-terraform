@@ -1,0 +1,75 @@
+- name: Download kubelet
+  shell: >
+    curl -sSL https://dl.k8s.io/v{{ k8s_ver }}/kubernetes-server-linux-amd64.tar.gz
+    | tar --extract --gzip --to-stdout kubernetes/server/bin/kubelet >/opt/kubernetes/kubelet-{{ k8s_ver }}.new
+    && chmod 0755 /opt/kubernetes/kubelet-{{ k8s_ver }}.new
+    && mv /opt/kubernetes/kubelet-{{ k8s_ver }}.new /opt/kubernetes/kubelet-{{ k8s_ver }}
+  args:
+    creates: /opt/kubernetes/kubelet-{{ k8s_ver }}
+- name: Kubelet manifest directory
+  file:
+    path: /etc/kubernetes/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Create kubelet group
+  group:
+    name: kubelet
+    system: yes
+- name: Generate node kubelet master certificates
+  command: ./tls/generate_cert.sh kubelet server {{ ansible_fqdn }}
+  register: create_kubelet_cert
+  changed_when: "create_kubelet_cert.rc != 2"
+  failed_when: "create_kubelet_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+- name: Make kubelet certificate folder
+  file:
+    state: directory
+    path: /etc/ssl/kubelet
+    owner: root
+    group: root
+    mode: 0755
+- name: Copy kubelet CA certificate
+  copy:
+    src: tls/kubelet/ca.pem
+    dest: /etc/ssl/kubelet/ca.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy kubelet node certificate
+  copy:
+    src: tls/kubelet/{{ ansible_fqdn }}.pem
+    dest: /etc/ssl/kubelet/node.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy kubelet node private key
+  copy:
+    src: tls/kubelet/{{ ansible_fqdn }}-key.pem
+    dest: /etc/ssl/kubelet/node-key.pem
+    owner: root
+    group: kubelet
+    mode: 0640
+- name: Add kube-proxy
+  template:
+    dest: /etc/kubernetes/manifests/kube-proxy.yaml
+    src: kube-proxy.yaml.j2
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
+- name: Configure kubelet
+  template:
+    dest: /etc/systemd/system/kubelet.service
+    src: kubelet.service.j2
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
+- name: Reloading systemd
+  command: systemctl daemon-reload
+  when: kubelet_svc.changed
+- name: run kubelet
+  service: name=kubelet state=started enabled=yes

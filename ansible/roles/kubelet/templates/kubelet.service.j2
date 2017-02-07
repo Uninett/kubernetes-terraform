@@ -12,7 +12,11 @@ ExecStart=/opt/kubernetes/kubelet-{{ k8s_ver }} \
   --hostname-override={{ inventory_hostname }} \
   --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %} \
   --cluster-dns={{ dns_service_ip }} \
-  --cluster-domain=cluster.local
+  --cluster-domain=cluster.local \
+  --anonymous-auth=false \
+  --tls-cert-file=/etc/ssl/kubelet/node.pem \
+  --tls-private-key-file=/etc/ssl/kubelet/node-key.pem \
+  --client-ca-file=/etc/ssl/kubelet/ca.pem
 Restart=always
 RestartSec=10
 [Install]
