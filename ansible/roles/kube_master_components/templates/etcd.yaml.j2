@@ -13,6 +13,8 @@ spec:
     args:
     - --name={{ inventory_hostname }}
     - --data-dir=/var/lib/etcd
+    - --election-timeout=1500
+    - --heartbeat-interval=250
     - --listen-client-urls=https://0.0.0.0:2379
     - --listen-peer-urls=https://0.0.0.0:2380
     - --initial-advertise-peer-urls=https://{{ ansible_default_ipv4['address'] }}:2380
