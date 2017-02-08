@@ -35,6 +35,7 @@ rules:
     - endpoints
     - secrets
     - configmaps
+    - pods
     verbs:
     - get
     - list
