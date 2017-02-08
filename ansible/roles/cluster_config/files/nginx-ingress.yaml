@@ -36,6 +36,7 @@ rules:
     - secrets
     - configmaps
     - pods
+    - nodes
     verbs:
     - get
     - list
