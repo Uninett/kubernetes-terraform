@@ -11,12 +11,34 @@ apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
   name: kube-lego
 rules:
-  - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
-    nonResourceURLs: []
-  - verbs: ["*"]
-    nonResourceURLs: ["*"]
+  - apiGroups:
+    - extensions
+    resources:
+    - ingresses
+    verbs:
+    - get
+    - list
+    - watch
+    - update
+  - apiGroups:
+    - ""
+    resources:
+    - services
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - secrets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - delete
+    - update
 
 ---
 
