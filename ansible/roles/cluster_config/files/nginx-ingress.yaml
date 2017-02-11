@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: nginx-ingress
-  namespace: kube-system
+  namespace: kube-ingress
 
 ---
 
@@ -60,7 +60,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: nginx-ingress
-    namespace: kube-system
+    namespace: kube-ingress
 roleRef:
   kind: ClusterRole
   name: nginx-ingress
@@ -72,7 +72,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-ingress-controller
-  namespace: kube-system
+  namespace: kube-ingress
 data:
   enable-vts-status: "true"
   use-proxy-protocol: "true"
@@ -83,7 +83,7 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: nginx-ingress-controller
-  namespace: kube-system
+  namespace: kube-ingress
   labels:
     app: nginx-ingress-lb
 spec:
@@ -129,7 +129,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-ingress-lb
-  namespace: kube-system
+  namespace: kube-ingress
   annotations:
     service.beta.kubernetes.io/external-traffic: OnlyLocal
 spec:
@@ -152,7 +152,7 @@ apiVersion: extensions/v1beta1
 kind: NetworkPolicy
 metadata:
   name: nginx-ingress-lb
-  namespace: kube-system
+  namespace: kube-ingress
 spec:
  podSelector:
    matchLabels:
@@ -170,7 +170,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: default-http-backend
-  namespace: kube-system
+  namespace: kube-ingress
 spec:
   replicas: 1
   selector:
@@ -212,7 +212,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: default-http-backend
-  namespace: kube-system
+  namespace: kube-ingress
   labels:
     app: default-http-backend
 spec:
@@ -230,7 +230,7 @@ apiVersion: extensions/v1beta1
 kind: NetworkPolicy
 metadata:
   name: default-http-backend
-  namespace: kube-system
+  namespace: kube-ingress
 spec:
   podSelector:
     matchLabels:
