@@ -18,4 +18,4 @@ The cluster needs a gpfs file system driver. Put
 
     Spectrum_Scale_Advanced-4.2.2.1-x86_64-Linux-install
 
-in `ansible/roles/gpfs/files`. Ask around for how to get it.
+in `ansible/roles/gpfs/files`. Ask around for how to get it, or you can disable the `gpfs` task in `worker.yaml`.
