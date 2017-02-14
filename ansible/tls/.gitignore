@@ -1,4 +1,5 @@
 /bin/
 /etcd/
+/kubelet/
 /kubernetes/
 /kubernetes-service-key.pem
