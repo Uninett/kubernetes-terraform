@@ -6,6 +6,7 @@
     && mv /opt/kubernetes/kubelet-{{ k8s_ver }}.new /opt/kubernetes/kubelet-{{ k8s_ver }}
   args:
     creates: /opt/kubernetes/kubelet-{{ k8s_ver }}
+  tags: k8s_upgrade
 - name: Kubelet manifest directory
   file:
     path: /etc/kubernetes/manifests
@@ -63,6 +64,7 @@
     group: root
     mode: 0644
   register: kubelet_svc
+  tags: k8s_upgrade
 - name: Configure kubelet
   template:
     dest: /etc/systemd/system/kubelet.service
@@ -71,8 +73,14 @@
     group: root
     mode: 0644
   register: kubelet_svc
+  tags: k8s_upgrade
 - name: Reloading systemd
   command: systemctl daemon-reload
   when: kubelet_svc.changed
+  tags: k8s_upgrade
+- name: restart kubelet
+  service: name=kubelet state=restarted enabled=yes
+  when: kubelet_svc.changed
+  tags: k8s_upgrade
 - name: run kubelet
   service: name=kubelet state=started enabled=yes
