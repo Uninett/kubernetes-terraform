@@ -23,13 +23,13 @@ spec:
     - --allow-privileged=true
     - --service-cluster-ip-range={{ service_ip_range }}
     - --secure-port=8443
-    - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota
+    - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/service-key.pem
     - --service-account-lookup=true
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true
+    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true,extensions/v1beta1/podsecuritypolicy=true
     - --authorization-mode=RBAC
     - --authorization-rbac-super-user=kube-admin
     - --service-node-port-range=30-32767

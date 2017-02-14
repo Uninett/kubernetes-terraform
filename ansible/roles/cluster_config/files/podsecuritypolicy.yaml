@@ -1,0 +1,145 @@
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: permissive
+spec:
+  hostPID: true
+  hostIPC: true
+  privileged: true
+  hostNetwork: true
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - 'emptyDir'
+  - 'secret'
+  - 'downwardAPI'
+  - 'configMap'
+  - 'persistentVolumeClaim'
+  - 'gitRepo'
+  - 'hostPath'
+
+---
+
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: restricted
+  annotations:
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: docker/default
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+spec:
+  hostPID: false
+  hostIPC: false
+  privileged: false
+  hostNetwork: false
+  allowedCapabilities:
+  - KILL
+  - CHOWN
+  - FSETID
+  - FOWNER
+  - NET_RAW
+  - SETGID
+  - SETUID
+  - SETFCAP
+  - SETPCAP
+  - AUDIT_WRITE
+  - NET_BIND_SERVICE
+  requiredDropCapabilities:
+  - MKNOD
+  - DAC_OVERRIDE
+  - SYS_CHROOT
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - 'emptyDir'
+  - 'secret'
+  - 'downwardAPI'
+  - 'configMap'
+  - 'persistentVolumeClaim'
+  - 'gitRepo'
+
+---
+# PermissivePSP grants access to use
+# the permissive PSP.
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+kind: ClusterRole
+metadata:
+  name: permissive-psp-user
+rules:
+- apiGroups:
+  - extensions
+  resources:
+  - podsecuritypolicies
+  resourceNames:
+  - permissive
+  verbs:
+  - use
+
+---
+# restrictedPSP grants access to use
+# the restricted PSP.
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+kind: ClusterRole
+metadata:
+  name: restricted-psp-user
+rules:
+- apiGroups:
+  - extensions
+  resources:
+  - podsecuritypolicies
+  resourceNames:
+  - restricted
+  verbs:
+  - use
+
+
+---
+# PermissivePSP grants the PermissivePSP role to
+# the kube-admin user
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+kind: ClusterRoleBinding
+metadata:
+    name: permissive-psp-users
+subjects:
+- kind: User
+  name: kube-admin
+  apiVersion: rbac.authorization.k8s.io/v1alpha1
+- kind: ServiceAccount
+  name: calico
+  namespace: kube-system
+  apiVersion: rbac.authorization.k8s.io/v1alpha1
+roleRef:
+   apiGroup: rbac.authorization.k8s.io
+   kind: ClusterRole
+   name: permissive-psp-user
+
+---
+# restrictedPSP grants the restrictedPSP role to
+# the groups restricted
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+kind: ClusterRoleBinding
+metadata:
+    name: restricted-psp-users
+subjects:
+- kind: User
+  name: "*"
+  apiVersion: rbac.authorization.k8s.io/v1alpha1
+- kind: Group
+  name: system:serviceaccounts
+  apiVersion: rbac.authorization.k8s.io/v1alpha1
+roleRef:
+   apiGroup: rbac.authorization.k8s.io
+   kind: ClusterRole
+   name: restricted-psp-user

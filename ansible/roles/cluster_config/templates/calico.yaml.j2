@@ -372,6 +372,7 @@ spec:
     spec:
       hostNetwork: true
       restartPolicy: OnFailure
+      serviceAccountName: calico
       containers:
         # Writes basic configuration to datastore.
         - name: configure-calico
