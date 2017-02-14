@@ -8,3 +8,6 @@
 - name: Install socat
   yum:
     name: socat
+- name: Install python-docker-py
+  yum:
+    name: python-docker-py

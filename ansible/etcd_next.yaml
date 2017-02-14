@@ -1,0 +1,6 @@
+- name: etcd next
+  hosts: masters
+  roles:
+    - etcd_next
+  vars_files:
+  - vars.yaml
