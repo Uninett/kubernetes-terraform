@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-dashboard
+  namespace: kube-system
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-dashboard
+rules:
+  - apiGroups:
+    - ""
+    resources:
+    - nodes
+    verbs:
+    - get
+    - list
+    - watch
+
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-dashboard-extended
+subjects:
+  - kind: ServiceAccount
+    name: kube-dashboard
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: kube-dashboard
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-dashboard
+subjects:
+  - kind: ServiceAccount
+    name: kube-dashboard
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kube-dashboard
+  namespace: kube-system
+  labels:
+    k8s-app: kube-dashboard
+    kubernetes.io/cluster-service: "true"
+spec:
+  selector:
+    matchLabels:
+      k8s-app: kube-dashboard
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-dashboard
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
+    spec:
+      serviceAccountName: kube-dashboard
+      containers:
+      - name: kube-dashboard
+        image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.5.1
+        args:
+        - --heapster-host=http://heapster.kube-system.svc
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        ports:
+        - containerPort: 9090
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9090
+          initialDelaySeconds: 30
+          timeoutSeconds: 30
