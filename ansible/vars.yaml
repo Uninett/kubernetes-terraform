@@ -8,3 +8,10 @@ dns_service_ip: 172.16.0.10
 service_ip_range: 172.16.0.0/16
 apiserver_service_ip: 172.16.0.1
 pod_ip_range: 10.11.0.0/16
+apiserver_cpu: 150m
+apiserver_memory: 400Mi
+etcd_cpu: 150m
+etcd_memory: 250Mi
+kube_proxy_cpu: 100m
+kube_scheduler_cpu: 150m
+kube_cm_cpu: 200m

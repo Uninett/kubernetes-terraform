@@ -214,7 +214,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRole
 metadata:
-  name: permissive
+  name: permissive-psp
 rules:
 - apiGroups:
   - extensions
@@ -229,7 +229,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRole
 metadata:
-  name: privileged-hostpathnet
+  name: privileged-hostpathnet-psp
 rules:
 - apiGroups:
   - extensions
@@ -244,7 +244,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRole
 metadata:
-  name: restricted-defaultcap
+  name: restricted-defaultcap-psp
 rules:
 - apiGroups:
   - extensions
@@ -259,7 +259,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRole
 metadata:
-  name: restricted-nomknodchroot
+  name: restricted-nomknodchroot-psp
 rules:
 - apiGroups:
   - extensions
@@ -274,7 +274,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRole
 metadata:
-  name: restricted
+  name: restricted-psp
 rules:
 - apiGroups:
   - extensions
@@ -292,7 +292,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRoleBinding
 metadata:
-    name: permissive
+    name: permissive-psp
 subjects:
 - kind: User
   name: kube-admin
@@ -300,13 +300,13 @@ subjects:
 roleRef:
    apiGroup: rbac.authorization.k8s.io
    kind: ClusterRole
-   name: permissive
+   name: permissive-psp
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRoleBinding
 metadata:
-    name: privileged-hostpathnet
+    name: privileged-hostpathnet-psp
 subjects:
 - kind: ServiceAccount
   name: calico
@@ -315,13 +315,13 @@ subjects:
 roleRef:
    apiGroup: rbac.authorization.k8s.io
    kind: ClusterRole
-   name: privileged-hostpathnet
+   name: privileged-hostpathnet-psp
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRoleBinding
 metadata:
-    name: restricted-nomknodchroot
+    name: restricted-nomknodchroot-psp
 subjects:
 - kind: ServiceAccount
   name: nginx-ingress
@@ -330,13 +330,13 @@ subjects:
 roleRef:
    apiGroup: rbac.authorization.k8s.io
    kind: ClusterRole
-   name: restricted-nomknodchroot
+   name: restricted-nomknodchroot-psp
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 kind: ClusterRoleBinding
 metadata:
-    name: restricted
+    name: restricted-psp
 subjects:
 - kind: User
   name: "*"
@@ -347,4 +347,4 @@ subjects:
 roleRef:
    apiGroup: rbac.authorization.k8s.io
    kind: ClusterRole
-   name: restricted
+   name: restricted-psp

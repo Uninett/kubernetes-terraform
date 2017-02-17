@@ -8,6 +8,9 @@ spec:
   containers:
   - name: kube-proxy
     image: gcr.io/google_containers/hyperkube-amd64:v{{k8s_ver}}
+    resources:
+      requests:
+        cpu: {{ kube_proxy_cpu }}
     command:
     - /hyperkube
     - proxy
