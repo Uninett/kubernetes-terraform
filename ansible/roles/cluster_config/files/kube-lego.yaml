@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kube-lego
-  namespace: kube-ingress
+  namespace: kube-system
 
 ---
 
@@ -40,7 +40,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: kube-lego
-    namespace: kube-ingress
+    namespace: kube-system
 roleRef:
   kind: ClusterRole
   name: kube-lego
@@ -52,7 +52,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
   name: kube-lego
-  namespace: kube-ingress
+  namespace: kube-system
 rules:
   - apiGroups:
     - ""
@@ -83,7 +83,7 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
   name: kube-lego
-  namespace: kube-ingress
+  namespace: kube-system
 subjects:
   - kind: ServiceAccount
     name: kube-lego
@@ -97,7 +97,7 @@ roleRef:
 apiVersion: v1
 metadata:
   name: kube-lego-nginx
-  namespace: kube-ingress
+  namespace: kube-system
 data:
   # modify this to specify your address
   lego.email: "system-saker@uninett.no"
@@ -110,7 +110,7 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: kube-lego-nginx
-  namespace: kube-ingress
+  namespace: kube-system
 spec:
   replicas: 1
   template:
@@ -157,16 +157,16 @@ apiVersion: extensions/v1beta1
 kind: NetworkPolicy
 metadata:
   name: kube-lego-backend
-  namespace: kube-ingress
+  namespace: kube-system
 spec:
   podSelector:
     matchLabels:
       app: kube-lego
   ingress:
     - from:
-      - podSelector:
+      - namespaceSelector:
           matchLabels:
-            app: nginx-ingress-lb
+            name: kube-ingress
       ports:
         - protocol: tcp
           port: 8080
