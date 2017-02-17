@@ -1,77 +1,7 @@
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1alpha1
-metadata:
-  name: kube-worker
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - services
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - nodes
-  verbs:
-  - create
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - nodes/status
-  verbs:
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
-  - patch
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - delete
-- apiGroups:
-  - ""
-  resources:
-  - pods/status
-  verbs:
-  - update
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  - secrets
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - persistentvolumeclaims
-  - persistentvolumes
-  verbs:
-  - get
-
----
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
-  name: kube-worker
+  name: kube-worker-node
 subjects:
 {% for host in groups['workers'] %}
   - kind: User
@@ -79,5 +9,21 @@ subjects:
 {% endfor %}
 roleRef:
   kind: ClusterRole
-  name: kube-worker
+  name: system:node
+  apiGroup: rbac.authorization.k8s.io
+
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-worker-node-proxier
+subjects:
+{% for host in groups['workers'] %}
+  - kind: User
+    name: "{{ host }}"
+{% endfor %}
+roleRef:
+  kind: ClusterRole
+  name: system:node-proxier
   apiGroup: rbac.authorization.k8s.io
