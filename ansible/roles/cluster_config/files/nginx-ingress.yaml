@@ -1,4 +1,13 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-ingress
+  labels:
+    name: kube-ingress
+
+---
+
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: nginx-ingress
