@@ -15,3 +15,8 @@ etcd_memory: 250Mi
 kube_proxy_cpu: 100m
 kube_scheduler_cpu: 150m
 kube_cm_cpu: 200m
+eviction_memory: 50Mi
+eviction_nodefs: 300Mi
+eviction_imagefs: 300Mi
+system_reserved_cpu: 100m
+system_reserved_memory: 150Mi
