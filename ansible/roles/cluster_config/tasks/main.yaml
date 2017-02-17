@@ -37,5 +37,7 @@
   - '../templates/*.yaml.j2'
 - name: Create required system namespaces
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/namespaces.yaml
+- name: Create required pod security policies
+  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/podsecuritypolicy.yaml
 - name: Apply configuration files
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config
