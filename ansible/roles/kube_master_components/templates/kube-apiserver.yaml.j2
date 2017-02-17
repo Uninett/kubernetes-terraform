@@ -43,6 +43,9 @@ spec:
     - --kubelet-certificate-authority=/etc/ssl/kubelet/ca.pem
     - --kubelet-client-certificate=/etc/ssl/kubelet/node-client.pem
     - --kubelet-client-key=/etc/ssl/kubelet/node-client-key.pem
+    - --audit-log-path=/var/log/apiserver/audit.log
+    - --audit-log-maxage=7
+    - --audit-log-maxbackup=5
     volumeMounts:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
@@ -62,6 +65,8 @@ spec:
     - mountPath: /etc/ssl/kubelet
       name: ssl-certs-kubelet
       readOnly: true
+    - mountPath: /var/log/apiserver
+      name: apiserver-auditlog
   volumes:
   - hostPath:
       path: /etc/kubernetes/ssl
@@ -81,3 +86,6 @@ spec:
   - hostPath:
       path: /etc/ssl/kubelet
     name: ssl-certs-kubelet
+  - hostPath:
+      path: /var/log/apiserver
+    name: apiserver-auditlog
