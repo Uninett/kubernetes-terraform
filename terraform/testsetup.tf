@@ -37,6 +37,22 @@ resource "openstack_compute_instance_v2" "master" {
         uuid = "${var.cluster_network}"
         floating_ip = "${element(openstack_compute_floatingip_v2.master.*.address, count.index)}"
     }
+
+    block_device {
+        boot_index = 0
+        delete_on_termination = true
+        source_type = "image"
+        destination_type = "local"
+        uuid = "${var.centos_image}"
+    }
+
+    block_device {
+        boot_index = -1
+        delete_on_termination = true
+        source_type = "blank"
+        destination_type = "volume"
+        volume_size = 10
+    }
 }
 
 
@@ -63,6 +79,22 @@ resource "openstack_compute_instance_v2" "worker" {
     network {
         uuid = "${var.cluster_network}"
         floating_ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
+    }
+
+    block_device {
+        boot_index = 0
+        delete_on_termination = true
+        source_type = "image"
+        destination_type = "local"
+        uuid = "${var.centos_image}"
+    }
+
+    block_device {
+        boot_index = -1
+        delete_on_termination = true
+        source_type = "blank"
+        destination_type = "volume"
+        volume_size = 10
     }
 }
 

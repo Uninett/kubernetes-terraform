@@ -1,0 +1,9 @@
+{
+  "storage-driver": "devicemapper",
+   "storage-opts": [
+     "dm.thinpooldev=/dev/mapper/vg-docker",
+     "dm.use_deferred_removal=true",
+     "dm.use_deferred_deletion=true"
+   ]
+}
+

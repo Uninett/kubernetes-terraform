@@ -3,6 +3,8 @@
     name: net.ipv4.ip_forward
     value: 1
     sysctl_file: /etc/sysctl.d/00-forwarding.conf
+- name: create docker-thinpool
+  command: lvcreate --type thin-pool -n docker -l 35%VG vg
 - name: Set up Docker YUM repository
   yum_repository:
     name: dockerrepo
@@ -13,6 +15,20 @@
 - name: Install Docker
   yum:
     name: docker-engine
+- name: Create docker config folder
+  file:
+    path: /etc/docker
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Config Docker service
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
 - name: Start Docker service
   service:
     name: docker

@@ -1,2 +1,4 @@
 - include: hosts.yaml
 - include: hostname.yaml
+# - include: yum.yaml
+- include: lvm.yaml
