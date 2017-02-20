@@ -19,3 +19,5 @@ eviction_nodefs: 300Mi
 eviction_imagefs: 300Mi
 system_reserved_cpu: 100m
 system_reserved_memory: 150Mi
+graphite_server: 158.38.213.209
+zabbix_server: zabbix-backend.uninett.no
