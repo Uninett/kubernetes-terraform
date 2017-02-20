@@ -23,7 +23,7 @@ resource "openstack_compute_instance_v2" "master" {
     count = "${var.master_count}"
     name = "${var.cluster_name}-master-${count.index}"
     region = "${var.region}"
-    image_id = "${var.centos_image}"
+    image_id = "${var.coreos_image}"
     flavor_name = "${var.node_flavor}"
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
@@ -31,6 +31,7 @@ resource "openstack_compute_instance_v2" "master" {
         "ssh-uninett",
         "nird-master",
     ]
+    user_data = "#cloud-config\nhostname: ${var.cluster_name}-master-${count.index}\n"
 
     #   Connecting to the set network with the provided floating ip.
     network {
@@ -43,7 +44,7 @@ resource "openstack_compute_instance_v2" "master" {
         delete_on_termination = true
         source_type = "image"
         destination_type = "local"
-        uuid = "${var.centos_image}"
+        uuid = "${var.coreos_image}"
     }
 }
 
@@ -58,7 +59,7 @@ resource "openstack_compute_instance_v2" "worker" {
     count = "${var.worker_count}"
     name = "${var.cluster_name}-worker-${count.index}"
     region = "${var.region}"
-    image_id = "${var.centos_image}"
+    image_id = "${var.coreos_image}"
     flavor_name = "${var.node_flavor}"
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
@@ -66,6 +67,7 @@ resource "openstack_compute_instance_v2" "worker" {
         "ssh-uninett",
         "kube-lb",
     ]
+    user_data = "#cloud-config\nhostname: ${var.cluster_name}-worker-${count.index}\n"
 
     #   Connecting to the set network with the provided floating ip.
     network {
@@ -78,7 +80,7 @@ resource "openstack_compute_instance_v2" "worker" {
         delete_on_termination = true
         source_type = "image"
         destination_type = "local"
-        uuid = "${var.centos_image}"
+        uuid = "${var.coreos_image}"
     }
 }
 
@@ -106,7 +108,7 @@ data "template_file" "inventory_tail" {
     template = "$${section_children}\n$${section_vars}"
     vars = {
         section_children = "[servers:children]\nmasters\nworkers"
-        section_vars = "[servers:vars]\nansible_ssh_user=centos\n[all]\ncluster\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\n"
+        section_vars = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all]\ncluster\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\n"
     }
 }
 

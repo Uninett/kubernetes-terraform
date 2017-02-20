@@ -1,0 +1,6 @@
+- name: Bootstrap Python on CoreOS
+  hosts: servers
+  gather_facts: False
+  become: False
+  roles:
+    - defunctzombie.coreos-bootstrap
