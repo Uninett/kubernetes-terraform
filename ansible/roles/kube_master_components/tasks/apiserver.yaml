@@ -1,5 +1,5 @@
 - name: Generate node Kubernetes certificates
-  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} apiserver.cluster.local {{ apiserver_service_ip }} {{ public_ip }}
+  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} apiserver.cluster.local kubernetes.default.svc.cluster.local {{ apiserver_service_ip }} {{ public_ip }}
   register: create_kubernetes_cert
   changed_when: "create_kubernetes_cert.rc != 2"
   failed_when: "create_kubernetes_cert.rc not in (0, 2)"
