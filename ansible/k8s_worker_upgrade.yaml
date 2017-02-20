@@ -1,0 +1,6 @@
+- name: Upgrade kubernetes on worker node
+  hosts: '{{ host }}'
+  roles:
+    - kubelet
+  vars_files:
+  - vars.yaml

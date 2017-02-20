@@ -1,0 +1,13 @@
+- name: Download next kubelet
+  shell: >
+    curl -sSL https://dl.k8s.io/v{{ k8s_next_ver }}/kubernetes-server-linux-amd64.tar.gz
+    | tar --extract --gzip --to-stdout kubernetes/server/bin/kubelet >/opt/kubernetes/kubelet-{{ k8s_next_ver }}.next
+    && chmod 0755 /opt/kubernetes/kubelet-{{ k8s_next_ver }}.next
+    && mv /opt/kubernetes/kubelet-{{ k8s_next_ver }}.next /opt/kubernetes/kubelet-{{ k8s_next_ver }}
+  args:
+    creates: /opt/kubernetes/kubelet-{{ k8s_next_ver }}
+  when: k8s_next_ver is defined
+- name: Pull next hyperkube
+  docker_image:
+    name: gcr.io/google_containers/hyperkube-amd64:v{{ k8s_next_ver }}
+  when: k8s_next_ver is defined

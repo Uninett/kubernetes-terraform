@@ -5,3 +5,9 @@
     owner: root
     group: root
     mode: 0644
+- name: Install socat
+  yum:
+    name: socat
+- name: Install python-docker-py
+  yum:
+    name: python-docker-py

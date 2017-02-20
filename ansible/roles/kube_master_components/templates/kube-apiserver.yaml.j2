@@ -8,6 +8,10 @@ spec:
   containers:
   - name: kube-apiserver
     image: gcr.io/google_containers/hyperkube-amd64:v{{ k8s_ver }}
+    resources:
+      requests:
+        cpu: {{ apiserver_cpu }}
+        memory: {{ apiserver_memory }}
     command:
     - /hyperkube
     - apiserver
@@ -23,17 +27,25 @@ spec:
     - --allow-privileged=true
     - --service-cluster-ip-range={{ service_ip_range }}
     - --secure-port=8443
-    - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota
+    - --admission-control=NamespaceLifecycle,DenyEscalatingExec,LimitRanger,ServiceAccount,ResourceQuota,PodSecurityPolicy
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/service-key.pem
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true
+    - --service-account-lookup=true
+    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true,extensions/v1beta1/podsecuritypolicy=true
     - --authorization-mode=RBAC
     - --authorization-rbac-super-user=kube-admin
     - --service-node-port-range=30-32767
     - --storage-backend=etcd3
     - --apiserver-count={{ apiserver_count }}
+    - --anonymous-auth=false
+    - --kubelet-certificate-authority=/etc/ssl/kubelet/ca.pem
+    - --kubelet-client-certificate=/etc/ssl/kubelet/node-client.pem
+    - --kubelet-client-key=/etc/ssl/kubelet/node-client-key.pem
+    - --audit-log-path=/var/log/apiserver/audit.log
+    - --audit-log-maxage=7
+    - --audit-log-maxbackup=5
     volumeMounts:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
@@ -50,6 +62,11 @@ spec:
     - mountPath: /etc/hosts
       name: hosts
       readOnly: true
+    - mountPath: /etc/ssl/kubelet
+      name: ssl-certs-kubelet
+      readOnly: true
+    - mountPath: /var/log/apiserver
+      name: apiserver-auditlog
   volumes:
   - hostPath:
       path: /etc/kubernetes/ssl
@@ -66,3 +83,9 @@ spec:
   - hostPath:
       path: /etc/hosts
     name: hosts
+  - hostPath:
+      path: /etc/ssl/kubelet
+    name: ssl-certs-kubelet
+  - hostPath:
+      path: /var/log/apiserver
+    name: apiserver-auditlog

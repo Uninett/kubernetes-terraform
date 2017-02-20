@@ -14,7 +14,7 @@
     gpgkey: https://yum.dockerproject.org/gpg
 - name: Install Docker
   yum:
-    name: docker-engine
+    name: "{{ docker_ver }}"
 - name: Create docker config folder
   file:
     path: /etc/docker

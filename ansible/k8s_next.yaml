@@ -1,0 +1,6 @@
+- name: K8s next
+  hosts: servers
+  roles:
+    - k8s_next
+  vars_files:
+  - vars.yaml

@@ -11,10 +11,23 @@ apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
   name: calico
 rules:
-  - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
-    nonResourceURLs: []
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    - namespaces
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - extensions
+    resources:
+    - networkpolicies
+    verbs:
+    - get
+    - list
+    - watch
 
 ---
 
@@ -142,7 +155,14 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: quay.io/calico/node:v1.0.1
+          image: calico/node:v1.0.1
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: 150m
+            requests:
+              cpu: 150m
+              memory: 200Mi
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -286,6 +306,13 @@ spec:
       containers:
         - name: calico-policy-controller
           image: calico/kube-policy-controller:v0.5.2
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: 200m
+            requests:
+              cpu: 100m
+              memory: 100Mi
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -359,6 +386,7 @@ spec:
     spec:
       hostNetwork: true
       restartPolicy: OnFailure
+      serviceAccountName: calico
       containers:
         # Writes basic configuration to datastore.
         - name: configure-calico

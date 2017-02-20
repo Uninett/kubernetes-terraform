@@ -11,7 +11,6 @@ spec:
     command:
     - /hyperkube
     - controller-manager
-    - --master=http://127.0.0.1:8080
     - --leader-elect=true
     - --service-account-private-key-file=/etc/kubernetes/service-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
@@ -19,12 +18,21 @@ spec:
     - --node-monitor-grace-period=20s
     - --resource-quota-sync-period=1m0s
     - --horizontal-pod-autoscaler-sync-period=10s
-    - --deleting-pods-burst=10
+    - --deployment-controller-sync-period=10s
     - --namespace-sync-period=1m0s
     - --concurrent-deployment-syncs=20
     - --concurrent-endpoint-syncs=20
+    - --concurrent-namespace-syncs=10
+    - --concurrent-resource-quota-syncs=10
+    - --concurrent-service-syncs=10
+    - --concurrent-serviceaccount-token-syncs=20
     - --concurrent-replicaset-syncs=40
     - --pod-eviction-timeout=30s
+    - --use-service-account-credentials
+    - --kubeconfig=/etc/kubernetes/kubeconfig-cm.yaml
+    resources:
+      requests:
+        cpu: {{ kube_cm_cpu }}
     livenessProbe:
       httpGet:
         host: 127.0.0.1
@@ -36,8 +44,8 @@ spec:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
       readOnly: true
-    - mountPath: /etc/ssl/certs
-      name: ssl-certs-host
+    - mountPath: /etc/kubernetes/kubeconfig-cm.yaml
+      name: kubeconfig
       readOnly: true
     - mountPath: /etc/kubernetes/service-key.pem
       name: kubernetes-service-key
@@ -47,8 +55,8 @@ spec:
       path: /etc/kubernetes/ssl
     name: ssl-certs-kubernetes
   - hostPath:
-      path: /usr/share/ca-certificates
-    name: ssl-certs-host
+      path: /etc/kubernetes/kubeconfig-cm.yaml
+    name: kubeconfig
   - hostPath:
       path: /etc/kubernetes/service-key.pem
     name: kubernetes-service-key

@@ -1,3 +1,17 @@
+- name: Generate controller-manager SSL keys
+  command: ./tls/generate_cert.sh kubernetes client {{ inventory_hostname }}-cm
+  register: create_kubernetes_cert
+  changed_when: "create_kubernetes_cert.rc != 2"
+  failed_when: "create_kubernetes_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+- name: kubeconfig-cm.yaml
+  template:
+    dest: /etc/kubernetes/kubeconfig-cm.yaml
+    src: kubeconfig-cm.yaml.j2
+    owner: root
+    group: root
+    mode: 0600
 - name: Add kube-controller-manager manifest
   template:
     src: kube-controller-manager.yaml.j2
@@ -5,3 +19,4 @@
     owner: root
     group: root
     mode: 0644
+  tags: k8s_upgrade

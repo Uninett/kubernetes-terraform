@@ -1,7 +1,8 @@
 - name: Install worker nodes
   hosts: workers
   roles:
-    # - gpfs
+    - role: gpfs
+      tags: gpfs
     - docker
     - kubelet
     - haproxy_apiserver

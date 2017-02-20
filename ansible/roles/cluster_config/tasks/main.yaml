@@ -35,5 +35,7 @@
     dest: "./cluster_config/{{ item | basename | regex_replace('\\.j2$','') }}"
   with_fileglob:
   - '../templates/*.yaml.j2'
+- name: Create required pod security policies
+  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/podsecuritypolicy.yaml
 - name: Apply configuration files
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config

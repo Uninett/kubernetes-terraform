@@ -1,7 +1,22 @@
 k8s_ver: 1.5.2
+# k8s_next_ver: 1.x.y
 etcd_ver: 3.1.0
+# etcd_next_ver: 3.u.v
+docker_ver: docker-engine-1.13.0-1.el7.centos
 apiserver_count: 3
 dns_service_ip: 172.16.0.10
 service_ip_range: 172.16.0.0/16
 apiserver_service_ip: 172.16.0.1
 pod_ip_range: 10.11.0.0/16
+apiserver_cpu: 150m
+apiserver_memory: 400Mi
+etcd_cpu: 150m
+etcd_memory: 250Mi
+kube_proxy_cpu: 100m
+kube_scheduler_cpu: 150m
+kube_cm_cpu: 200m
+eviction_memory: 50Mi
+eviction_nodefs: 300Mi
+eviction_imagefs: 300Mi
+system_reserved_cpu: 100m
+system_reserved_memory: 150Mi
