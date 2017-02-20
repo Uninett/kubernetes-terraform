@@ -45,14 +45,6 @@ resource "openstack_compute_instance_v2" "master" {
         destination_type = "local"
         uuid = "${var.centos_image}"
     }
-
-    block_device {
-        boot_index = -1
-        delete_on_termination = true
-        source_type = "blank"
-        destination_type = "volume"
-        volume_size = 10
-    }
 }
 
 
@@ -87,14 +79,6 @@ resource "openstack_compute_instance_v2" "worker" {
         source_type = "image"
         destination_type = "local"
         uuid = "${var.centos_image}"
-    }
-
-    block_device {
-        boot_index = -1
-        delete_on_termination = true
-        source_type = "blank"
-        destination_type = "volume"
-        volume_size = 10
     }
 }
 

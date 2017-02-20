@@ -1,3 +1,2 @@
 - include: hosts.yaml
 - include: hostname.yaml
-- include: lvm.yaml
