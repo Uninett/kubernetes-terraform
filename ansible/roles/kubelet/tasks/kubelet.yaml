@@ -1,12 +1,3 @@
-- name: Download kubelet
-  shell: >
-    curl -sSL https://dl.k8s.io/v{{ k8s_ver }}/kubernetes-server-linux-amd64.tar.gz
-    | tar --extract --gzip --to-stdout kubernetes/server/bin/kubelet >/opt/kubernetes/kubelet-{{ k8s_ver }}.new
-    && chmod 0755 /opt/kubernetes/kubelet-{{ k8s_ver }}.new
-    && mv /opt/kubernetes/kubelet-{{ k8s_ver }}.new /opt/kubernetes/kubelet-{{ k8s_ver }}
-  args:
-    creates: /opt/kubernetes/kubelet-{{ k8s_ver }}
-  tags: k8s_upgrade
 - name: Kubelet manifest directory
   file:
     path: /etc/kubernetes/manifests

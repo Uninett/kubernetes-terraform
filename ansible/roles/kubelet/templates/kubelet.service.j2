@@ -1,5 +1,19 @@
 [Service]
-ExecStart=/opt/kubernetes/kubelet-{{ k8s_ver }} \
+# We are using gcr.io instead of quay.io because the latter is terribly slow
+Environment=RKT_RUN_ARGS=--insecure-options=image
+Environment=KUBELET_IMAGE_URL=docker://gcr.io/google_containers/hyperkube-amd64
+Environment=KUBELET_IMAGE_TAG=v{{ k8s_ver }}
+Environment='RKT_OPTS= \
+  --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
+  --mount volume=etc-cni,target=/etc/cni \
+  --volume opt-cni,kind=host,source=/opt/cni,readOnly=true \
+  --mount volume=opt-cni,target=/opt/cni \
+  --volume etc-ssl-kubelet,kind=host,source=/etc/ssl/kubelet,readOnly=true \
+  --mount volume=etc-ssl-kubelet,target=/etc/ssl/kubelet \
+  --volume etc-hosts,kind=host,source=/etc/hosts,readOnly=true \
+  --mount volume=etc-hosts,target=/etc/hosts \
+'
+ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/etc/kubernetes/kubeconfig.yaml \
   --require-kubeconfig \
   --network-plugin-dir=/etc/cni/net.d \
