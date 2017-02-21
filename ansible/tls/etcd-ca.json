@@ -1,5 +1,5 @@
 {
-    "CN": "NIRD-SP etcd CA",
+    "CN": "PaaS 2 etcd CA",
     "key": {
         "algo": "rsa",
         "size": 2048

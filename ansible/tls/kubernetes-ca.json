@@ -1,5 +1,5 @@
 {
-    "CN": "NIRD-SP Kubernetes CA",
+    "CN": "PaaS 2 Kubernetes CA",
     "key": {
         "algo": "rsa",
         "size": 2048

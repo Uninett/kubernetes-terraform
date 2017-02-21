@@ -1,5 +1,5 @@
 {
-    "CN": "NIRD-SP Kubelet CA",
+    "CN": "PaaS 2 Kubelet CA",
     "key": {
         "algo": "rsa",
         "size": 2048
