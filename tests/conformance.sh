@@ -41,11 +41,11 @@ pushd "$REPO"
 # kubetest -v --check_version_skew=false --test --test_args="--ginkgo.focus=\[Conformance\]"
 
 # For now, go with old style/shim:
-go run hack/e2e.go -v --test --test_args="--ginkgo.focus=\[Conformance\]"
+go run hack/e2e.go -v --check_version_skew=false --test --test_args="--ginkgo.focus=\[Conformance\]"
 
 #
 # Step 3b - Alternative, parallell way (2 parts):
 # run all parallel-safe conformance tests in parallel, old style
-#GINKGO_PARALLEL=y go run hack/e2e.go -v --test --test_args="--ginkgo.focus=\[Conformance\] --ginkgo.skip=\[Serial\]"
+#GINKGO_PARALLEL=y go run hack/e2e.go -v --check_version_skew=false --test --test_args="--ginkgo.focus=\[Conformance\] --ginkgo.skip=\[Serial\]"
 # ... and finish up with remaining tests in serial, old style
-#go run hack/e2e.go -v --test --test_args="--ginkgo.focus=\[Serial\].*\[Conformance\]"
+#go run hack/e2e.go -v --check_version_skew=false --test --test_args="--ginkgo.focus=\[Serial\].*\[Conformance\]"
