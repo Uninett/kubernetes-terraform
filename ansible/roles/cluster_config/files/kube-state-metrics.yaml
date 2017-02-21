@@ -103,4 +103,4 @@ spec:
             app: metrics-scraper
       ports:
         - protocol: tcp
-          port: 8082
+          port: 8080
