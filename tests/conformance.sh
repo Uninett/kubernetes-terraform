@@ -2,6 +2,8 @@
 set -e
 set -o pipefail
 
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
 #
 # Step 1 - get kubernetes source
 #
