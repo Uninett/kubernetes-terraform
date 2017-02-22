@@ -35,7 +35,6 @@ spec:
     - --service-account-lookup=true
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true,extensions/v1beta1/podsecuritypolicy=true
     - --authorization-mode=RBAC
-    - --authorization-rbac-super-user=kube-admin
     - --service-node-port-range=30-32767
     - --storage-backend=etcd3
     - --apiserver-count={{ apiserver_count }}

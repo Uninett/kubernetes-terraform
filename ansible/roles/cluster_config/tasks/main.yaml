@@ -1,5 +1,5 @@
 - name: Generate node Kubernetes certificates
-  command: ./tls/generate_cert.sh kubernetes client kube-admin
+  command: env CERT_ORG="system:masters" ./tls/generate_cert.sh kubernetes client kube-admin
   args:
     creates: tls/kubernetes/kube-admin.pem
 - name: Generating kubeconfig

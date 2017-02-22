@@ -294,8 +294,8 @@ kind: ClusterRoleBinding
 metadata:
     name: permissive-psp
 subjects:
-- kind: User
-  name: kube-admin
+- kind: Group
+  name: system:masters
   apiVersion: rbac.authorization.k8s.io/v1alpha1
 roleRef:
    apiGroup: rbac.authorization.k8s.io
