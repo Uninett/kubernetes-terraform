@@ -4,6 +4,7 @@ variable "domain_name" {}
 variable "tenant_name" {}
 variable "region" {}
 variable "node_flavor" {}
+variable "worker_node_flavor" {}
 variable "coreos_image" {}
 
 # From local.tfvars
