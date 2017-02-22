@@ -60,7 +60,7 @@ resource "openstack_compute_instance_v2" "worker" {
     name = "${var.cluster_name}-worker-${count.index}"
     region = "${var.region}"
     image_id = "${var.coreos_image}"
-    flavor_name = "${var.node_flavor}"
+    flavor_name = "${var.worker_node_flavor}"
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
         "default",

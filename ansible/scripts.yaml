@@ -1,0 +1,8 @@
+- name: Scripts
+  hosts: cluster
+  connection: local
+  become: false
+  vars_files:
+  - vars.yaml
+  roles:
+  - scripts

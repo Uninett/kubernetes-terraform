@@ -46,6 +46,8 @@ spec:
       readOnly: true
     - mountPath: /var/lib/etcd
       name: etcd-data
+    - mountPath: /var/backups/etcd
+      name: etcd-backups
   volumes:
   - hostPath:
       path: /etc/ssl/etcd
@@ -53,3 +55,6 @@ spec:
   - hostPath:
       path: /var/lib/etcd
     name: etcd-data
+  - hostPath:
+      path: /var/backups/etcd
+    name: etcd-backups
