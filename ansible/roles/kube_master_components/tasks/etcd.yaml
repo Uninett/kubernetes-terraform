@@ -12,6 +12,13 @@
     owner: root
     group: root
     mode: 0755
+- name: Make etcd backups folder
+  file:
+    state: directory
+    path: /var/backups/etcd
+    owner: root
+    group: root
+    mode: 0755
 - name: Add Etcd manifest
   template:
     src: etcd.yaml.j2
