@@ -1,0 +1,195 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+
+---
+
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: kube-selftest
+  annotations:
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: docker/default
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+spec:
+  hostPID: false
+  hostIPC: false
+  privileged: false
+  hostNetwork: false
+  allowedCapabilities:
+  - KILL
+  - CHOWN
+  - FSETID
+  - FOWNER
+  - NET_RAW
+  - SETGID
+  - SETUID
+  - SETFCAP
+  - SETPCAP
+  - AUDIT_WRITE
+  - NET_BIND_SERVICE
+  requiredDropCapabilities:
+  - MKNOD
+  - DAC_OVERRIDE
+  - SYS_CHROOT
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+  - 'hostPath'
+  - 'secret'
+
+---
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - kube-selftest
+    verbs:
+      - use
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-selftest
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - kube-selftest
+    verbs:
+      - use
+
+---
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+subjects:
+  - kind: ServiceAccount
+    name: kube-selftest
+roleRef:
+  kind: Role
+  name: kube-selftest
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+subjects:
+  - kind: ServiceAccount
+    name: kube-selftest
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: kube-selftest
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+kind: DaemonSet
+apiVersion: extensions/v1beta1
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      labels:
+        app: kube-selftest
+    spec:
+      serviceAccount: kube-selftest
+      containers:
+        - name: kube-selftest
+          image: registry.uninett.no/public/kube-selftest-service:v0.1
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+            - name: SERVICE_NAME
+              value: kube-selftest
+            - name: SERVICE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: STATUS_FILE
+              value: "/app/selftest-status-dir/status"
+          volumeMounts:
+            - mountPath: /app/selftest-status-dir
+              name: selftest-status-dir
+      volumes:
+        - name: selftest-status-dir
+          hostPath:
+            path: /run/selftest
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+spec:
+  type: ClusterIP
+  selector:
+    app: kube-selftest
+  ports:
+    - protocol: TCP
+      port: 80
+
+---
+
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: kube-selftest
+  namespace: kube-system
+spec:
+  podSelector:
+    matchLabels:
+      app: kube-selftest
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: kube-selftest
+      ports:
+        - protocol: tcp
+          port: 80
