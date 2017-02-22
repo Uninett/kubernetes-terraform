@@ -12,6 +12,12 @@ CA="$1"; shift
 PROFILE="$1"; shift
 NAME="$1" # No shift here, because we are going to use $@ to get all names later
 
+if [ -n "$CERT_ORG" ]; then
+    ORGBLOCK=', "names": [ { "O": "'"$CERT_ORG"'" } ]'
+else
+    ORGBLOCK=''
+fi
+
 # From http://stackoverflow.com/a/17841619
 function join_by {
     local IFS="$1"
@@ -46,6 +52,7 @@ define REQUEST <<EOF
     "size": 2048
   },
   "CN": "${NAME}"
+  $ORGBLOCK
 }
 EOF
 
