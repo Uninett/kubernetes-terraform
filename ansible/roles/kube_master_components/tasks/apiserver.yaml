@@ -33,6 +33,13 @@
     owner: root
     group: root
     mode: 0600
+- name: Generate Kubernetes service key
+  command: ./tls/generate_rsa_key.sh kubernetes-service
+  run_once: true
+  args:
+    creates: tls/kubernetes-service-key.pem
+  delegate_to: localhost
+  become: false
 - name: Copy Kubernetes service key
   copy:
     src: tls/kubernetes-service-key.pem
