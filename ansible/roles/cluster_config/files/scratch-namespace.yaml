@@ -15,3 +15,32 @@ roleRef:
   kind: ClusterRole
   name: edit
   apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resources
+  namespace: scratch
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: 16Gi
+    limits.cpu: "6"
+    limits.memory: 22Gi
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: resource-limits
+  namespace: scratch
+spec:
+  limits:
+  - defaultRequest:
+      cpu: 50m
+      memory: 100Mi
+    default:
+      cpu: 150m
+      memory: 200Mi
+    type: Container
