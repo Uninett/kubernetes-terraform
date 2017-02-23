@@ -1,0 +1,12 @@
+# This service is overridden to remove the
+# `Before=systemd-user-sessions.service` dependency. That dependency
+# would prevent us from being able to log into the node before our
+# self test has completed.
+
+[Unit]
+Description=Generate /run/coreos/motd
+After=locksmithd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/coreos/motdgen
