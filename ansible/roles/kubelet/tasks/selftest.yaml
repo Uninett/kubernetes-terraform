@@ -18,4 +18,4 @@
   command: systemctl daemon-reload
   when: selftest_svc.changed or motdgen_svc.changed
 - name: Enable selftest service
-  service: name=selftest state=started enabled=yes
+  service: name=selftest enabled=yes
