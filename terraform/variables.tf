@@ -12,7 +12,7 @@ variable "user_name" {}
 variable "password" {}
 variable "cluster_name" {  }
 variable "cluster_network" {}
-
+variable "cluster_dns_domain" {}
 
 variable "ssh_public_key" { default = "~/.ssh/id_rsa.pub" }
 
