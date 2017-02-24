@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: kube-dashboard
+  name: dashboard
   namespace: kube-system
 
 ---
@@ -9,7 +9,7 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
-  name: kube-dashboard
+  name: dashboard
 rules:
   - apiGroups:
     - ""
@@ -26,14 +26,14 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
-  name: kube-dashboard-extended
+  name: dashboard-extended
 subjects:
   - kind: ServiceAccount
-    name: kube-dashboard
+    name: dashboard
     namespace: kube-system
 roleRef:
   kind: ClusterRole
-  name: kube-dashboard
+  name: dashboard
   apiGroup: rbac.authorization.k8s.io
 
 ---
@@ -41,11 +41,11 @@ roleRef:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1alpha1
 metadata:
-  name: kube-dashboard-default
+  name: dashboard-default
   namespace: default
 subjects:
   - kind: ServiceAccount
-    name: kube-dashboard
+    name: dashboard
     namespace: kube-system
 roleRef:
   kind: ClusterRole
@@ -57,26 +57,26 @@ roleRef:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: kube-dashboard
+  name: dashboard
   namespace: kube-system
   labels:
-    app: kube-dashboard
+    app: dashboard
     kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
-      app: kube-dashboard
+      app: dashboard
   template:
     metadata:
       labels:
-        app: kube-dashboard
+        app: dashboard
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
-      serviceAccountName: kube-dashboard
+      serviceAccountName: dashboard
       containers:
-      - name: kube-dashboard
+      - name: dashboard
         image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.5.1
         args:
         - --heapster-host=http://heapster.kube-system.svc
