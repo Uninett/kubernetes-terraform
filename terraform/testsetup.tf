@@ -28,14 +28,14 @@ resource "openstack_compute_instance_v2" "master" {
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
         "default",
-        "ssh-uninett",
-        "nird-master",
+        "${openstack_networking_secgroup_v2.ssh_access.id}",
+        "${openstack_networking_secgroup_v2.kube_master.id}",
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-master-${count.index}\n"
 
     #   Connecting to the set network with the provided floating ip.
     network {
-        uuid = "${var.cluster_network}"
+        uuid = "${openstack_networking_network_v2.network_1.id}"
         floating_ip = "${element(openstack_compute_floatingip_v2.master.*.address, count.index)}"
     }
 
@@ -64,14 +64,14 @@ resource "openstack_compute_instance_v2" "worker" {
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
         "default",
-        "ssh-uninett",
-        "kube-lb",
+        "${openstack_networking_secgroup_v2.ssh_access.id}",
+        "${openstack_networking_secgroup_v2.kube_lb.id}",
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-worker-${count.index}\n"
 
     #   Connecting to the set network with the provided floating ip.
     network {
-        uuid = "${var.cluster_network}"
+        uuid = "${openstack_networking_network_v2.network_1.id}"
         floating_ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
     }
 
@@ -108,7 +108,7 @@ data "template_file" "inventory_tail" {
     template = "$${section_children}\n$${section_vars}"
     vars = {
         section_children = "[servers:children]\nmasters\nworkers"
-        section_vars = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all]\ncluster\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\n"
+        section_vars = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all]\ncluster\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\ncluster_dns_domain=${var.cluster_dns_domain}\n"
     }
 }
 

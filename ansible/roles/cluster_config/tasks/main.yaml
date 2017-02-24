@@ -11,6 +11,10 @@
   command: ./tls/generate_cert.sh etcd client calico
   args:
     creates: tls/etcd/calico.pem
+- name: Generate OpenID Connect signing key
+  command: ./tls/generate_rsa_key.sh oidc-signing
+  args:
+    creates: tls/oidc-signing-key.pem
 - name: Waiting for API server to become ready
   wait_for:
     host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"

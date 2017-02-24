@@ -1,0 +1,114 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: paas2-tokenissuer
+  namespace: kube-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: paas2-tokenissuer
+    spec:
+      containers:
+      - name: paas2-tokenissuer
+        image: registry.uninett.no/public/paas2_tokenissuer:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6543
+        env:
+          - name: scope
+            value: read_user api
+          - name: client_secret
+            valueFrom:
+              secretKeyRef:
+                name: tokenissuer-gitlab-oauth
+                key: client_secret
+          - name: client_id
+            valueFrom:
+              secretKeyRef:
+                name: tokenissuer-gitlab-oauth
+                key: client_id
+          - name: issuer
+            value: https://auth.{{cluster_dns_domain}}
+          - name: api_server_url
+            value: https://api.{{cluster_dns_domain}}:8443/
+          - name: cluster_name
+            value: {{cluster_name}}
+          - name: private_key_file
+            value: /var/signing-keys/key
+        volumeMounts:
+          - mountPath: /var/signing-keys
+            name: oidc-signing-key
+      volumes:
+        - name: oidc-signing-key
+          secret:
+            secretName: oidc-signing-key
+
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: paas2-tokenissuer
+  namespace: kube-system
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  tls:
+  - hosts:
+    - auth.{{cluster_dns_domain}}
+    secretName: paas2-tokenissuer
+  rules:
+  - host: auth.{{cluster_dns_domain}}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: paas2-tokenissuer
+          servicePort: 6543
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: paas2-tokenissuer
+  namespace: kube-system
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6543
+    name: http
+  selector:
+    app: paas2-tokenissuer
+
+---
+
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: paas2-tokenissuer
+  namespace: kube-system
+spec:
+  podSelector:
+    matchLabels:
+      app: paas2-tokenissuer
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: kube-ingress
+      ports:
+        - protocol: tcp
+          port: 6543
+---
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: oidc-signing-key
+  namespace: kube-system
+data:
+  key: {{ lookup('file', 'tls/oidc-signing-key.pem')|b64encode }}

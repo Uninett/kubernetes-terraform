@@ -1,5 +1,5 @@
 - name: Generate node Kubernetes certificates
-  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} apiserver.cluster.local kubernetes.default.svc.cluster.local {{ apiserver_service_ip }} {{ public_ip }}
+  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} apiserver.cluster.local kubernetes.default.svc.cluster.local {{ apiserver_service_ip }} {{ public_ip }} api.{{cluster_dns_domain}}
   register: create_kubernetes_cert
   changed_when: "create_kubernetes_cert.rc != 2"
   failed_when: "create_kubernetes_cert.rc not in (0, 2)"
@@ -33,6 +33,13 @@
     owner: root
     group: root
     mode: 0600
+- name: Generate Kubernetes service key
+  command: ./tls/generate_rsa_key.sh kubernetes-service
+  run_once: true
+  args:
+    creates: tls/kubernetes-service-key.pem
+  delegate_to: localhost
+  become: false
 - name: Copy Kubernetes service key
   copy:
     src: tls/kubernetes-service-key.pem
