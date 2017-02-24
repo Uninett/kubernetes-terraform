@@ -14,9 +14,9 @@ fi
 if [ ! -x ./tls/bin/cfssl -o ! -x ./tls/bin/cfssljson ]; then
     echo "Fetching cfssl binaries" >&2
     mkdir -p "./tls/bin"
-    if [ "$(uname -sp)" = "Linux x86_64" ]; then
+    if [ "$(uname -sm)" = "Linux x86_64" ]; then
 	variant=linux-amd64
-    elif [ "$(uname -sp)" = "Darwin i386" ]; then
+    elif [ "$(uname -sm)" = "Darwin x86_64" ]; then
 	variant=darwin-amd64
     else
 	echo "Unknown OS variant: $(uname -sp)" >&2
