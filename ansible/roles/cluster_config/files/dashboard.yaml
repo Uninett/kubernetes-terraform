@@ -60,16 +60,16 @@ metadata:
   name: kube-dashboard
   namespace: kube-system
   labels:
-    k8s-app: kube-dashboard
+    app: kube-dashboard
     kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
-      k8s-app: kube-dashboard
+      app: kube-dashboard
   template:
     metadata:
       labels:
-        k8s-app: kube-dashboard
+        app: kube-dashboard
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
