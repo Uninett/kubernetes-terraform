@@ -9,6 +9,7 @@ if [ ! -x ./.ve/bin/ansible ]; then
     rm -rf .ve
     virtualenv -p python2 .ve
     .ve/bin/pip install ansible
+    .ve/bin/pip install markupsafe
 fi
 
 if [ ! -x ./tls/bin/cfssl -o ! -x ./tls/bin/cfssljson ]; then
