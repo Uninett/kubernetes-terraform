@@ -59,3 +59,45 @@ roleRef:
   kind: ClusterRole
   name: view
   apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+kind: ClusterRole
+metadata:
+  name: scratch-internal-ingress
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+      - deletecollection
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses/status
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: scratch-internal-ingress
+  namespace: scratch
+subjects:
+  - kind: Group
+    name: scm_internal
+roleRef:
+  kind: ClusterRole
+  name: scratch-internal-ingress
+  apiGroup: rbac.authorization.k8s.io
