@@ -53,7 +53,7 @@ metadata:
   namespace: scratch
 subjects:
   - kind: ServiceAccount
-    name: kube-dashboard
+    name: dashboard
     namespace: kube-system
 roleRef:
   kind: ClusterRole
