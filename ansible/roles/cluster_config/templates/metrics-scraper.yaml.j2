@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: metrics-scraper
-        image: uninett-docker-uninett.bintray.io/paas2/metric-scraper
+        image: registry.uninett.no/public/paas2-metric-scraper
         env:
           - name: GRAPHITE_SERVER
             value: {{ graphite_server }}

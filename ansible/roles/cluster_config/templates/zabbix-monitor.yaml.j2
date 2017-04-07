@@ -52,7 +52,7 @@ spec:
       serviceAccountName: kube-zabbix-monitor
       containers:
       - name: kube-zabbix-monitor
-        image: uninett-docker-uninett.bintray.io/paas2/zabbix-monitor
+        image: registry.uninett.no/public/paas2-zabbix-monitor
         command: ["/app/monitor.py"]
         args:
           - --zabbix-server
