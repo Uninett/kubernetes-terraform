@@ -1,0 +1,9 @@
+[Service]
+Environment="LOCKSMITHD_ETCD_CAFILE=/etc/ssl/etcd/ca.pem"
+Environment="LOCKSMITHD_ETCD_CERTFILE=/etc/ssl/etcd/node.pem"
+Environment="LOCKSMITHD_ETCD_KEYFILE=/etc/ssl/etcd/node-key.pem"
+Environment="LOCKSMITHD_ENDPOINT={% set comma = joiner(',') %}
+{%- for host in groups['masters'] -%}
+{{ comma() }}https://{{ host }}.node.cluster.local:2379
+{%- endfor %}"
+Environment="REBOOT_STRATEGY=etcd-lock"

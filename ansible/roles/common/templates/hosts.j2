@@ -1,0 +1,10 @@
+127.0.0.1   localhost
+::1         localhost
+
+127.0.0.1   apiserver.cluster.local
+
+{% for host in play_hosts %}
+{% if 'ansible_default_ipv4' in hostvars[host] %}
+{{ hostvars[host]['ansible_default_ipv4']['address'] }}  {{ host }}.node.cluster.local {{ host }}
+{% endif %}
+{% endfor %}

@@ -1,0 +1,6 @@
+/.ve/
+/*.retry
+/inventory
+/kubeconfig
+/cluster_config
+/scripts

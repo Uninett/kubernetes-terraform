@@ -1,0 +1,4 @@
+- name: Perform common node setup
+  hosts: servers
+  roles:
+    - common

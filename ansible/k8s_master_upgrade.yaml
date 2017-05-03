@@ -1,0 +1,7 @@
+- name: Upgrade kubernetes on master node
+  hosts: '{{ host }}'
+  roles:
+    - kubelet
+    - kube_master_components
+  vars_files:
+  - vars.yaml

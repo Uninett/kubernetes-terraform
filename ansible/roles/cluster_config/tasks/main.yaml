@@ -1,0 +1,45 @@
+- name: Generate node Kubernetes certificates
+  command: env CERT_ORG="system:masters" ./tls/generate_cert.sh kubernetes client kube-admin
+  args:
+    creates: tls/kubernetes/kube-admin.pem
+- name: Generating kubeconfig
+  template:
+    src: kubeconfig.j2
+    dest: ./kubeconfig
+    mode: 0600
+- name: Generate calico etcd certificate & key
+  command: ./tls/generate_cert.sh etcd client calico
+  args:
+    creates: tls/etcd/calico.pem
+- name: Generate OpenID Connect signing key
+  command: ./tls/generate_rsa_key.sh oidc-signing
+  args:
+    creates: tls/oidc-signing-key.pem
+- name: Waiting for API server to become ready
+  wait_for:
+    host: "{{ hostvars[groups['masters'][0]]['public_ip'] }}"
+    port: 8443
+- name: Clear Kubernetes configuration directory
+  file:
+    dest: ./cluster_config
+    state: absent
+- name: Prepare Kubernetes configuration directory
+  file:
+    dest: ./cluster_config
+    state: directory
+- name: Copy configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./cluster_config/{{ item | basename }}"
+  with_fileglob:
+  - '*.yaml'
+- name: Initialize templated configuration files
+  template:
+    src: "{{ item }}"
+    dest: "./cluster_config/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/*.yaml.j2'
+- name: Create required pod security policies
+  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/podsecuritypolicy.yaml
+- name: Apply configuration files
+  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config

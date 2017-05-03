@@ -1,0 +1,11 @@
+[Unit]
+Description=Wait for kubelet to be ready
+Before=locksmithd.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'while test ! -f /run/selftest/status; do sleep 1; done'
+TimeoutStartSec=infinity
+
+[Install]
+WantedBy=multi-user.target

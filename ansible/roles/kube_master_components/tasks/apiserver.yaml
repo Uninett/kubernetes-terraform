@@ -1,0 +1,82 @@
+- name: Generate node Kubernetes certificates
+  command: ./tls/generate_cert.sh kubernetes server {{ ansible_fqdn }} apiserver.cluster.local kubernetes.default.svc.cluster.local {{ apiserver_service_ip }} {{ public_ip }} api.{{cluster_dns_domain}}
+  register: create_kubernetes_cert
+  changed_when: "create_kubernetes_cert.rc != 2"
+  failed_when: "create_kubernetes_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+- name: Make Kubernetes certificate folder
+  file:
+    state: directory
+    path: /etc/kubernetes/ssl
+    owner: root
+    group: root
+    mode: 0755
+- name: Copy Kubernetes CA certificate
+  copy:
+    src: tls/kubernetes/ca.pem
+    dest: /etc/kubernetes/ssl/ca.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy Kubernetes node certificate
+  copy:
+    src: tls/kubernetes/{{ ansible_fqdn }}.pem
+    dest: /etc/kubernetes/ssl/node.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy Kubernetes node private key
+  copy:
+    src: tls/kubernetes/{{ ansible_fqdn }}-key.pem
+    dest: /etc/kubernetes/ssl/node-key.pem
+    owner: root
+    group: root
+    mode: 0600
+- name: Generate Kubernetes service key
+  command: ./tls/generate_rsa_key.sh kubernetes-service
+  run_once: true
+  args:
+    creates: tls/kubernetes-service-key.pem
+  delegate_to: localhost
+  become: false
+- name: Copy Kubernetes service key
+  copy:
+    src: tls/kubernetes-service-key.pem
+    dest: /etc/kubernetes/service-key.pem
+    owner: root
+    group: root
+    mode: 0600
+- name: Waiting for Etcd to become ready
+  wait_for:
+    host: "{{ ansible_default_ipv4['address'] }}"
+    port: 2379
+- name: Generate kubelet client certificates
+  command: ./tls/generate_cert.sh kubelet client {{ inventory_hostname }}-client
+  register: create_kubelet_cert
+  changed_when: "create_kubelet_cert.rc != 2"
+  failed_when: "create_kubelet_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+- name: Copy kubelet client certificate
+  copy:
+    src: tls/kubelet/{{ inventory_hostname }}-client.pem
+    dest: /etc/ssl/kubelet/node-client.pem
+    owner: root
+    group: root
+    mode: 0644
+- name: Copy kubelet client private key
+  copy:
+    src: tls/kubelet/{{ inventory_hostname }}-client-key.pem
+    dest: /etc/ssl/kubelet/node-client-key.pem
+    owner: root
+    group: kubelet
+    mode: 0640
+- name: Add apiserver manifest
+  template:
+    src: kube-apiserver.yaml.j2
+    dest: /etc/kubernetes/manifests/kube-apiserver.yaml
+    owner: root
+    group: root
+    mode: 0644
+  tags: k8s_upgrade

@@ -1,0 +1,7 @@
+- name: Install master nodes
+  hosts: masters
+  roles:
+    - kubelet
+    - kube_master_components
+  vars_files:
+  - vars.yaml

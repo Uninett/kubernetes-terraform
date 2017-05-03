@@ -1,0 +1,77 @@
+- name: Kubelet manifest directory
+  file:
+    path: /etc/kubernetes/manifests
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Create kubelet group
+  group:
+    name: kubelet
+    system: yes
+- name: Generate node kubelet master certificates
+  command: ./tls/generate_cert.sh kubelet server {{ inventory_hostname }}
+  register: create_kubelet_cert
+  changed_when: "create_kubelet_cert.rc != 2"
+  failed_when: "create_kubelet_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+- name: Make kubelet certificate folder
+  file:
+    state: directory
+    path: /etc/ssl/kubelet
+    owner: root
+    group: root
+    mode: 0755
+- name: Copy kubelet CA certificate
+  copy:
+    src: tls/kubelet/ca.pem
+    dest: /etc/ssl/kubelet/ca.pem
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
+- name: Copy kubelet node certificate
+  copy:
+    src: tls/kubelet/{{ inventory_hostname }}.pem
+    dest: /etc/ssl/kubelet/node.pem
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
+- name: Copy kubelet node private key
+  copy:
+    src: tls/kubelet/{{ inventory_hostname }}-key.pem
+    dest: /etc/ssl/kubelet/node-key.pem
+    owner: root
+    group: kubelet
+    mode: 0640
+  register: kubelet_svc
+- name: Add kube-proxy
+  template:
+    dest: /etc/kubernetes/manifests/kube-proxy.yaml
+    src: kube-proxy.yaml.j2
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
+  tags: k8s_upgrade
+- name: Configure kubelet
+  template:
+    dest: /etc/systemd/system/kubelet.service
+    src: kubelet.service.j2
+    owner: root
+    group: root
+    mode: 0644
+  register: kubelet_svc
+  tags: k8s_upgrade
+- name: Reloading systemd
+  command: systemctl daemon-reload
+  when: kubelet_svc.changed
+  tags: k8s_upgrade
+- name: restart kubelet
+  service: name=kubelet state=restarted enabled=yes
+  when: kubelet_svc.changed
+  tags: k8s_upgrade
+- name: run kubelet
+  service: name=kubelet state=started enabled=yes

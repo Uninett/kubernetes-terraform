@@ -1,0 +1,14 @@
+- name: Bootstrap Python on CoreOS
+  hosts: servers
+  gather_facts: False
+  become: False
+  pre_tasks:
+    - name: waiting for host to come online
+      local_action: wait_for host={{ hostvars[inventory_hostname]['ansible_host'] }}
+                state=started port=22
+      become: false
+    - name: Ensuring that sshd is running properly
+      pause:
+        seconds: 10
+  roles:
+    - defunctzombie.coreos-bootstrap

@@ -1,0 +1,42 @@
+[Service]
+# We are using gcr.io instead of quay.io because the latter is terribly slow
+Environment=RKT_RUN_ARGS=--insecure-options=image
+Environment=KUBELET_IMAGE_URL=docker://gcr.io/google_containers/hyperkube-amd64
+Environment=KUBELET_IMAGE_TAG=v{{ k8s_ver }}
+Environment='RKT_OPTS= \
+  --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
+  --mount volume=etc-cni,target=/etc/cni \
+  --volume opt-cni,kind=host,source=/opt/cni,readOnly=true \
+  --mount volume=opt-cni,target=/opt/cni \
+  --volume etc-ssl-kubelet,kind=host,source=/etc/ssl/kubelet,readOnly=true \
+  --mount volume=etc-ssl-kubelet,target=/etc/ssl/kubelet \
+  --volume etc-hosts,kind=host,source=/etc/hosts,readOnly=true \
+  --mount volume=etc-hosts,target=/etc/hosts \
+'
+ExecStart=/usr/lib/coreos/kubelet-wrapper \
+  --kubeconfig=/etc/kubernetes/kubeconfig.yaml \
+  --require-kubeconfig \
+  --network-plugin-dir=/etc/cni/net.d \
+  --network-plugin=cni \
+{% if inventory_hostname in groups['masters'] %}
+  --register-schedulable=false \
+{% endif %}
+  --allow-privileged=true \
+  --pod-manifest-path=/etc/kubernetes/manifests \
+  --hostname-override={{ inventory_hostname }} \
+  --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %}  \
+  --cluster-dns={{ dns_service_ip }} \
+  --cluster-domain=cluster.local \
+  --anonymous-auth=false \
+  --tls-cert-file=/etc/ssl/kubelet/node.pem \
+  --tls-private-key-file=/etc/ssl/kubelet/node-key.pem \
+  --client-ca-file=/etc/ssl/kubelet/ca.pem \
+  --serialize-image-pulls=false \
+  --node-status-update-frequency=4s \
+  --eviction-minimum-reclaim=memory.available=100Mi,nodefs.available=1Gi,imagefs.available=2Gi \
+  --eviction-hard=memory.available<{{ eviction_memory }},nodefs.available<{{ eviction_nodefs }},imagefs.available<{{ eviction_imagefs }} \
+  --system-reserved=cpu={{ system_reserved_cpu }},memory={{ system_reserved_memory }}
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target

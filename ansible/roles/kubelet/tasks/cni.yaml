@@ -1,0 +1,25 @@
+- name: Create cni config folder
+  file:
+    path: /etc/cni/net.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Create cni binary folder
+  file:
+    path: /opt/cni/bin
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+- name: Install CNI
+  shell: curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.4.0/cni-amd64-v0.4.0.tgz' | tar --extract --gzip --directory /opt/cni/bin
+  args:
+    creates: /opt/cni/bin/loopback
+- name: Create kubernetes directory
+  file:
+    path: /opt/kubernetes
+    state: directory
+    owner: root
+    group: root
+    mode: 0755

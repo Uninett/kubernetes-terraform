@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: scratch
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: scratch-internal-edit
+  namespace: scratch
+subjects:
+  - kind: Group
+    name: scm_internal
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resources
+  namespace: scratch
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: 16Gi
+    limits.cpu: "6"
+    limits.memory: 22Gi
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: resource-limits
+  namespace: scratch
+spec:
+  limits:
+  - defaultRequest:
+      cpu: 50m
+      memory: 100Mi
+    default:
+      cpu: 150m
+      memory: 200Mi
+    type: Container
+---
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: kube-dashboard-scatch
+  namespace: scratch
+subjects:
+  - kind: ServiceAccount
+    name: dashboard
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+kind: ClusterRole
+metadata:
+  name: scratch-internal-ingress
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+      - deletecollection
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses/status
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1alpha1
+metadata:
+  name: scratch-internal-ingress
+  namespace: scratch
+subjects:
+  - kind: Group
+    name: scm_internal
+roleRef:
+  kind: ClusterRole
+  name: scratch-internal-ingress
+  apiGroup: rbac.authorization.k8s.io

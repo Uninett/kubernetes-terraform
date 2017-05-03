@@ -1,0 +1,6 @@
+/bin/
+/etcd/
+/kubelet/
+/kubernetes/
+/kubernetes-service-key.pem
+/oidc-signing-key.pem

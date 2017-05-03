@@ -1,0 +1,12 @@
+- name: generate /etc/hosts
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+  register: hosts_updated
+- name: Reload facts
+  setup:
+    gather_subset=network
+  when: hosts_updated.changed

@@ -1,0 +1,8 @@
+- name: Configure Kubernetes
+  hosts: cluster
+  connection: local
+  become: false
+  vars_files:
+  - vars.yaml
+  roles:
+  - cluster_config

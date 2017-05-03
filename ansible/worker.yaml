@@ -1,0 +1,7 @@
+- name: Install worker nodes
+  hosts: workers
+  roles:
+    - kubelet
+    - haproxy_apiserver
+  vars_files:
+  - vars.yaml

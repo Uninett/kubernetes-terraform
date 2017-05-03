@@ -1,0 +1,21 @@
+- name: Override motdgen service
+  copy:
+    src: motdgen.service
+    dest: /etc/systemd/system/motdgen.service
+    owner: root
+    group: root
+    mode: 0644
+  register: motdgen_svc
+- name: Configure selftest service
+  copy:
+    src: selftest.service
+    dest: /etc/systemd/system/selftest.service
+    owner: root
+    group: root
+    mode: 0644
+  register: selftest_svc
+- name: Reloading systemd
+  command: systemctl daemon-reload
+  when: selftest_svc.changed or motdgen_svc.changed
+- name: Enable selftest service
+  service: name=selftest enabled=yes
