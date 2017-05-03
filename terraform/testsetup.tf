@@ -13,12 +13,6 @@ resource "openstack_compute_keypair_v2" "keypair" {
     public_key = "${file(var.ssh_public_key)}"
 }
 
-# Master nodes
-resource "openstack_compute_floatingip_v2" "master" {
-    count = "${var.master_count}"
-    region = "${var.region}"
-    pool = "public-v4"
-}
 resource "openstack_compute_instance_v2" "master" {
     count = "${var.master_count}"
     name = "${var.cluster_name}-master-${count.index}"
@@ -33,10 +27,8 @@ resource "openstack_compute_instance_v2" "master" {
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-master-${count.index}\n"
 
-    #   Connecting to the set network with the provided floating ip.
     network {
-        uuid = "${openstack_networking_network_v2.network_1.id}"
-        floating_ip = "${element(openstack_compute_floatingip_v2.master.*.address, count.index)}"
+        name = "public"
     }
 
     block_device {
@@ -48,13 +40,7 @@ resource "openstack_compute_instance_v2" "master" {
     }
 }
 
-
 # Worker nodes
-resource "openstack_compute_floatingip_v2" "worker" {
-    count = "${var.worker_count}"
-    region = "${var.region}"
-    pool = "public-v4"
-}
 resource "openstack_compute_instance_v2" "worker" {
     count = "${var.worker_count}"
     name = "${var.cluster_name}-worker-${count.index}"
@@ -69,10 +55,8 @@ resource "openstack_compute_instance_v2" "worker" {
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-worker-${count.index}\n"
 
-    #   Connecting to the set network with the provided floating ip.
     network {
-        uuid = "${openstack_networking_network_v2.network_1.id}"
-        floating_ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
+        name = "public"
     }
 
     block_device {
@@ -90,7 +74,7 @@ data "template_file" "masters_ansible" {
     count = "${var.master_count}"
     vars {
         name  = "${element(openstack_compute_instance_v2.master.*.name, count.index)}"
-        ip = "${element(openstack_compute_floatingip_v2.master.*.address, count.index)}"
+        ip = "${element(openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, count.index)}"
     }
 }
 
@@ -99,7 +83,7 @@ data "template_file" "workers_ansible" {
     count = "${var.worker_count}"
     vars {
         name  = "${element(openstack_compute_instance_v2.worker.*.name, count.index)}"
-        ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
+        ip = "${element(openstack_compute_instance_v2.etcd.*.network.0.fixed_ip_v4, count.index)}"
         lb_flag = "${count.index < 3 ? "true" : "false"}"
     }
 }
