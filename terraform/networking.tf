@@ -27,7 +27,7 @@ resource "openstack_networking_router_interface_v2" "router_interface_1" {
 
 resource "openstack_networking_secgroup_v2" "ssh_access" {
     region = "${var.region}"
-    name = "ssh_access"
+    name = "${var.cluster_name}-ssh_access"
     description = "Security groups for allowing SSH access"
 }
 
@@ -45,7 +45,7 @@ resource "openstack_networking_secgroup_rule_v2" "ssh_access_ipv4" {
 
 resource "openstack_networking_secgroup_v2" "kube_lb" {
     region = "${var.region}"
-    name = "kube_lb"
+    name = "${var.cluster_name}-kube_lb"
     description = "Security groups for allowing web access to lb nodes"
 }
 
@@ -75,7 +75,7 @@ resource "openstack_networking_secgroup_rule_v2" "kube_lb_https_ipv4" {
 
 resource "openstack_networking_secgroup_v2" "kube_master" {
     region = "${var.region}"
-    name = "kube_master"
+    name = "${var.cluster_name}_kube_master"
     description = "Security groups for allowing API access to the master nodes"
 }
 
