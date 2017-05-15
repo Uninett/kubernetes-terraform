@@ -36,7 +36,7 @@ resource "openstack_compute_instance_v2" "master" {
     #   Connecting to the set network with the provided floating ip.
     network {
         uuid = "${openstack_networking_network_v2.network_1.id}"
-        floating_ip = "${element(openstack_compute_floatingip_v2.master.*.address, count.index)}"
+        floating_ip = "${openstack_compute_floatingip_v2.master.*.address[count.index]}"
     }
 
     block_device {
@@ -71,7 +71,7 @@ resource "openstack_compute_instance_v2" "worker" {
     #   Connecting to the set network with the provided floating ip.
     network {
         uuid = "${openstack_networking_network_v2.network_1.id}"
-        floating_ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
+        floating_ip = "${openstack_compute_floatingip_v2.worker.*.address[count.index]}"
     }
 
     block_device {
@@ -89,8 +89,8 @@ data "template_file" "masters_ansible" {
     template = "$${name} ansible_host=$${ip} public_ip=$${ip}"
     count = "${var.master_count}"
     vars {
-        name  = "${element(openstack_compute_instance_v2.master.*.name, count.index)}"
-        ip = "${element(openstack_compute_floatingip_v2.master.*.address, count.index)}"
+        name  = "${openstack_compute_instance_v2.master.*.name[count.index]}"
+        ip = "${openstack_compute_floatingip_v2.master.*.address[count.index]}"
     }
 }
 
@@ -98,8 +98,8 @@ data "template_file" "workers_ansible" {
     template = "$${name} ansible_host=$${ip} lb=$${lb_flag}"
     count = "${var.worker_count}"
     vars {
-        name  = "${element(openstack_compute_instance_v2.worker.*.name, count.index)}"
-        ip = "${element(openstack_compute_floatingip_v2.worker.*.address, count.index)}"
+        name  = "${openstack_compute_instance_v2.worker.*.name[count.index]}"
+        ip = "${openstack_compute_floatingip_v2.worker.*.address[count.index]}"
         lb_flag = "${count.index < 3 ? "true" : "false"}"
     }
 }
