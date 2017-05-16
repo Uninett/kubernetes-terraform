@@ -135,7 +135,7 @@ spec:
       serviceAccount: kube-selftest
       containers:
         - name: kube-selftest
-          image: registry.uninett.no/public/kube-selftest-service:v0.2
+          image: registry.uninett.no/public/kube-selftest-service:v0.3
           livenessProbe:
             httpGet:
               path: /healthz
