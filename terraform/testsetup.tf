@@ -28,8 +28,8 @@ resource "openstack_compute_instance_v2" "master" {
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
         "default",
-        "${openstack_networking_secgroup_v2.ssh_access.name}",
-        "${openstack_networking_secgroup_v2.kube_master.name}",
+        "${openstack_networking_secgroup_v2.grp_ssh_access.name}",
+        "${openstack_networking_secgroup_v2.grp_kube_master.name}",
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-master-${count.index}\n"
 
@@ -64,8 +64,8 @@ resource "openstack_compute_instance_v2" "worker" {
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
         "default",
-        "${openstack_networking_secgroup_v2.ssh_access.name}",
-        "${openstack_networking_secgroup_v2.kube_lb.name}",
+        "${openstack_networking_secgroup_v2.grp_ssh_access.name}",
+        "${openstack_networking_secgroup_v2.grp_kube_lb.name}",
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-worker-${count.index}\n"
 
