@@ -59,7 +59,6 @@ resource "openstack_compute_instance_v2" "worker" {
     count = "${var.worker_count}"
     name = "${var.cluster_name}-worker-${count.index}"
     region = "${var.region}"
-    image_id = "${var.coreos_image}"
     flavor_name = "${var.worker_node_flavor}"
     key_pair = "${openstack_compute_keypair_v2.keypair.name}"
     security_groups = [
@@ -79,8 +78,9 @@ resource "openstack_compute_instance_v2" "worker" {
         boot_index = 0
         delete_on_termination = true
         source_type = "image"
-        destination_type = "local"
+        destination_type = "volume"
         uuid = "${var.coreos_image}"
+        volume_size = 40
     }
 }
 
