@@ -30,7 +30,7 @@ spec:
     - --key-file=/etc/ssl/etcd/node-key.pem
     - --trusted-ca-file=/etc/ssl/etcd/ca.pem
     - --client-cert-auth=true
-    - --advertise-client-urls=https://{{ host }}.node.cluster.local:2379
+    - --advertise-client-urls=https://{{ inventory_hostname }}.node.cluster.local:2379
     - --initial-cluster={% set comma = joiner(',') %}
 {%- for host in groups['masters'] -%}
 {{ comma() }}{{ host }}=https://{{ host }}.node.cluster.local:2380
