@@ -16,6 +16,10 @@ rules:
     resources:
     - nodes
     - pods
+    - services
+    - limitranges
+    - resourcequotas
+    - replicationcontrollers
     verbs:
     - get
     - list
@@ -24,6 +28,8 @@ rules:
     - extensions
     resources:
     - deployments
+    - daemonsets
+    - replicasets
     verbs:
     - get
     - list
@@ -62,7 +68,7 @@ spec:
       serviceAccountName: kube-state-metrics
       containers:
       - name: kube-state-metrics
-        image: gcr.io/google_containers/kube-state-metrics:v0.4.1
+        image: gcr.io/google_containers/kube-state-metrics:v0.5.0
         ports:
         - containerPort: 8080
 
