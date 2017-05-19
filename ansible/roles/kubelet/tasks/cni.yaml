@@ -13,7 +13,7 @@
     group: root
     mode: 0755
 - name: Install CNI
-  shell: curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.4.0/cni-amd64-v0.4.0.tgz' | tar --extract --gzip --directory /opt/cni/bin
+  shell: curl -sSL 'https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz' | tar --extract --gzip --directory /opt/cni/bin
   args:
     creates: /opt/cni/bin/loopback
 - name: Create kubernetes directory
