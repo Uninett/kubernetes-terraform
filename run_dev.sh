@@ -16,10 +16,10 @@ pushd terraform
 #     https://github.com/hashicorp/terraform/issues/7519
 #
 terraform apply -var-file ipnett.tfvars -var-file local.tfvars -parallelism 1 \
-          -target openstack_networking_secgroup_rule_v2.ssh_access_ipv4 \
-          -target openstack_networking_secgroup_rule_v2.kube_lb_http_ipv4 \
-          -target openstack_networking_secgroup_rule_v2.kube_lb_https_ipv4 \
-          -target openstack_networking_secgroup_rule_v2.kube_master_ipv4
+          -target openstack_networking_secgroup_rule_v2.rule_ssh_access_ipv4 \
+          -target openstack_networking_secgroup_rule_v2.rule_kube_lb_http_ipv4 \
+          -target openstack_networking_secgroup_rule_v2.rule_kube_lb_https_ipv4 \
+          -target openstack_networking_secgroup_rule_v2.rule_kube_master_ipv4
 
 # Now, do the rest in parallell as normal
 terraform apply -var-file ipnett.tfvars -var-file local.tfvars
