@@ -3,7 +3,7 @@
 # https://github.com/kubernetes/kubernetes/commit/a209040ac8d78818fd98a058222764e7b3538657
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: discovery-workaround
 rules:
@@ -14,7 +14,7 @@ rules:
   - get
 ---
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: discovery-workaround
 subjects:

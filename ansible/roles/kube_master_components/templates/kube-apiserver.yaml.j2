@@ -33,7 +33,8 @@ spec:
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/service-key.pem
     - --service-account-lookup=true
-    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1alpha1=true,extensions/v1beta1/podsecuritypolicy=true
+    - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1beta1=true,extensions/v1beta1/podsecuritypolicy=true
+    - --feature-gates=AffinityInAnnotations=true
     - --authorization-mode=RBAC
     - --service-node-port-range=30-32767
     - --storage-backend=etcd3

@@ -49,7 +49,7 @@ spec:
 ---
 
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: kube-selftest
   namespace: kube-system
@@ -75,7 +75,7 @@ rules:
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: kube-selftest
 rules:
@@ -91,7 +91,7 @@ rules:
 ---
 
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: kube-selftest
   namespace: kube-system
@@ -106,7 +106,7 @@ roleRef:
 ---
 
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: kube-selftest
   namespace: kube-system
@@ -191,5 +191,5 @@ spec:
             matchLabels:
               app: kube-selftest
       ports:
-        - protocol: tcp
+        - protocol: TCP
           port: 80
