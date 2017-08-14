@@ -84,7 +84,7 @@ resource "openstack_compute_instance_v2" "worker" {
         source_type = "image"
         destination_type = "volume"
         uuid = "${var.coreos_image}"
-        volume_size = 40
+        volume_size = "${var.worker_disk_size}"
     }
 }
 
