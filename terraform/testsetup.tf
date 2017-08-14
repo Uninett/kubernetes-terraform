@@ -33,10 +33,9 @@ resource "openstack_compute_instance_v2" "master" {
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-master-${count.index}\n"
 
-    #   Connecting to the set network with the provided floating ip.
+    #   Connecting to the set network
     network {
         uuid = "${openstack_networking_network_v2.network_1.id}"
-        floating_ip = "${openstack_compute_floatingip_v2.master.*.address[count.index]}"
     }
 
     block_device {
@@ -46,6 +45,12 @@ resource "openstack_compute_instance_v2" "master" {
         destination_type = "local"
         uuid = "${var.coreos_image}"
     }
+}
+
+resource "openstack_compute_floatingip_associate_v2" "master" {
+    count = "${var.master_count}"
+    floating_ip = "${openstack_compute_floatingip_v2.master.*.address[count.index]}"
+    instance_id = "${openstack_compute_instance_v2.master.*.id[count.index]}"
 }
 
 
@@ -68,10 +73,9 @@ resource "openstack_compute_instance_v2" "worker" {
     ]
     user_data = "#cloud-config\nhostname: ${var.cluster_name}-worker-${count.index}\n"
 
-    #   Connecting to the set network with the provided floating ip.
+    #   Connecting to the set network
     network {
         uuid = "${openstack_networking_network_v2.network_1.id}"
-        floating_ip = "${openstack_compute_floatingip_v2.worker.*.address[count.index]}"
     }
 
     block_device {
@@ -82,6 +86,12 @@ resource "openstack_compute_instance_v2" "worker" {
         uuid = "${var.coreos_image}"
         volume_size = 40
     }
+}
+
+resource "openstack_compute_floatingip_associate_v2" "worker" {
+    count = "${var.worker_count}"
+    floating_ip = "${openstack_compute_floatingip_v2.worker.*.address[count.index]}"
+    instance_id = "${openstack_compute_instance_v2.worker.*.id[count.index]}"
 }
 
 
