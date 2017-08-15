@@ -33,6 +33,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --tls-private-key-file=/etc/ssl/kubelet/node-key.pem \
   --client-ca-file=/etc/ssl/kubelet/ca.pem \
   --serialize-image-pulls=false \
+  --feature-gates=ExperimentalCriticalPodAnnotation=true
   --node-status-update-frequency=4s \
   --eviction-minimum-reclaim=memory.available=100Mi,nodefs.available=1Gi,imagefs.available=2Gi \
   --eviction-hard=memory.available<{{ eviction_memory }},nodefs.available<{{ eviction_nodefs }},imagefs.available<{{ eviction_imagefs }} \
