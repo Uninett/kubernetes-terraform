@@ -18,6 +18,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --require-kubeconfig \
   --network-plugin-dir=/etc/cni/net.d \
   --network-plugin=cni \
+  --enable-cri=false \
 {% if inventory_hostname in groups['masters'] %}
   --register-schedulable=false \
 {% endif %}

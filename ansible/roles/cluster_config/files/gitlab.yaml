@@ -10,7 +10,7 @@ metadata:
 # * We don't grant access to reading secrets, nor impersonating service accounts.
 # * We add access to creating ingress & networkpolicy.
 # * We add access to creating & updating secrets.
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
   name: gitlab
@@ -140,7 +140,7 @@ rules:
 ---
 
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1alpha1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: gitlab
   namespace: default
