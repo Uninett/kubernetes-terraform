@@ -155,6 +155,7 @@ spec:
             mountPath: /run/log/journal
           - name: config
             mountPath: /etc/journalbeat.yml
+            subPath: journalbeat.yml
           - name: machine-id
             mountPath: /etc/machine-id
           - name: uninett-ca-crt
