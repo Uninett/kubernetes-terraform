@@ -1,10 +1,9 @@
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: calico
-  namespace: kube-system
+# Calico Version v2.6.1
+# https://docs.projectcalico.org/v2.6/releases#v2.6.1
 
 ---
+
+# UNINETT - Custom PodSecurotyPolicy to allow mounting of hostPath volumes
 apiVersion: extensions/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -51,50 +50,91 @@ spec:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: calico
+  name: calico-kube-controllers
+  namespace: kube-system
 rules:
   - apiGroups:
-    - ""
+      - ""
+      - extensions
     resources:
-    - pods
-    - namespaces
+      - pods
+      - namespaces
+      - networkpolicies
     verbs:
-    - get
-    - list
-    - watch
+      - watch
+      - list
+  # UNINETT - We need a custom PodSecurotyPolicy to allow mounting of hostPath volumes
   - apiGroups:
-    - extensions
+      - extensions
     resources:
-    - networkpolicies
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - extensions
-    resources:
-    - podsecuritypolicies
+      - podsecuritypolicies
     resourceNames:
-    - calico
+      - calico
     verbs:
-    - use
+      - use
+
 ---
 
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: calico
-subjects:
-  - kind: ServiceAccount
-    name: calico
-    namespace: kube-system
+  name: calico-kube-controllers
 roleRef:
-  kind: ClusterRole
-  name: calico
   apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: calico-kube-controllers
+subjects:
+- kind: ServiceAccount
+  name: calico-kube-controllers
+  namespace: kube-system
 
 ---
 
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: calico-node
+  namespace: kube-system
+rules:
+  - apiGroups: [""]
+    resources:
+      - pods
+      - nodes
+    verbs:
+      - get
+  # UNINETT - We need a custom PodSecurotyPolicy to allow mounting of hostPath volumes
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - calico
+    verbs:
+      - use
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: calico-node
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: calico-node
+subjects:
+- kind: ServiceAccount
+  name: calico-node
+  namespace: kube-system
+
+---
+
+# Calico Version v2.6.1
+# https://docs.projectcalico.org/v2.6/releases#v2.6.1
+# This manifest includes the following component versions:
+#   calico/node:v2.6.1
+#   calico/cni:v1.11.0
+#   calico/kube-controllers:v1.0.0
 
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -104,6 +144,7 @@ metadata:
   namespace: kube-system
 data:
   # Configure this with the location of your etcd cluster.
+  # UNINETT - let ansible generate a list of etcd nodes.
   etcd_endpoints: {% set comma = joiner(',') %}
 {%- for host in groups['masters'] -%}
 {{ comma() }}https://{{ host }}.node.cluster.local:2379
@@ -116,12 +157,14 @@ data:
   cni_network_config: |-
     {
         "name": "k8s-pod-network",
+        "cniVersion": "0.1.0",
         "type": "calico",
         "etcd_endpoints": "__ETCD_ENDPOINTS__",
         "etcd_key_file": "__ETCD_KEY_FILE__",
         "etcd_cert_file": "__ETCD_CERT_FILE__",
         "etcd_ca_cert_file": "__ETCD_CA_CERT_FILE__",
         "log_level": "info",
+        "mtu": 1500,
         "ipam": {
             "type": "calico-ipam"
         },
@@ -135,9 +178,9 @@ data:
         }
     }
 
-
   # If you're using TLS enabled etcd uncomment the following.
   # You must also populate the Secret below with these files.
+  # UNINETT - credentials for etcd
   etcd_ca: "/calico-secrets/etcd-ca"
   etcd_cert: "/calico-secrets/etcd-cert"
   etcd_key: "/calico-secrets/etcd-key"
@@ -157,6 +200,7 @@ data:
   # not using TLS for etcd.
   # This self-hosted install expects three files with the following names.  The values
   # should be base64 encoded strings of the entire contents of each file.
+  # UNINETT - etcd credentials created by ansible
   etcd-key: {{ lookup('file', 'tls/etcd/calico-key.pem')|b64encode }}
   etcd-cert: {{ lookup('file', 'tls/etcd/calico.pem')|b64encode }}
   etcd-ca: {{ lookup('file', 'tls/etcd/ca.pem')|b64encode }}
@@ -187,21 +231,14 @@ spec:
           [{"key": "dedicated", "value": "master", "effect": "NoSchedule" },
            {"key":"CriticalAddonsOnly", "operator":"Exists"}]
     spec:
-      serviceAccount: calico
       hostNetwork: true
+      serviceAccountName: calico-node
       containers:
         # Runs calico/node container on each Kubernetes node.  This
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: calico/node:v1.2.1
-          resources:
-            limits:
-              memory: 200Mi
-              cpu: 250m
-            requests:
-              cpu: 250m
-              memory: 200Mi
+          image: quay.io/calico/node:v2.6.1
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -215,6 +252,9 @@ spec:
                 configMapKeyRef:
                   name: calico-config
                   key: calico_backend
+            # Cluster type to identify the deployment type
+            - name: CLUSTER_TYPE
+              value: "k8s,bgp"
             # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
@@ -223,14 +263,18 @@ spec:
               value: "ACCEPT"
             # Configure the IP Pool from which Pod IPs will be chosen.
             - name: CALICO_IPV4POOL_CIDR
-              value: "{{ pod_ip_range }}"
+              value: "{{ pod_ip_range }}" # UNINETT - Use pod_ip_range variable from ansible.
             - name: CALICO_IPV4POOL_IPIP
               value: "always"
             # Disable IPv6 on Kubernetes.
             - name: FELIX_IPV6SUPPORT
               value: "false"
+            # Set Felix logging to "info"
             - name: FELIX_LOGSEVERITYSCREEN
               value: "info"
+            # Set MTU for tunnel device used if ipip is enabled
+            - name: FELIX_IPINIPMTU
+              value: "1440"
             # Location of the CA certificate for etcd.
             - name: ETCD_CA_CERT_FILE
               valueFrom:
@@ -252,8 +296,25 @@ spec:
             # Auto-detect the BGP IP address.
             - name: IP
               value: ""
+            - name: FELIX_HEALTHENABLED
+              value: "true"
           securityContext:
             privileged: true
+          resources:
+            requests:
+              cpu: 250m
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 9099
+            periodSeconds: 10
+            initialDelaySeconds: 10
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 9099
+            periodSeconds: 10
           volumeMounts:
             - mountPath: /lib/modules
               name: lib-modules
@@ -263,13 +324,14 @@ spec:
               readOnly: false
             - mountPath: /calico-secrets
               name: etcd-certs
+            # UNINETT - /etc/hosts is used to resolve the etcd nodes.
             - name: hosts
               mountPath: /etc/hosts
               readOnly: true
         # This container installs the Calico CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: calico/cni:v1.8.3
+          image: quay.io/calico/cni:v1.11.0
           command: ["/install-cni.sh"]
           env:
             # The location of the Calico etcd cluster.
@@ -291,6 +353,7 @@ spec:
               name: cni-net-dir
             - mountPath: /calico-secrets
               name: etcd-certs
+            # UNINETT - /etc/hosts is used to resolve the etcd nodes.
             - name: hosts
               mountPath: /etc/hosts
               readOnly: true
@@ -313,52 +376,46 @@ spec:
         - name: etcd-certs
           secret:
             secretName: calico-etcd-secrets
+        # UNINETT - /etc/hosts is used to resolve the etcd nodes.
         - name: hosts
           hostPath:
             path: /etc/hosts
 
 ---
 
-# This manifest deploys the Calico policy controller on Kubernetes.
-# See https://github.com/projectcalico/k8s-policy
+# This manifest deploys the Calico Kubernetes controllers.
+# See https://github.com/projectcalico/kube-controllers
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: calico-policy-controller
+  name: calico-kube-controllers
   namespace: kube-system
   labels:
-    k8s-app: calico-policy
+    k8s-app: calico-kube-controllers
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ''
     scheduler.alpha.kubernetes.io/tolerations: |
       [{"key": "dedicated", "value": "master", "effect": "NoSchedule" },
        {"key":"CriticalAddonsOnly", "operator":"Exists"}]
 spec:
-  # The policy controller can only have a single active instance.
+  # The controllers can only have a single active instance.
   replicas: 1
   strategy:
     type: Recreate
   template:
     metadata:
-      name: calico-policy-controller
+      name: calico-kube-controllers
       namespace: kube-system
       labels:
-        k8s-app: calico-policy
+        k8s-app: calico-kube-controllers
     spec:
-      serviceAccount: calico
-      # The policy controller must run in the host network namespace so that
+      # The controllers must run in the host network namespace so that
       # it isn't governed by policy that would prevent it from working.
       hostNetwork: true
+      serviceAccountName: calico-kube-controllers
       containers:
-        - name: calico-policy-controller
-          image: calico/kube-policy-controller:v0.6.0
-          resources:
-            limits:
-              memory: 200Mi
-              cpu: 200m
-            requests:
-              cpu: 100m
-              memory: 100Mi
+        - name: calico-kube-controllers
+          image: quay.io/calico/kube-controllers:v1.0.0
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -384,19 +441,11 @@ spec:
                 configMapKeyRef:
                   name: calico-config
                   key: etcd_cert
-            # The location of the Kubernetes API.  Use the default Kubernetes
-            # service for API access.
-            - name: K8S_API
-              value: "https://apiserver.cluster.local:8443"
-            # Since we're running in the host namespace and might not have KubeDNS
-            # access, configure the container's /etc/hosts to resolve
-            # kubernetes.default to the correct service clusterIP.
-            - name: CONFIGURE_ETC_HOSTS
-              value: "false"
           volumeMounts:
             # Mount in the etcd TLS secrets.
             - mountPath: /calico-secrets
               name: etcd-certs
+            # UNINETT - /etc/hosts is used to resolve the etcd nodes.
             - name: hosts
               mountPath: /etc/hosts
               readOnly: true
@@ -405,7 +454,59 @@ spec:
         - name: etcd-certs
           secret:
             secretName: calico-etcd-secrets
+        # UNINETT - /etc/hosts is used to resolve the etcd nodes.
         - name: hosts
           hostPath:
             path: /etc/hosts
 
+---
+
+# This deployment turns off the old "policy-controller". It should remain at 0 replicas, and then
+# be removed entirely once the new kube-controllers deployment has been deployed above.
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: calico-policy-controller
+  namespace: kube-system
+  labels:
+    k8s-app: calico-policy
+spec:
+  # Turn this deployment off in favor of the kube-controllers deployment above.
+  replicas: 0
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: calico-policy-controller
+      namespace: kube-system
+      labels:
+        k8s-app: calico-policy
+    spec:
+      hostNetwork: true
+      serviceAccountName: calico-kube-controllers
+      containers:
+        - name: calico-policy-controller
+          image: quay.io/calico/kube-controllers:v1.0.0
+          env:
+            # The location of the Calico etcd cluster.
+            - name: ETCD_ENDPOINTS
+              valueFrom:
+                configMapKeyRef:
+                  name: calico-config
+                  key: etcd_endpoints
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-kube-controllers
+  namespace: kube-system
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: calico-node
+  namespace: kube-system
