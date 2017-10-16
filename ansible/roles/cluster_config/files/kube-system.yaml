@@ -1,14 +1,5 @@
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: kube-system
-  labels:
-    name: kube-system
-
----
-
-apiVersion: extensions/v1beta1
 kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
 metadata:
-    name: default-deny
-    namespace: kube-system
+  name: default-deny
+  namespace: kube-system

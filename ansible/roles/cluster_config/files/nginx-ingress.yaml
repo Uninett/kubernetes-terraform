@@ -6,6 +6,15 @@ metadata:
     name: kube-ingress
 
 ---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: default-deny
+  namespace: kube-ingress
+spec:
+  podSelector:
+
+---
 
 apiVersion: v1
 kind: ServiceAccount
@@ -223,7 +232,7 @@ spec:
 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: nginx-ingress-lb
@@ -300,7 +309,7 @@ spec:
 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-http-backend
