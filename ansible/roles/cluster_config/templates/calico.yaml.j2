@@ -48,7 +48,7 @@ spec:
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: calico-kube-controllers
   namespace: kube-system
@@ -76,7 +76,7 @@ rules:
 ---
 
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: calico-kube-controllers
 roleRef:
@@ -84,14 +84,14 @@ roleRef:
   kind: ClusterRole
   name: calico-kube-controllers
 subjects:
-- kind: ServiceAccount
-  name: calico-kube-controllers
-  namespace: kube-system
+  - kind: ServiceAccount
+    name: calico-kube-controllers
+    namespace: kube-system
 
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: calico-node
   namespace: kube-system
@@ -114,7 +114,7 @@ rules:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: calico-node
@@ -123,9 +123,9 @@ roleRef:
   kind: ClusterRole
   name: calico-node
 subjects:
-- kind: ServiceAccount
-  name: calico-node
-  namespace: kube-system
+  - kind: ServiceAccount
+    name: calico-node
+    namespace: kube-system
 
 ---
 

@@ -7,7 +7,7 @@ metadata:
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-lego
 rules:
@@ -34,7 +34,7 @@ rules:
 ---
 
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-lego
 subjects:
@@ -49,7 +49,7 @@ roleRef:
 ---
 
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-lego
   namespace: kube-system
@@ -80,7 +80,7 @@ rules:
 ---
 
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-lego
   namespace: kube-system
