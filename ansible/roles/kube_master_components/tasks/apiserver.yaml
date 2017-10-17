@@ -72,6 +72,14 @@
     owner: root
     group: kubelet
     mode: 0640
+- name: Copy Api server Audit Policy fie
+  copy:
+    src: audit-policy.yaml
+    dest: /etc/kubernetes/audit-policy.yaml
+    owner: root
+    group: root
+    mode: 0644
+  tags: k8s_upgrade
 - name: Add apiserver manifest
   template:
     src: kube-apiserver.yaml.j2
