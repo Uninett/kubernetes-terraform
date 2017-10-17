@@ -25,6 +25,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
 {% endif %}
   --allow-privileged=true \
   --pod-manifest-path=/etc/kubernetes/manifests \
+  --feature-gates=ExperimentalCriticalPodAnnotation=true,TaintBasedEvictions=true \
   --hostname-override={{ inventory_hostname }} \
   --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %}  \
   --cluster-dns={{ dns_service_ip }} \
