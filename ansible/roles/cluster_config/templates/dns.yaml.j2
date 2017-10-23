@@ -97,28 +97,18 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
-        scheduler.alpha.kubernetes.io/affinity: >
-          {
-            "podAntiAffinity": {
-              "requiredDuringSchedulingIgnoredDuringExecution": [
-                {
-                  "labelSelector": {
-                    "matchExpressions": [
-                      {
-                        "key": "k8s-app",
-                        "operator": "In",
-                        "values": ["kube-dns"]
-                      }
-                    ]
-                  },
-                  "topologyKey": "kubernetes.io/hostname"
-               }
-              ]
-             }
-           }
-
     spec:
       serviceAccount: kube-dns
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - kube-dns
+            topologyKey: kubernetes.io/hostname
       volumes:
       - name: kube-dns-config
         configMap:
