@@ -14,7 +14,7 @@ spec:
     command:
     - /hyperkube
     - proxy
-    - --kubeconfig=/etc/kubernetes/kubeconfig.yaml
+    - --config=/etc/kubernetes/kube-proxy-config.yaml
     - --proxy-mode=iptables
     securityContext:
       privileged: true
@@ -22,7 +22,13 @@ spec:
       - mountPath: /etc/kubernetes/kubeconfig.yaml
         name: "kubeconfig"
         readOnly: true
+      - mountPath: /etc/kubernetes/kube-proxy-config.yaml
+        name: "kube-proxy-config"
+        readOnly: true
   volumes:
     - name: "kubeconfig"
       hostPath:
         path: "/etc/kubernetes/kubeconfig.yaml"
+    - name: "kube-proxy-config"
+      hostPath:
+        path: "/etc/kubernetes/kube-proxy-config.yaml"
