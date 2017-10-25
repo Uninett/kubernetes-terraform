@@ -7,6 +7,14 @@ metadata:
 
 ---
 
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: kube-ingress
+
+---
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
