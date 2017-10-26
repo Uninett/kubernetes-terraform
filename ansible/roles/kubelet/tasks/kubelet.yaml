@@ -47,6 +47,14 @@
     group: kubelet
     mode: 0640
   register: kubelet_svc
+- name: Add kube-proxy-config
+  template:
+    dest: /etc/kubernetes/kube-proxy-config.yaml
+    src: kube-proxy-config.yaml.j2
+    owner: root
+    group: root
+    mode: 0644
+  tags: k8s_upgrade
 - name: Add kube-proxy
   template:
     dest: /etc/kubernetes/manifests/kube-proxy.yaml
