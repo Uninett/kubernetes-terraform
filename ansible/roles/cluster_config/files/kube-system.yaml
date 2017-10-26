@@ -2,12 +2,13 @@ kind: Namespace
 apiVersion: v1
 metadata:
   name: kube-system
-  annotations:
-    net.beta.kubernetes.io/network-policy: |
-      {
-        "ingress": {
-          "isolation": "DefaultDeny"
-        }
-      }
   labels:
     name: kube-system
+
+---
+
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+    name: default-deny
+    namespace: kube-system
