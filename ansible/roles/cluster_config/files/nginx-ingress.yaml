@@ -21,23 +21,22 @@ metadata:
   name: nginx-ingress
 rules:
   - apiGroups:
-    - extensions
+    - ""
     resources:
-    - ingresses
+    - configmaps
+    - endpoints
+    - nodes
+    - pods
+    - secrets
     verbs:
-    - get
     - list
     - watch
   - apiGroups:
-    - extensions
+    - ""
     resources:
-    - ingresses/status
+    - nodes
     verbs:
     - get
-    - list
-    - watch
-    - patch
-    - update
   - apiGroups:
     - ""
     resources:
@@ -46,16 +45,10 @@ rules:
     - get
     - list
     - watch
-    - patch
-    - update
   - apiGroups:
-    - ""
+    - "extensions"
     resources:
-    - endpoints
-    - secrets
-    - configmaps
-    - pods
-    - nodes
+    - ingresses
     verbs:
     - get
     - list
@@ -67,6 +60,11 @@ rules:
     verbs:
     - create
     - patch
+  - apiGroups:
+    - "extensions"
+    resources:
+    - ingresses/status
+    verbs:
     - update
 
 ---
@@ -81,6 +79,64 @@ subjects:
     namespace: kube-ingress
 roleRef:
   kind: ClusterRole
+  name: nginx-ingress
+  apiGroup: rbac.authorization.k8s.io
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: ingress-nginx
+rules:
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    - pods
+    - secrets
+    - namespaces
+    verbs:
+    - get
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    resourceNames:
+    # Defaults to "<election-id>-<ingress-class>"
+    # Here: "<ingress-controller-leader>-<nginx>"
+    # This has to be adapted if you change either parameter
+    # when launching the nginx-ingress-controller.
+    - "ingress-controller-leader-nginx"
+    verbs:
+    - get
+    - update
+  - apiGroups:
+    - ""
+    resources:
+    - configmaps
+    verbs:
+    - create
+  - apiGroups:
+    - ""
+    resources:
+    - endpoints
+    verbs:
+    - get
+
+---
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: nginx-ingress
+  namespace: kube-ingress
+subjects:
+  - kind: ServiceAccount
+    name: nginx-ingress
+roleRef:
+  kind: Role
   name: nginx-ingress
   apiGroup: rbac.authorization.k8s.io
 
@@ -116,7 +172,7 @@ spec:
       nodeSelector:
         lb: "true"
       containers:
-        - image: gcr.io/google_containers/nginx-ingress-controller:0.8.3
+        - image: gcr.io/google_containers/nginx-ingress-controller:0.9.0-beta.15
           name: nginx-ingress-lb
           imagePullPolicy: Always
           livenessProbe:
@@ -139,7 +195,7 @@ spec:
           args:
             - /nginx-ingress-controller
             - --default-backend-service=kube-system/default-http-backend
-            - --nginx-configmap=$(POD_NAMESPACE)/nginx-ingress-controller
+            - --configmap=$(POD_NAMESPACE)/nginx-ingress-controller
 
 
 ---
