@@ -137,7 +137,7 @@ subjects:
     name: nginx-ingress
 roleRef:
   kind: Role
-  name: nginx-ingress
+  name: nginx-ingress-role
   apiGroup: rbac.authorization.k8s.io
 
 ---
