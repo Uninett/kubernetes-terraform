@@ -71,7 +71,7 @@ spec:
             mountPath: /conf
         workingDir: /conf
       - name: dashboard
-        image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.6.1
+        image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.8.2
         args:
         - --heapster-host=http://heapster.kube-system.svc
         resources:
