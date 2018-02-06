@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-worker-node
 subjects:
-{% for host in groups['workers'] %}
+{% for host in groups['workers'] + groups['storage'] %}
   - kind: User
     name: "{{ host }}"
 {% endfor %}
@@ -19,7 +19,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-worker-node-proxier
 subjects:
-{% for host in groups['workers'] %}
+{% for host in groups['workers'] + groups['storage'] %}
   - kind: User
     name: "{{ host }}"
 {% endfor %}
@@ -33,7 +33,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kube-worker-permissive
 subjects:
-{% for host in groups['workers'] %}
+{% for host in groups['workers'] + groups['storage'] %}
   - kind: User
     name: "{{ host }}"
 {% endfor %}

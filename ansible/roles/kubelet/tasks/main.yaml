@@ -1,3 +1,4 @@
 - include: cni.yaml
+- include: rook-dir.yaml
 - include: kubelet.yaml
 - include: selftest.yaml

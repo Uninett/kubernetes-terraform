@@ -1,0 +1,8 @@
+- name: Configure Kubernetes Rook Cluster
+  hosts: cluster
+  connection: local
+  become: false
+  vars_files:
+  - vars.yaml
+  roles:
+  - rook_cluster

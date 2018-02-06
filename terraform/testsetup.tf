@@ -94,6 +94,54 @@ resource "openstack_compute_floatingip_associate_v2" "worker" {
     instance_id = "${openstack_compute_instance_v2.worker.*.id[count.index]}"
 }
 
+# Storage nodes
+resource "openstack_compute_floatingip_v2" "storage" {
+    count = "${var.storage_count}"
+    region = "${var.region}"
+    pool = "public-v4"
+}
+resource "openstack_compute_instance_v2" "storage" {
+    count = "${var.storage_count}"
+    name = "${var.cluster_name}-storage-${count.index}"
+    region = "${var.region}"
+    flavor_name = "${var.storage_node_flavor}"
+    key_pair = "${openstack_compute_keypair_v2.keypair.name}"
+    security_groups = [
+        "default",
+        "${openstack_networking_secgroup_v2.grp_ssh_access.name}",
+        "${openstack_networking_secgroup_v2.grp_kube_lb.name}",
+    ]
+    user_data = "#cloud-config\nhostname: ${var.cluster_name}-storage-${count.index}\n"
+
+    #   Connecting to the set network
+    network {
+        uuid = "${openstack_networking_network_v2.network_1.id}"
+    }
+
+    block_device {
+        boot_index = 0
+        delete_on_termination = true
+        source_type = "image"
+        destination_type = "volume"
+        uuid = "${var.coreos_image}"
+        volume_size = "20"
+    }
+
+    block_device {
+        boot_index = -1
+        delete_on_termination = true
+        source_type = "blank"
+        destination_type = "volume"
+        volume_size = "${var.storage_disk_size}"
+    }
+
+}
+
+resource "openstack_compute_floatingip_associate_v2" "storage" {
+    count = "${var.storage_count}"
+    floating_ip = "${openstack_compute_floatingip_v2.storage.*.address[count.index]}"
+    instance_id = "${openstack_compute_instance_v2.storage.*.id[count.index]}"
+}
 
 data "template_file" "masters_ansible" {
     template = "$${name} ansible_host=$${ip} public_ip=$${ip}"
@@ -105,7 +153,7 @@ data "template_file" "masters_ansible" {
 }
 
 data "template_file" "workers_ansible" {
-    template = "$${name} ansible_host=$${ip} lb=$${lb_flag}"
+    template = "$${name} ansible_host=$${ip} lb=$${lb_flag} storagenode=false"
     count = "${var.worker_count}"
     vars {
         name  = "${openstack_compute_instance_v2.worker.*.name[count.index]}"
@@ -114,19 +162,29 @@ data "template_file" "workers_ansible" {
     }
 }
 
+data "template_file" "storage_ansible" {
+    template = "$${name} ansible_host=$${ip} lb=false storagenode=true"
+    count = "${var.storage_count}"
+    vars {
+        name  = "${openstack_compute_instance_v2.storage.*.name[count.index]}"
+        ip = "${openstack_compute_floatingip_v2.storage.*.address[count.index]}"
+    }
+}
+
 data "template_file" "inventory_tail" {
     template = "$${section_children}\n$${section_vars}"
     vars = {
-        section_children = "[servers:children]\nmasters\nworkers"
+        section_children = "[servers:children]\nmasters\nworkers\nstorage"
         section_vars = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all]\ncluster\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\ncluster_dns_domain=${var.cluster_dns_domain}\n"
     }
 }
 
 data "template_file" "inventory" {
-    template = "\n[masters]\n$${master_hosts}\n[workers]\n$${worker_hosts}\n$${inventory_tail}"
+    template = "\n[masters]\n$${master_hosts}\n[workers]\n$${worker_hosts}\n[storage]\n$${storage_hosts}\n$${inventory_tail}"
     vars {
         master_hosts = "${join("\n",data.template_file.masters_ansible.*.rendered)}"
         worker_hosts = "${join("\n",data.template_file.workers_ansible.*.rendered)}"
+        storage_hosts = "${join("\n",data.template_file.storage_ansible.*.rendered)}"
         inventory_tail = "${data.template_file.inventory_tail.rendered}"
     }
 }
