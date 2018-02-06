@@ -24,7 +24,6 @@ spec:
     - --etcd-cafile=/etc/ssl/etcd/ca.pem
     - --etcd-certfile=/etc/ssl/etcd/node.pem
     - --etcd-keyfile=/etc/ssl/etcd/node-key.pem
-    - --etcd-quorum-read=true
     - --allow-privileged=true
     - --service-cluster-ip-range={{ service_ip_range }}
     - --secure-port=8443
