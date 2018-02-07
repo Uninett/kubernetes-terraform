@@ -6,6 +6,13 @@ metadata:
     name: kube-ingress
 
 ---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: default-deny
+  namespace: kube-ingress
+
+---
 
 apiVersion: v1
 kind: ServiceAccount
@@ -16,7 +23,7 @@ metadata:
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: nginx-ingress
 rules:
@@ -70,7 +77,7 @@ rules:
 ---
 
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: nginx-ingress
 subjects:
@@ -84,8 +91,8 @@ roleRef:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: nginx-ingress-role
   namespace: kube-ingress
@@ -128,7 +135,7 @@ rules:
 ---
 
 kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: nginx-ingress
   namespace: kube-ingress
@@ -223,7 +230,7 @@ spec:
 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: nginx-ingress-lb
@@ -300,7 +307,7 @@ spec:
 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-http-backend
