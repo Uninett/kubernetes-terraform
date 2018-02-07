@@ -158,6 +158,7 @@ data:
   enable-vts-status: "true"
   server-name-hash-bucket-size: "128"
   use-proxy-protocol: "true"
+  hsts: "false"
 
 ---
 
