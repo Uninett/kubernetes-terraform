@@ -30,7 +30,7 @@ spec:
     - --pod-eviction-timeout=30s
     - --use-service-account-credentials
     - --kubeconfig=/etc/kubernetes/kubeconfig-cm.yaml
-    - --feature-gates=ExperimentalCriticalPodAnnotation=true,TaintBasedEvictions=true
+    - --feature-gates=ExperimentalCriticalPodAnnotation=true
     resources:
       requests:
         cpu: {{ kube_cm_cpu }}
