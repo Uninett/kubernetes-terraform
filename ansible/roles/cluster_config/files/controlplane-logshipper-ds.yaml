@@ -153,6 +153,8 @@ spec:
             mountPath: /data
           - name: container-data
             mountPath: /var/lib/docker/containers
+          - name: pod-data
+            mountPath: /var/log/pods
           - name: filebeat-data
             mountPath: /var/lib/filebeat
           - name: audit-data
@@ -169,6 +171,9 @@ spec:
         - name: container-data
           hostPath:
             path: /var/lib/docker/containers
+        - name: pod-data
+          hostPath:
+            path: /var/log/pods
         - name: filebeat-data
           hostPath:
             path: /var/lib/filebeat
