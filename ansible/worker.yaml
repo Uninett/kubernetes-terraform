@@ -1,5 +1,5 @@
 - name: Install worker nodes
-  hosts: workers
+  hosts: workers, storage
   roles:
     - kubelet
     - haproxy_apiserver

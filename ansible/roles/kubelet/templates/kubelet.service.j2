@@ -19,6 +19,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --network-plugin=cni \
   --cni-bin-dir=/opt/cni/bin \
   --cni-conf-dir=/etc/cni/net.d \
+  --volume-plugin-dir=/var/lib/kubelet/volumeplugins \
 {% if inventory_hostname in groups['masters'] %}
   --register-schedulable=false \
 {% endif %}
@@ -26,7 +27,10 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --pod-manifest-path=/etc/kubernetes/manifests \
   --feature-gates=ExperimentalCriticalPodAnnotation=true \
   --hostname-override={{ inventory_hostname }} \
-  --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %}  \
+  --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},storagenode={% if storagenode is defined and storagenode=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %} \
+{% if inventory_hostname in groups['storage'] %}
+  --register-with-taints=storagenode=true:PreferNoSchedule \
+{% endif %}
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
   --anonymous-auth=false \

@@ -1,0 +1,10 @@
+- name: Create rook config/state directory
+  file:
+    state: directory
+    path: /var/lib/rook
+    owner: root
+    group: root
+    mode: 0755
+  when:
+    - storagenode is defined
+    - storagenode == "true"

@@ -1,0 +1,26 @@
+- name: Clear Rook storage configuration directory
+  file:
+    dest: ./rook_cluster_config
+    state: absent
+- name: Prepare Rook storage configuration directory
+  file:
+    dest: ./rook_cluster_config
+    state: directory
+- name: Copy configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./rook_cluster_config/{{ item | basename }}"
+  with_fileglob:
+  - '*.yaml'
+- name: Initialize templated configuration files
+  template:
+    src: "{{ item }}"
+    dest: "./rook_cluster_config/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/*.yaml.j2'
+- name: Create main rook cluster
+  command: kubectl --kubeconfig kubeconfig apply -f ./rook_cluster_config/rook-cluster.yaml
+- name: Create rook pools and storage classes
+  command: kubectl --kubeconfig kubeconfig apply -f ./rook_cluster_config/rook-pools.yaml
+- name: Run rook tools for debugging
+  command: kubectl --kubeconfig kubeconfig apply -f ./rook_cluster_config/rook-tools.yaml
