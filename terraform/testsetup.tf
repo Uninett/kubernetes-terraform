@@ -144,30 +144,33 @@ resource "openstack_compute_floatingip_associate_v2" "storage" {
 }
 
 data "template_file" "masters_ansible" {
-    template = "$${name} ansible_host=$${ip} public_ip=$${ip}"
+    template = "$${name} internal_ip=$${internal_ip} ansible_host=$${ip} public_ip=$${ip}"
     count = "${var.master_count}"
     vars {
         name  = "${openstack_compute_instance_v2.master.*.name[count.index]}"
         ip = "${openstack_compute_floatingip_v2.master.*.address[count.index]}"
+        internal_ip = "${openstack_compute_instance_v2.master.*.access_ip_v4[count.index]}"
     }
 }
 
 data "template_file" "workers_ansible" {
-    template = "$${name} ansible_host=$${ip} lb=$${lb_flag} storagenode=false"
+    template = "$${name} internal_ip=$${internal_ip} ansible_host=$${ip} lb=$${lb_flag} storagenode=false"
     count = "${var.worker_count}"
     vars {
         name  = "${openstack_compute_instance_v2.worker.*.name[count.index]}"
         ip = "${openstack_compute_floatingip_v2.worker.*.address[count.index]}"
+        internal_ip = "${openstack_compute_instance_v2.worker.*.access_ip_v4[count.index]}"
         lb_flag = "${count.index < 3 ? "true" : "false"}"
     }
 }
 
 data "template_file" "storage_ansible" {
-    template = "$${name} ansible_host=$${ip} lb=false storagenode=true"
+    template = "$${name} internal_ip=$${internal_ip} ansible_host=$${ip} lb=false storagenode=true"
     count = "${var.storage_count}"
     vars {
         name  = "${openstack_compute_instance_v2.storage.*.name[count.index]}"
         ip = "${openstack_compute_floatingip_v2.storage.*.address[count.index]}"
+        internal_ip = "${openstack_compute_instance_v2.storage.*.access_ip_v4[count.index]}"
     }
 }
 
