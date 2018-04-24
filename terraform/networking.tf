@@ -74,6 +74,18 @@ resource "openstack_networking_secgroup_rule_v2" "rule_kube_lb_https_ipv4" {
     security_group_id = "${openstack_networking_secgroup_v2.grp_kube_lb.id}"
 }
 
+resource "openstack_networking_secgroup_rule_v2" "rule_kube_lb_nodeports_ipv4" {
+    count = "${length(var.allow_lb_from_v4)}"
+    region = "${var.region}"
+    direction = "ingress"
+    ethertype = "IPv4"
+    protocol = "tcp"
+    port_range_min = 30000
+    port_range_max = 32767
+    remote_ip_prefix = "${element(var.allow_lb_from_v4, count.index)}"
+    security_group_id = "${openstack_networking_secgroup_v2.grp_kube_lb.id}"
+}
+
 resource "openstack_networking_secgroup_v2" "grp_kube_master" {
     region = "${var.region}"
     name = "${var.cluster_name}_kube_master"
