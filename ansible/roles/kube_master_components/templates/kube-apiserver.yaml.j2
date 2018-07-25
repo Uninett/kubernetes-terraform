@@ -46,7 +46,7 @@ spec:
     - --audit-log-path=/var/log/apiserver/audit.log
     - --audit-log-maxage=7
     - --audit-log-maxbackup=5
-    - --oidc-issuer-url=https://auth.{{cluster_dns_domain}}
+    - --oidc-issuer-url=https://console.{{cluster_dns_domain}}
     - --oidc-client-id=paas2.0
     - --oidc-groups-claim=groups
     - --audit-log-format=json
