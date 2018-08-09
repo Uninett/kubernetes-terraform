@@ -1,6 +1,6 @@
-k8s_ver: 1.9.8
+k8s_ver: 1.10.6
 # k8s_next_ver: 1.x.y
-etcd_ver: 3.2.22
+etcd_ver: 3.2.24
 # etcd_next_ver: 3.u.v
 apiserver_count: 3
 dns_service_ip: 172.16.0.10
