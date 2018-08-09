@@ -180,16 +180,28 @@ spec:
       nodeSelector:
         lb: "true"
       containers:
-        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.12.0
+        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.17.1
           name: nginx-ingress-lb
           imagePullPolicy: Always
           livenessProbe:
+            failureThreshold: 3
             httpGet:
               path: /healthz
               port: 10254
               scheme: HTTP
-            initialDelaySeconds: 30
-            timeoutSeconds: 5
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
           # use downward API
           env:
             - name: POD_NAME
@@ -207,7 +219,19 @@ spec:
             - --annotations-prefix=ingress.kubernetes.io
             - --profiling=false
             - --sort-backends
-
+          securityContext:
+            capabilities:
+                drop:
+                - ALL
+                add:
+                - NET_BIND_SERVICE
+            # www-data -> 33
+            runAsUser: 33
+          ports:
+          - name: http
+            containerPort: 80
+          - name: https
+            containerPort: 443
 ---
 
 apiVersion: v1
