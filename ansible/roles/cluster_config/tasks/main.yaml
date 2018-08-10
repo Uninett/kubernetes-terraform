@@ -39,5 +39,7 @@
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/podsecuritypolicy.yaml
 - name: Create rook operator
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/rook-operator.yaml
+- name: Create main rook cluster
+  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/rook-cluster.yaml
 - name: Apply configuration files
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config
