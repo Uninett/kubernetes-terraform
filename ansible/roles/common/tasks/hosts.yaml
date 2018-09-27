@@ -5,6 +5,7 @@
     owner: root
     group: root
     mode: 0644
+    unsafe_writes: yes
   register: hosts_updated
 - name: Reload facts
   setup:
