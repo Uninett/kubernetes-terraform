@@ -28,6 +28,9 @@ spec:
       - mountPath: /lib/modules
         name: lib-modules
         readOnly: true
+      - mountPath: /run/xtables.lock
+        name: xtables-lock
+        readOnly: false
   volumes:
     - name: "kubeconfig"
       hostPath:
@@ -38,3 +41,7 @@ spec:
     - name: lib-modules
       hostPath:
         path: /lib/modules
+    - name: xtables-lock
+      hostPath:
+        path: /run/xtables.lock
+        type: FileOrCreate
