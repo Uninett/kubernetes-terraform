@@ -3,4 +3,5 @@ kind: KubeProxyConfiguration
 clientConnection:
   kubeconfig: /etc/kubernetes/kubeconfig.yaml
 hostnameOverride: {{ inventory_hostname }}
+clusterCIDR: {{ pod_ip_range }}
 mode: iptables
