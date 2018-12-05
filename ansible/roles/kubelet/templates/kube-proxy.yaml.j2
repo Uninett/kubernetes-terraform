@@ -25,6 +25,9 @@ spec:
       - mountPath: /etc/kubernetes/kube-proxy-config.yaml
         name: "kube-proxy-config"
         readOnly: true
+      - mountPath: /lib/modules
+        name: lib-modules
+        readOnly: true
   volumes:
     - name: "kubeconfig"
       hostPath:
@@ -32,3 +35,6 @@ spec:
     - name: "kube-proxy-config"
       hostPath:
         path: "/etc/kubernetes/kube-proxy-config.yaml"
+    - name: lib-modules
+      hostPath:
+        path: /lib/modules
