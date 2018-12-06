@@ -1,4 +1,4 @@
-k8s_ver: 1.10.6
+k8s_ver: 1.12.3
 # k8s_next_ver: 1.x.y
 etcd_ver: 3.3.10
 # etcd_next_ver: 3.u.v
