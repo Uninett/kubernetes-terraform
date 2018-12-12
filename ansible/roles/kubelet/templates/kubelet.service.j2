@@ -33,6 +33,9 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
   --anonymous-auth=false \
+  --authorization-mode=Webhook \
+  --authentication-token-webhook \
+  --read-only-port=0 \
   --tls-cert-file=/etc/ssl/kubelet/node.pem \
   --tls-private-key-file=/etc/ssl/kubelet/node-key.pem \
   --client-ca-file=/etc/ssl/kubelet/ca.pem \

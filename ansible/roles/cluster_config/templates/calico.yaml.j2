@@ -1,7 +1,7 @@
-# Calico Version v2.6.7
-# https://docs.projectcalico.org/v2.6/releases#v2.6.7
+# UNINETT - from: release-v2.6.12/k8s-manifests/rbac.yaml
 
----
+# Calico Version v2.6.12
+# https://docs.projectcalico.org/v2.6/releases#v2.6.12
 
 # UNINETT - Custom PodSecurotyPolicy to allow mounting of hostPath volumes
 apiVersion: extensions/v1beta1
@@ -48,14 +48,14 @@ spec:
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: calico-kube-controllers
   namespace: kube-system
 rules:
   - apiGroups:
-      - ""
-      - extensions
+    - ""
+    - extensions
     resources:
       - pods
       - namespaces
@@ -72,11 +72,9 @@ rules:
       - calico
     verbs:
       - use
-
 ---
-
 kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: calico-kube-controllers
 roleRef:
@@ -84,14 +82,14 @@ roleRef:
   kind: ClusterRole
   name: calico-kube-controllers
 subjects:
-  - kind: ServiceAccount
-    name: calico-kube-controllers
-    namespace: kube-system
+- kind: ServiceAccount
+  name: calico-kube-controllers
+  namespace: kube-system
 
 ---
 
 kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: calico-node
   namespace: kube-system
@@ -114,7 +112,7 @@ rules:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1
+apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
   name: calico-node
@@ -123,18 +121,20 @@ roleRef:
   kind: ClusterRole
   name: calico-node
 subjects:
-  - kind: ServiceAccount
-    name: calico-node
-    namespace: kube-system
+- kind: ServiceAccount
+  name: calico-node
+  namespace: kube-system
 
 ---
 
-# Calico Version v2.6.7
-# https://docs.projectcalico.org/v2.6/releases#v2.6.7
+# UNINETT - from: release-v2.6.12/k8s-manifests/hosted/calico.yaml
+
+# Calico Version v2.6.12
+# https://docs.projectcalico.org/v2.6/releases#v2.6.12
 # This manifest includes the following component versions:
-#   calico/node:v2.6.7
-#   calico/cni:v1.11.2
-#   calico/kube-controllers:v1.0.3
+#   calico/node:v2.6.12
+#   calico/cni:v1.11.8
+#   calico/kube-controllers:v1.0.5
 
 # This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
@@ -238,7 +238,7 @@ spec:
         # container programs network policy and routes on each
         # host.
         - name: calico-node
-          image: quay.io/calico/node:v2.6.7
+          image: quay.io/calico/node:v2.6.12
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -331,7 +331,7 @@ spec:
         # This container installs the Calico CNI binaries
         # and CNI network config file on each node.
         - name: install-cni
-          image: quay.io/calico/cni:v1.11.2
+          image: quay.io/calico/cni:v1.11.8
           command: ["/install-cni.sh"]
           env:
             # The location of the Calico etcd cluster.
@@ -415,7 +415,7 @@ spec:
       serviceAccountName: calico-kube-controllers
       containers:
         - name: calico-kube-controllers
-          image: quay.io/calico/kube-controllers:v1.0.3
+          image: quay.io/calico/kube-controllers:v1.0.5
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -486,7 +486,7 @@ spec:
       serviceAccountName: calico-kube-controllers
       containers:
         - name: calico-policy-controller
-          image: quay.io/calico/kube-controllers:v1.0.1
+          image: quay.io/calico/kube-controllers:v1.0.5
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
