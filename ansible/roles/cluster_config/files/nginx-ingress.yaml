@@ -180,7 +180,7 @@ spec:
       nodeSelector:
         lb: "true"
       containers:
-        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.17.1
+        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.21.0
           name: nginx-ingress-lb
           imagePullPolicy: Always
           livenessProbe:
@@ -214,7 +214,6 @@ spec:
                   fieldPath: metadata.namespace
           args:
             - /nginx-ingress-controller
-            - --default-backend-service=kube-system/default-http-backend
             - --configmap=$(POD_NAMESPACE)/nginx-ingress-controller
             - --annotations-prefix=ingress.kubernetes.io
             - --profiling=false
@@ -272,82 +271,3 @@ spec:
          port: 80
        - protocol: TCP
          port: 443
-
----
-
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: default-http-backend
-  namespace: kube-system
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: default-http-backend
-  template:
-    metadata:
-      labels:
-        app: default-http-backend
-    spec:
-      terminationGracePeriodSeconds: 60
-      containers:
-        - name: default-http-backend
-          # Any image is permissable as long as:
-          # 1. It serves a 404 page at /
-          # 2. It serves 200 on a /healthz endpoint
-          image: gcr.io/google_containers/defaultbackend:1.4
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 30
-            timeoutSeconds: 5
-          ports:
-            - containerPort: 8080
-          resources:
-            limits:
-              cpu: 10m
-              memory: 20Mi
-            requests:
-              cpu: 10m
-              memory: 20Mi
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: default-http-backend
-  namespace: kube-system
-  labels:
-    app: default-http-backend
-spec:
-  type: ClusterIP
-  selector:
-    app: default-http-backend
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-http-backend
-  namespace: kube-system
-spec:
-  podSelector:
-    matchLabels:
-      app: default-http-backend
-  ingress:
-    - from:
-      - namespaceSelector:
-          matchLabels:
-            name: kube-ingress
-      ports:
-        - protocol: TCP
-          port: 8080
