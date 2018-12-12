@@ -3,3 +3,24 @@ apiVersion: networking.k8s.io/v1
 metadata:
   name: default-deny
   namespace: kube-system
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cert-manager-solver
+  namespace: cert-manager
+spec:
+  podSelector:
+    matchExpressions:
+      - key: certmanager.k8s.io/acme-http-domain
+        operator: Exists
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-ingress
+      ports:
+        - protocol: TCP
+          port: 8089
