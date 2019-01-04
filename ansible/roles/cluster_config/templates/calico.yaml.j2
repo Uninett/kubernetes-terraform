@@ -380,7 +380,14 @@ spec:
         - name: hosts
           hostPath:
             path: /etc/hosts
-
+      tolerations:
+        # Make sure calico/node gets scheduled on all nodes.
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+        - key: CriticalAddonsOnly
+          operator: Exists
 ---
 
 # This manifest deploys the Calico Kubernetes controllers.
