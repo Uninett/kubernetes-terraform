@@ -159,6 +159,7 @@ data:
   server-name-hash-bucket-size: "128"
   use-proxy-protocol: "true"
   hsts: "false"
+  http-redirect-code: "301"
 
 ---
 
