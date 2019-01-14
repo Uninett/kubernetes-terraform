@@ -116,7 +116,7 @@ spec:
         image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.10.1
         args:
         - --heapster-host=http://heapster.kube-system.svc
-        - --enable-skip-login # Auth handled by oauth-proxy
+        - --enable-insecure-login # Auth handled by oauth-proxy
         resources:
           limits:
             cpu: 100m
