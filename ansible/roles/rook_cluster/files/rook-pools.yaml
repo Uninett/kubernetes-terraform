@@ -1,7 +1,7 @@
-apiVersion: ceph.rook.io/v1beta1
-kind: Pool
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
 metadata:
-  name: betapool
+  name: cephpool
   namespace: rook-ceph
 spec:
   # The failure domain will spread the replicas of the data across different failure zones
@@ -14,9 +14,9 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-   name: beta
+   name: ceph-block
 provisioner: ceph.rook.io/block
 parameters:
-  pool: betapool
+  pool: cephpool
   clusterNamespace: rook-ceph
   fstype: xfs
