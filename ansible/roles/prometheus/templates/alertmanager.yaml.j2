@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: alertmanager
+  namespace: {{ kubernetes_namespace }}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: alertmanager
+  name: alertmanager-config
+  namespace: {{ kubernetes_namespace }}
+data:
+  alertmanager.yml: |
+    global: {}
+    receivers:
+    - name: default-receiver
+    route:
+      group_interval: 5m
+      group_wait: 10s
+      receiver: default-receiver
+      repeat_interval: 3h
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: alertmanager
+  namespace: {{ kubernetes_namespace }}
+  labels:
+    app: alertmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: alertmanager
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: alertmanager
+      ports:
+        - protocol: TCP
+          port: 9094
+        - protocol: UDP
+          port: 9094
+    - from:
+      - podSelector:
+          matchLabels:
+            app: prometheus-server
+      ports:
+        - protocol: TCP
+          port: 9093

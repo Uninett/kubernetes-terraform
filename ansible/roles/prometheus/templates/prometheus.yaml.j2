@@ -1,0 +1,401 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-server
+  namespace: {{ kubernetes_namespace }}
+---
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: prometheus-server
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+  - apiGroups:
+      - "extensions"
+    resources:
+      - ingresses/status
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - nonResourceURLs:
+      - "/metrics"
+    verbs:
+      - get
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-server
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-server
+    namespace: {{ kubernetes_namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-server
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server-conf
+  labels:
+    name: prometheus-server-conf
+  namespace: {{ kubernetes_namespace }}
+data:
+  prometheus.yaml: |-
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    rule_files:
+      - /etc/config/prometheus-rules.yaml
+      - /etc/alerts/*.yaml
+    alerting:
+      alertmanagers:
+      - scheme: http
+        static_configs:
+        - targets:
+          - "alertmanager-1.{{ kubernetes_namespace }}.svc:9093"
+          - "alertmanager-2.{{ kubernetes_namespace }}.svc:9093"
+    
+    # Ref: https://github.com/prometheus/prometheus/blob/master/documentation/examples/prometheus-kubernetes.yml
+    scrape_configs:
+      - job_name: 'prometheus'
+
+        # Override the global default and scrape targets from this job every 5 seconds.
+        scrape_interval: 10s
+
+        static_configs:
+          - targets: ['localhost:9090']
+
+      - job_name: 'kubernetes-apiservers'
+
+        kubernetes_sd_configs:
+        - role: endpoints
+
+        scheme: https
+
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: default;kubernetes;https
+
+      - job_name: 'kubernetes-nodes'
+
+        scheme: https
+
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+        kubernetes_sd_configs:
+        - role: node
+
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc.cluster.local:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics
+
+      - job_name: 'kubernetes-cadvisor'
+
+        scheme: https
+
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+
+        kubernetes_sd_configs:
+        - role: node
+
+        relabel_configs:
+        - action: labelmap
+          regex: __meta_kubernetes_node_label_(.+)
+        - target_label: __address__
+          replacement: kubernetes.default.svc.cluster.local:443
+        - source_labels: [__meta_kubernetes_node_name]
+          regex: (.+)
+          target_label: __metrics_path__
+          replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor     
+
+      - job_name: 'kubernetes-service-endpoints'
+
+        scrape_interval: 30s
+        scrape_timeout: 25s
+
+        kubernetes_sd_configs:
+        - role: endpoints
+
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+          action: replace
+          target_label: __scheme__
+          regex: (https?)
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+          action: replace
+          target_label: __address__
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+        - action: labelmap
+          regex: __meta_kubernetes_service_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_service_name]
+          action: replace
+          target_label: kubernetes_name
+
+      - job_name: 'kubernetes-pods'
+
+        kubernetes_sd_configs:
+        - role: pod
+
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - action: labelmap
+          regex: __meta_kubernetes_pod_label_(.+)
+        - source_labels: [__meta_kubernetes_namespace]
+          action: replace
+          target_label: kubernetes_namespace
+        - source_labels: [__meta_kubernetes_pod_name]
+          action: replace
+          target_label: kubernetes_pod_name
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server-rules
+  labels:
+    name: prometheus-server-rules
+  namespace: {{ kubernetes_namespace }}
+data:
+  prometheus-rules.yaml: |-
+    # Rules go here
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: prometheus-pv-claim
+  namespace: {{ kubernetes_namespace }}
+spec:
+  storageClassName: {{ prometheus_storage_class_name }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ prometheus_storage_class_size }}
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: {{ kubernetes_namespace }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      serviceAccountName: prometheus-server
+      initContainers:
+      - name: prometheus-server-init-chowndata
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        # 65534 is the nobody user that prometheus uses.
+        command: ["chown", "65534:65534", "/data"]
+        volumeMounts:
+        - name: storage-volume
+          mountPath: /data/
+      containers:
+        - name: prometheus-server-configmap-reload
+          image: {{ configmap_reloader_image }}
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --volume-dir=/etc/config
+            - --volume-dir=/etc/alerts
+            - --webhook-url=http://127.0.0.1:9090/-/reload
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config/
+              readOnly: true
+            - name: alerts-volume
+              mountPath: /etc/alerts/
+              readOnly: true
+        - name: prometheus-server
+          image: {{ prometheus_server_image }}
+          args:
+            - "--config.file=/etc/config/prometheus.yaml"
+            - "--storage.tsdb.path=/data"
+            - "--web.console.libraries=/etc/prometheus/console_libraries"
+            - "--web.console.templates=/etc/prometheus/consoles"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config/prometheus.yaml
+              subPath: prometheus.yaml
+            - name: rules-volume
+              mountPath: /etc/config/prometheus-rules.yaml
+              subPath: prometheus-rules.yaml
+            - name: alerts-volume
+              mountPath: /etc/alerts/
+            - name: storage-volume
+              mountPath: /data/
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 4Gi
+            requests:
+              cpu: 500m
+              memory: 2Gi
+      terminationGracePeriodSeconds: 300
+      volumes:
+        - name: config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-conf
+        - name: rules-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-rules
+        - name: alerts-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-alerts
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: {{ kubernetes_namespace }}
+spec:
+  selector: 
+    app: prometheus-server
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 9090 
+
+# Disabled until we have cfg auth in front of it
+# ---
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: prometheus-ingress
+#   namespace: {{ kubernetes_namespace }}
+#   labels:
+#     app: prometheus-server
+#   annotations:
+#     kubernetes.io/ingress.class: "nginx"
+#     ingress.kubernetes.io/proxy-body-size: "1m"
+# spec:
+#   tls:
+#   - hosts:
+#     - {{ ingress_host }}
+#     secretName: wildcard-tls
+#   rules:
+#   - host: {{ ingress_host }}
+#     http:
+#       paths:
+#       - path: /
+#         backend:
+#           serviceName: prometheus-server
+#           servicePort: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: prometheus
+  namespace: {{ kubernetes_namespace }}
+  labels:
+    app: prometheus-server
+spec:
+  podSelector:
+    matchLabels:
+      name: prometheus-server
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: kube-ingress
+      ports:
+        - protocol: TCP
+          port: 8080

@@ -1,0 +1,87 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: alertmanager-pv-claim-{{ am_id }}
+  namespace: {{ kubernetes_namespace }}
+spec:
+  storageClassName: {{ alertmanager_storage_class_name }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ alertmanager_storage_class_size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: alertmanager
+  name: alertmanager-{{ am_id }}
+  namespace: {{ kubernetes_namespace }}
+spec:
+  selector:
+    matchLabels:
+      name: alertmanager-{{ am_id }}
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+        name: alertmanager-{{ am_id }}
+    spec:
+      serviceAccountName: alertmanager
+      containers:
+        - name: alertmanager
+          image: {{ alertmanager_image }}
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.podIP
+          args:
+            - --config.file=/etc/config/alertmanager.yml
+            - --storage.path=/data
+            - --cluster.advertise-address=$(POD_IP):9094
+            - --cluster.peer=alertmanager-{{ am_peer_id }}:9094
+            - --cluster.peer-timeout=180s
+            - --web.external-url=/
+          ports:
+            - containerPort: 9093
+              name: http
+            - containerPort: 9094
+              name: gossip
+          readinessProbe:
+            httpGet:
+              path: /#/status
+              port: 9093
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+            - name: storage-volume
+              mountPath: "/data"
+              subPath: ""
+
+        - name: alertmanager-configmap-reload
+          image: {{ configmap_reloader_image }}
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --volume-dir=/etc/config
+            - --webhook-url=http://localhost:9093/-/reload
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: alertmanager-config
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: alertmanager-pv-claim-{{ am_id }}

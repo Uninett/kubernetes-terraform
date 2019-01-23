@@ -1,0 +1,57 @@
+- name: Clear Prometheus configuration directory
+  file:
+    dest: ./prometheus_config
+    state: absent
+
+- name: Prepare Prometheus configuration directory
+  file:
+    dest: ./prometheus_config
+    state: directory
+
+- name: Copy configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_config/{{ item | basename }}"
+  with_fileglob:
+  - '*.yaml'
+
+- name: Clear Prometheus rules directory
+  file:
+    dest: ./prometheus_alerts
+    state: absent
+
+
+- name: Prepare Prometheus rules directory
+  file:
+    dest: ./prometheus_alerts
+    state: directory
+
+- name: Copy alert files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_alerts/{{ item | basename }}"
+  with_fileglob:
+  - 'alerts/*.yaml'
+
+- name: Initialize templates for alertmanager-1
+  include: alertmanager.yaml am_id=1 am_peer_id=2
+
+- name: Initialize templates for alertmanager-2
+  include: alertmanager.yaml am_id=2 am_peer_id=1
+
+- name: Initialize templated Prometheus configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_config/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/common.yaml.j2'
+  - '../templates/prometheus.yaml.j2'
+
+- name: Apply common cfg files
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_config/common.yaml
+
+- name: Apply Prometheus alert rules
+  shell: "kubectl -n {{ kubernetes_namespace }} create configmap prometheus-server-alerts --from-file=./prometheus_alerts --save-config --dry-run -o yaml | kubectl apply -f -"
+
+- name: Apply Prometheus and Alertmanager cfg files
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_config

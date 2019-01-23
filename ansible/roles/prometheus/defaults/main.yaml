@@ -1,0 +1,18 @@
+# Deployment vars
+kubernetes_namespace: monitoring
+
+# Ingress
+ingress_host: prometheus.uninett.no
+
+# Common
+configmap_reloader_image: jimmidyson/configmap-reload:v0.2.2
+
+# Prometheus
+prometheus_server_image: prom/prometheus:v2.6.1
+prometheus_storage_class_name: beta
+prometheus_storage_class_size: 75Gi
+
+# Alertmanager
+alertmanager_image: prom/alertmanager:v0.15.3
+alertmanager_storage_class_name: beta
+alertmanager_storage_class_size: 5Gi

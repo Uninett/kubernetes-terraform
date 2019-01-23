@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-{{ am_id }}
+  namespace: {{ kubernetes_namespace }}
+  labels:
+    app: alertmanager
+    name: alertmanager-{{ am_id }}
+spec:
+  selector: 
+    name: alertmanager-{{ am_id }}
+  ports:
+    - name: http
+      port: 9093
+      protocol: TCP
+      targetPort: 9093 
+    - name: gossip-tcp
+      port: 9094
+      protocol: TCP
+      targetPort: 9094 
+    - name: gossip-udp
+      port: 9094
+      protocol: UDP
+      targetPort: 9094 

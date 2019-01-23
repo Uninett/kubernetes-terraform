@@ -1,0 +1,7 @@
+- name: Initialize templated alertmanager configuration files
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_config/{{ am_id }}-{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/alertmanager-*.yaml.j2'
+

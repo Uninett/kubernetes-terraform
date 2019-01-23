@@ -3,5 +3,7 @@
 /inventory
 /kubeconfig
 /cluster_config
+/prometheus_alerts/
+/prometheus_config/
 /rook_cluster_config
 /scripts
