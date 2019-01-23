@@ -1,0 +1,12 @@
+groups:
+- name: ceph
+  rules:
+  - alert: ceph_cluster_free_capacity
+    expr: (ceph_cluster_total_bytes{rook_cluster="rook-ceph"}-ceph_cluster_total_used_bytes{rook_cluster="rook-ceph"})/ceph_cluster_total_bytes{rook_cluster="rook-ceph"} * 100 < 10
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+       summary: "Ceph disk capacity running low: {{ $value }}% remaining"
+       zabbix_host: prometheus-paas2
+       zabbix_summary: "Ceph disk capacity running low"

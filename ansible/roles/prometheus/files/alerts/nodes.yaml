@@ -1,0 +1,12 @@
+groups:
+- name: kubernetes_nodes
+  rules:
+  - alert: cluster_worker_memory_usage
+    expr: sum (container_memory_working_set_bytes{id="/",type="worker"}) / sum (machine_memory_bytes{type="worker"}) * 100 > 90
+    for: 10m
+    labels:
+      severity: page
+    annotations:
+       summary: "Kubernetes worker memory running low: {{ $value }}% used"
+       zabbix_host: prometheus-paas2
+       zabbix_summary: "Kubernetes worker memory running low"
