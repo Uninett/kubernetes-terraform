@@ -13,6 +13,6 @@ prometheus_storage_class_name: beta
 prometheus_storage_class_size: 75Gi
 
 # Alertmanager
-alertmanager_image: prom/alertmanager:v0.15.3
+alertmanager_image: prom/alertmanager:v0.16.0
 alertmanager_storage_class_name: beta
 alertmanager_storage_class_size: 5Gi

@@ -33,6 +33,15 @@ spec:
         name: alertmanager-{{ am_id }}
     spec:
       serviceAccountName: alertmanager
+      initContainers:
+      - name: alertmanager-init-chowndata
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        # 65534 is the nobody user that alertmanager uses.
+        command: ["chown", "-R", "65534:65534", "/data"]
+        volumeMounts:
+        - name: storage-volume
+          mountPath: /data/
       containers:
         - name: alertmanager
           image: {{ alertmanager_image }}
