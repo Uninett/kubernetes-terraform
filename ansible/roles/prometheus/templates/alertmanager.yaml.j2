@@ -16,13 +16,18 @@ metadata:
 data:
   alertmanager.yml: |
     global: {}
-    receivers:
-    - name: default-receiver
     route:
+      group_by:
+        - 'job'
       group_interval: 5m
       group_wait: 10s
-      receiver: default-receiver
+      receiver: zabbix
       repeat_interval: 3h
+    receivers:
+    - name: zabbix
+      webhook_configs:
+        - url: http://alertmanager-zabbix-webhook:8080/alerts
+          send_resolved: true
 
 ---
 apiVersion: networking.k8s.io/v1
