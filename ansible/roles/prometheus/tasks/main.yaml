@@ -42,6 +42,8 @@
   - '../templates/alertmanager.yaml.j2'
   - '../templates/alertmanager-zabbix-webhook-config.yaml.j2'
   - '../templates/alertmanager-zabbix-webhook.yaml.j2'
+  - '../templates/alertmanager-zabbix-provisioner-config.yaml.j2'
+  - '../templates/alertmanager-zabbix-provisioner.yaml.j2'
 
 - name: Apply common cfg files
   command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_generated/config/common.yaml

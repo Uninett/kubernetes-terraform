@@ -393,6 +393,9 @@ spec:
       name: prometheus-server
   ingress:
     - from:
+      - podSelector:
+          matchLabels:
+            app: alertmanager-zabbix-provisioner
       - namespaceSelector:
           matchLabels:
             name: kube-ingress

@@ -18,16 +18,20 @@ alertmanager_storage_class_name: beta
 alertmanager_storage_class_size: 5Gi
 
 # Alertmanager Zabbix integration
+zabbix_server_host: zabbix-backend.uninett.no
+zabbix_server_port: 10051
+
 # Webhook
 # Source: https://scm.uninett.no/asm/alertmanager-zabbix-webhook
 alertmanager_zabbix_webhook_image: registry.uninett.no/public/alertmanager-zabbix-webhook:latest
 alertmanager_zabbix_webhook_listen_port: 8080
 alertmanager_zabbix_webhook_queue_capacity: 500
-zabbix_server_host: zabbix-backend.uninett.no
-zabbix_server_port: 10051
 zabbix_host_annotation: zabbix
 zabbix_key_prefix: prometheus
 
 # Provisioner
 # Source: https://scm.uninett.no/asm/alertmanager-zabbix-provisioner
-alertmanager-zabbix_provisioner_image: registry.uninett.no/public/alertmanager-zabbix-provisioner:latest
+alertmanager_zabbix_provisioner_image: registry.uninett.no/public/alertmanager-zabbix-provisioner:latest
+zabbix_discovery_rule_key: test
+rules_polling_interval: 3600
+rules_url: http://prometheus:8080/api/v1/rules
