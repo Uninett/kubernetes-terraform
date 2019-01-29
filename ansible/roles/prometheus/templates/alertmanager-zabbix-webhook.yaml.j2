@@ -1,0 +1,73 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: alertmanager-zabbix-webhook
+  namespace: {{ kubernetes_namespace }}
+spec:
+  selector:
+    app: alertmanager-zabbix-webhook
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager-zabbix-webhook
+  namespace: {{ kubernetes_namespace }}
+spec:
+  selector:
+    matchLabels:
+      name: alertmanager-zabbix-webhook
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: alertmanager-zabbix-webhook
+        app: alertmanager-zabbix-webhook
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: webhook
+        image: {{ alertmanager_zabbix_webhook_image }}
+        imagePullPolicy: Always
+        args:
+          - "-config"
+          - "/config/webhook.yaml"
+        resources:
+          requests:
+            memory: 10Mi
+            cpu: 0.1
+          limits:
+            memory: 10Mi
+            cpu: 0.1
+        volumeMounts:
+        - mountPath: /config
+          name: alertmanager-zabbix-webhook-config
+      volumes:
+      - name: alertmanager-zabbix-webhook-config
+        configMap:
+          name: alertmanager-zabbix-webhook-config
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: alertmanager-zabbix-webhook
+  namespace: {{ kubernetes_namespace }}
+  labels:
+    app: alertmanager-zabbix-webhook
+spec:
+  podSelector:
+    matchLabels:
+      name: alertmanager-zabbix-webhook
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: alertmanager
+      ports:
+        - protocol: TCP
+          port: 8080

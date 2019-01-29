@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-zabbix-webhook-config
+  namespace: {{ kubernetes_namespace }}
+data:
+  webhook.yaml: |+
+    port: {{ alertmanager_zabbix_webhook_listen_port }}
+    queueCapacity: {{ alertmanager_zabbix_webhook_queue_capacity }}
+    zabbixServerHost: {{ zabbix_server_host }}
+    zabbixServerPort: {{ zabbix_server_port }}
+    zabbixHostAnnotation: {{ zabbix_host_annotation }}
+    zabbixKeyPrefix: {{ zabbix_key_prefix }}
