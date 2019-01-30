@@ -26,8 +26,8 @@ zabbix_server_port: 10051
 alertmanager_zabbix_webhook_image: registry.uninett.no/public/alertmanager-zabbix-webhook:latest
 alertmanager_zabbix_webhook_listen_port: 8080
 alertmanager_zabbix_webhook_queue_capacity: 500
-zabbix_host_annotation: zabbix
-zabbix_key_prefix: prometheus
+zabbix_host_annotation: zabbix_host
+zabbix_key_prefix: prometheusdata
 
 # Provisioner
 # Source: https://scm.uninett.no/asm/alertmanager-zabbix-provisioner
