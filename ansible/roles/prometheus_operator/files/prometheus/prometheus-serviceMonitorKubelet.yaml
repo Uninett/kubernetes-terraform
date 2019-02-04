@@ -13,15 +13,22 @@ spec:
     port: https-metrics
     scheme: https
     tlsConfig:
-      insecureSkipVerify: true
+      caFile: /etc/prometheus/configmaps/prometheus-kubelet-ca/kubelet-ca.pem
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     honorLabels: true
     interval: 30s
+    metricRelabelings:
+    # Drop a bunch of metrics which are disabled but still sent, see
+    # https://github.com/google/cadvisor/issues/1925. 
+    - action: drop
+      regex: container_(network_tcp_usage_total|network_udp_usage_total|tasks_state|cpu_load_average_10s)
+      sourceLabels:
+      - __name__
     path: /metrics/cadvisor
     port: https-metrics
     scheme: https
     tlsConfig:
-      insecureSkipVerify: true
+      caFile: /etc/prometheus/configmaps/prometheus-kubelet-ca/kubelet-ca.pem
   jobLabel: k8s-app
   namespaceSelector:
     matchNames:

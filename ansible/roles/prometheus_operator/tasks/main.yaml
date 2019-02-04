@@ -1,0 +1,41 @@
+- name: Clear generated Prometheus configuration directory
+  file:
+    dest: ./prometheus_gen
+    state: absent
+
+- name: Prepare Prometheus configuration directory
+  file:
+    dest: "{{ item }}"
+    state: directory
+  with_items:
+    - "./prometheus_gen"
+    - "./prometheus_gen/operator"
+    - "./prometheus_gen/prometheus"
+
+- name: Copy namespace configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/{{ item | basename }}"
+  with_fileglob:
+  - '*.yaml'
+
+- name: Copy operator configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/operator/{{ item | basename }}"
+  with_fileglob:
+  - 'operator/*.yaml'
+
+- name: Copy Prometheus configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/prometheus/{{ item | basename }}"
+  with_fileglob:
+  - 'prometheus/*.yaml'
+
+- name: Initialize templated Prometheus configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/prometheus/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/prometheus/*.yaml.j2'

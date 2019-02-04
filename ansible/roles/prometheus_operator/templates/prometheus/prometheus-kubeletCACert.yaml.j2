@@ -1,0 +1,11 @@
+---
+# Kubelet CA cert for Prometheus access to /metrics
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-kubelet-ca
+  namespace: monitoring
+data:
+  # UNINETT - kubelet CA cert created by ansible
+  kubelet-ca.pem: |-
+{{ lookup('file', 'tls/kubelet/ca.pem') | indent(width=4, indentfirst=True) }}

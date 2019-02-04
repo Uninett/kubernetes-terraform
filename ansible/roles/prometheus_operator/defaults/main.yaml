@@ -1,0 +1,36 @@
+# Deployment vars
+kubernetes_namespace: monitoring
+
+# Common
+configmap_reloader_image: jimmidyson/configmap-reload:v0.2.2
+
+# Prometheus
+prometheus_ingress_host: prometheus.uninett.no
+prometheus_instance_name: system
+prometheus_server_version: v2.6.1
+prometheus_storage_class_name: beta
+prometheus_storage_class_size: 100Gi
+
+# Alertmanager
+alertmanager_version: v0.16.0
+alertmanager_storage_class_name: beta
+alertmanager_storage_class_size: 5Gi
+
+# Alertmanager Zabbix integration
+zabbix_server_host: zabbix-backend.uninett.no
+zabbix_server_port: 10051
+
+# Webhook
+# Source: https://scm.uninett.no/asm/alertmanager-zabbix-webhook
+alertmanager_zabbix_webhook_image: registry.uninett.no/public/alertmanager-zabbix-webhook:latest
+alertmanager_zabbix_webhook_listen_port: 8080
+alertmanager_zabbix_webhook_queue_capacity: 500
+zabbix_host_annotation: zabbix_host
+zabbix_key_prefix: prometheusdata
+
+# Provisioner
+# Source: https://scm.uninett.no/asm/alertmanager-zabbix-provisioner
+alertmanager_zabbix_provisioner_image: registry.uninett.no/public/alertmanager-zabbix-provisioner:latest
+zabbix_discovery_rule_key: test
+rules_polling_interval: 3600
+rules_url: http://prometheus:8080/api/v1/rules
