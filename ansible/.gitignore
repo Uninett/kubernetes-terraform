@@ -4,4 +4,5 @@
 /kubeconfig
 /cluster_config
 /rook_cluster_config
+/prometheus_gen
 /scripts
