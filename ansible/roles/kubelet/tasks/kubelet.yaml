@@ -10,7 +10,7 @@
     name: kubelet
     system: yes
 - name: Generate node kubelet master certificates
-  command: ./tls/generate_cert.sh kubelet server {{ inventory_hostname }}
+  command: ./tls/generate_cert.sh kubelet server {{ inventory_hostname }} {{ internal_ip }}
   register: create_kubelet_cert
   changed_when: "create_kubelet_cert.rc != 2"
   failed_when: "create_kubelet_cert.rc not in (0, 2)"
