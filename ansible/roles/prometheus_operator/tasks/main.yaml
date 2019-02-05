@@ -11,6 +11,7 @@
     - "./prometheus_gen"
     - "./prometheus_gen/operator"
     - "./prometheus_gen/prometheus"
+    - "./prometheus_gen/alertmanager"
 
 - name: Copy namespace configuration files
   copy:
@@ -39,3 +40,17 @@
     dest: "./prometheus_gen/prometheus/{{ item | basename | regex_replace('\\.j2$','') }}"
   with_fileglob:
   - '../templates/prometheus/*.yaml.j2'
+
+- name: Copy Alertmanager configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/alertmanager/{{ item | basename }}"
+  with_fileglob:
+  - 'alertmanager/*.yaml'
+
+- name: Initialize templated Alertmanager configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/alertmanager/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/alertmanager/*.yaml.j2'

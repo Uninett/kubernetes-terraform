@@ -14,7 +14,7 @@ prometheus_storage_class_size: 100Gi
 # Alertmanager
 alertmanager_version: v0.16.0
 alertmanager_storage_class_name: beta
-alertmanager_storage_class_size: 5Gi
+alertmanager_storage_class_size: 10Gi
 
 # Alertmanager Zabbix integration
 zabbix_server_host: zabbix-backend.uninett.no
