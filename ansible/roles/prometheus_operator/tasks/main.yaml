@@ -12,6 +12,7 @@
     - "./prometheus_gen/operator"
     - "./prometheus_gen/prometheus"
     - "./prometheus_gen/alertmanager"
+    - "./prometheus_gen/node-exporter"
 
 - name: Copy namespace configuration files
   copy:
@@ -54,3 +55,17 @@
     dest: "./prometheus_gen/alertmanager/{{ item | basename | regex_replace('\\.j2$','') }}"
   with_fileglob:
   - '../templates/alertmanager/*.yaml.j2'
+
+- name: Copy Node-exporter configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/node-exporter/{{ item | basename }}"
+  with_fileglob:
+  - 'node-exporter/*.yaml'
+
+- name: Initialize templated Node-exporter configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/node-exporter/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/node-exporter/*.yaml.j2'

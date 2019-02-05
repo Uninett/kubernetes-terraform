@@ -15,3 +15,11 @@ rules:
   - subjectaccessreviews
   verbs:
   - create
+- apiGroups:
+  - extensions
+  resourceNames:
+  - node-exporter
+  resources:
+  - podsecuritypolicies
+  verbs:
+  - use
