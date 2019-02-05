@@ -60,6 +60,9 @@ spec:
   - name: dns-tcp
     port: 53
     protocol: TCP
+  - name: kube-dns-metrics
+    port: 10055
+    protocol: TCP
 
 ---
 
@@ -235,7 +238,6 @@ spec:
       dnsPolicy: Default  # Don't use cluster DNS.
 
 ---
-
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -251,3 +253,28 @@ spec:
        port: 53
      - protocol: UDP
        port: 53
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+ name: allow-prometheus
+ namespace: kube-system
+spec:
+ podSelector:
+  matchLabels:
+    k8s-app: kube-dns
+ ingress:
+  - from:
+    # Note: Do we also want to restrict to a specific prometheus here?
+    # The variable for that is currently only in the prometheus role
+    - podSelector:
+        matchLabels:
+          app: prometheus
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+     - protocol: TCP
+       port: 10055
+
