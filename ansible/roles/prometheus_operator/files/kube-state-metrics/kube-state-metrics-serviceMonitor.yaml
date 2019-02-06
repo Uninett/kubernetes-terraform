@@ -14,12 +14,14 @@ spec:
     scheme: https
     scrapeTimeout: 30s
     tlsConfig:
+      # TODO: Add a proper certificate
       insecureSkipVerify: true
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     interval: 30s
     port: https-self
     scheme: https
     tlsConfig:
+      # TODO: Add a proper certificate
       insecureSkipVerify: true
   jobLabel: k8s-app
   selector:

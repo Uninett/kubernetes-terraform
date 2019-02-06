@@ -12,6 +12,7 @@ spec:
     port: https
     scheme: https
     tlsConfig:
+      # TODO: Add a proper certificate
       insecureSkipVerify: true
   jobLabel: k8s-app
   selector:

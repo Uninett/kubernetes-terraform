@@ -84,3 +84,21 @@
     dest: "./prometheus_gen/kube-state-metrics/{{ item | basename | regex_replace('\\.j2$','') }}"
   with_fileglob:
   - '../templates/kube-state-metrics/*.yaml.j2'
+
+- name: Apply common Kubernetes manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen
+
+- name: Apply Operator Kubernetes manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/operator
+
+- name: Apply Alertmanager Kubernetes manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/alertmanager
+
+- name: Apply Prometheus Kubernetes manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/prometheus
+
+- name: Apply node-exporter Kubernetes manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/node-exporter
+
+- name: Apply kube-state-metrics Kubernetes manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/kube-state-metrics
