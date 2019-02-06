@@ -13,6 +13,7 @@
     - "./prometheus_gen/prometheus"
     - "./prometheus_gen/alertmanager"
     - "./prometheus_gen/node-exporter"
+    - "./prometheus_gen/kube-state-metrics"
 
 - name: Copy namespace configuration files
   copy:
@@ -69,3 +70,17 @@
     dest: "./prometheus_gen/node-exporter/{{ item | basename | regex_replace('\\.j2$','') }}"
   with_fileglob:
   - '../templates/node-exporter/*.yaml.j2'
+
+- name: Copy Kube-state-metrics configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/kube-state-metrics/{{ item | basename }}"
+  with_fileglob:
+  - 'kube-state-metrics/*.yaml'
+
+- name: Initialize templated Kube-state-metrics configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/kube-state-metrics/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/kube-state-metrics/*.yaml.j2'

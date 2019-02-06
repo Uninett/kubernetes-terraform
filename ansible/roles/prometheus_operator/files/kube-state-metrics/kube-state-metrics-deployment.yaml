@@ -56,12 +56,14 @@ spec:
         image: quay.io/coreos/kube-state-metrics:v1.5.0
         name: kube-state-metrics
         resources:
+          # Tweak these to the same as addon-resizer sets
+          # to avoid churn on deployment
           limits:
-            cpu: 100m
-            memory: 150Mi
+            cpu: 122m
+            memory: 480Mi
           requests:
-            cpu: 100m
-            memory: 150Mi
+            cpu: 122m
+            memory: 480Mi
       - command:
         - /pod_nanny
         - --container=kube-state-metrics
@@ -87,10 +89,10 @@ spec:
         resources:
           limits:
             cpu: 50m
-            memory: 30Mi
+            memory: 50Mi
           requests:
-            cpu: 10m
-            memory: 30Mi
+            cpu: 50m
+            memory: 50Mi
       nodeSelector:
         beta.kubernetes.io/os: linux
       securityContext:
