@@ -14,6 +14,7 @@
     - "./prometheus_gen/alertmanager"
     - "./prometheus_gen/node-exporter"
     - "./prometheus_gen/kube-state-metrics"
+    - "./prometheus_gen/zabbix"
 
 - name: Copy namespace configuration files
   copy:
@@ -85,6 +86,13 @@
   with_fileglob:
   - '../templates/kube-state-metrics/*.yaml.j2'
 
+- name: Initialize templated alertmanager-zabbix configuration files
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/zabbix/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/zabbix/*.yaml.j2'
+
 - name: Apply common Kubernetes manifests
   command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen
 
@@ -102,3 +110,6 @@
 
 - name: Apply kube-state-metrics Kubernetes manifests
   command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/kube-state-metrics
+
+- name: Apply alertmanager-zabbix manifests
+  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/zabbix

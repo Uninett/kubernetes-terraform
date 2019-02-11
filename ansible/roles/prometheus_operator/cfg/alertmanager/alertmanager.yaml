@@ -5,10 +5,9 @@ route:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 12h
-  receiver: 'null'
-  routes:
-    - match:
-        alertname: DeadMansSwitch
-      receiver: 'null'
+  receiver: zabbix
 receivers:
-  - name: 'null'
+  - name: zabbix
+    webhook_configs:
+      - url: http://alertmanager-zabbix-webhook:8080/alerts
+        send_resolved: true

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-zabbix-provisioner-config
+  namespace: {{ monitoring_namespace }}
+data:
+  provisioner.yaml: |+
+    # URL to the Prometheus rules API endpoint
+    rulesUrl: {{ rules_url }}
+
+    # Polling interval in seconds
+    rulesPollingInterval: {{ rules_polling_interval }}
+
+    # Addr:port to Zabbix for where to send trapper discovery items
+    zabbixAddr: {{ zabbix_server_host }}:{{ zabbix_server_port }}
+
+    # Zabbix discovery rule key
+    zabbixDiscoveryRuleKey: {{ zabbix_discovery_rule_key }} 

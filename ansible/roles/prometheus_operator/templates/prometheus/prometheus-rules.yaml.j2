@@ -312,6 +312,7 @@ spec:
     rules:
     - alert: AlertmanagerDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Alertmanager has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-alertmanagerdown
       expr: |
@@ -321,6 +322,7 @@ spec:
         severity: critical
     - alert: CoreDNSDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: CoreDNS has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-corednsdown
       expr: |
@@ -330,6 +332,7 @@ spec:
         severity: critical
     - alert: KubeAPIDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: KubeAPI has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeapidown
       expr: |
@@ -339,6 +342,7 @@ spec:
         severity: critical
     - alert: KubeControllerManagerDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: KubeControllerManager has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubecontrollermanagerdown
       expr: |
@@ -348,6 +352,7 @@ spec:
         severity: critical
     - alert: KubeSchedulerDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: KubeScheduler has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeschedulerdown
       expr: |
@@ -357,6 +362,7 @@ spec:
         severity: critical
     - alert: KubeStateMetricsDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: KubeStateMetrics has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubestatemetricsdown
       expr: |
@@ -366,6 +372,7 @@ spec:
         severity: critical
     - alert: KubeletDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Kubelet has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeletdown
       expr: |
@@ -375,6 +382,7 @@ spec:
         severity: critical
     - alert: NodeExporterDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: NodeExporter has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-nodeexporterdown
       expr: |
@@ -384,6 +392,7 @@ spec:
         severity: critical
     - alert: PrometheusDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Prometheus has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-prometheusdown
       expr: |
@@ -393,6 +402,7 @@ spec:
         severity: critical
     - alert: PrometheusOperatorDown
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: PrometheusOperator has disappeared from Prometheus target discovery.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-prometheusoperatordown
       expr: |
@@ -404,6 +414,7 @@ spec:
     rules:
     - alert: KubePodCrashLooping
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container
           }}) is restarting {{ printf "%.2f" $value }} times / 5 minutes.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodcrashlooping
@@ -414,6 +425,7 @@ spec:
         severity: critical
     - alert: KubePodNotReady
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready
           state for longer than an hour.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodnotready
@@ -424,6 +436,7 @@ spec:
         severity: critical
     - alert: KubeDeploymentGenerationMismatch
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Deployment generation for {{ $labels.namespace }}/{{ $labels.deployment
           }} does not match, this indicates that the Deployment has failed but has
           not been rolled back.
@@ -437,6 +450,7 @@ spec:
         severity: critical
     - alert: KubeDeploymentReplicasMismatch
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has not
           matched the expected number of replicas for longer than an hour.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedeploymentreplicasmismatch
@@ -449,6 +463,7 @@ spec:
         severity: critical
     - alert: KubeStatefulSetReplicasMismatch
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }} has
           not matched the expected number of replicas for longer than 15 minutes.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubestatefulsetreplicasmismatch
@@ -461,6 +476,7 @@ spec:
         severity: critical
     - alert: KubeStatefulSetGenerationMismatch
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: StatefulSet generation for {{ $labels.namespace }}/{{ $labels.statefulset
           }} does not match, this indicates that the StatefulSet has failed but has
           not been rolled back.
@@ -474,6 +490,7 @@ spec:
         severity: critical
     - alert: KubeStatefulSetUpdateNotRolledOut
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }} update
           has not been rolled out.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubestatefulsetupdatenotrolledout
@@ -494,6 +511,7 @@ spec:
         severity: critical
     - alert: KubeDaemonSetRolloutStuck
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Only {{ $value }}% of the desired Pods of DaemonSet {{ $labels.namespace
           }}/{{ $labels.daemonset }} are scheduled and ready.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedaemonsetrolloutstuck
@@ -640,6 +658,7 @@ spec:
     rules:
     - alert: KubePersistentVolumeUsageCritical
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim
           }} in Namespace {{ $labels.namespace }} is only {{ printf "%0.2f" $value
           }}% free.
@@ -654,6 +673,7 @@ spec:
         severity: critical
     - alert: KubePersistentVolumeFullInFourDays
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Based on recent sampling, the PersistentVolume claimed by {{ $labels.persistentvolumeclaim
           }} in Namespace {{ $labels.namespace }} is expected to fill up within four
           days. Currently {{ printf "%0.2f" $value }}% is available.
@@ -671,6 +691,7 @@ spec:
         severity: critical
     - alert: KubePersistentVolumeErrors
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: The persistent volume {{ $labels.persistentvolume }} has status {{
           $labels.phase }}.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepersistentvolumeerrors
@@ -745,6 +766,7 @@ spec:
         severity: warning
     - alert: KubeAPILatencyHigh
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: The API server has a 99th percentile latency of {{ $value }} seconds
           for {{ $labels.verb }} {{ $labels.resource }}.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeapilatencyhigh
@@ -755,6 +777,7 @@ spec:
         severity: critical
     - alert: KubeAPIErrorsHigh
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: API server is returning errors for {{ $value }}% of requests.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeapierrorshigh
       expr: |
@@ -786,6 +809,7 @@ spec:
         severity: warning
     - alert: KubeClientCertificateExpiration
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: A client certificate used to authenticate to the apiserver is expiring
           in less than 24 hours.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubeclientcertificateexpiration
@@ -797,6 +821,7 @@ spec:
     rules:
     - alert: AlertmanagerConfigInconsistent
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: The configuration of the instances of the Alertmanager cluster `{{$labels.service}}`
           are out of sync.
       expr: |
@@ -815,6 +840,7 @@ spec:
         severity: warning
     - alert: AlertmanagerMembersInconsistent
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Alertmanager has not found all other members of the cluster.
       expr: |
         alertmanager_cluster_members{job="alertmanager-main",namespace="monitoring"}
@@ -856,6 +882,7 @@ spec:
         severity: warning
     - alert: NodeDiskRunningFull
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         message: Device {{ $labels.device }} of node-exporter {{ $labels.namespace
           }}/{{ $labels.pod }} will be full within the next 2 hours.
       expr: |
@@ -896,6 +923,7 @@ spec:
         severity: warning
     - alert: PrometheusErrorSendingAlerts
       annotations:
+        [% zabbix_host_annotation %]: [% zabbix_host %]
         description: Errors while sending alerts from Prometheus {{$labels.namespace}}/{{
           $labels.pod}} to Alertmanager {{$labels.Alertmanager}}
         summary: Errors while sending alerts from Prometheus
