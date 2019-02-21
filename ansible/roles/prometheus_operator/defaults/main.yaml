@@ -7,12 +7,12 @@ configmap_reloader_image: jimmidyson/configmap-reload:v0.2.2
 # Prometheus
 prometheus_ingress_host: prometheus.uninett.no
 prometheus_instance_name: system
-prometheus_server_version: v2.6.1
+prometheus_server_version: v2.7.1
 prometheus_storage_class_name: beta
 prometheus_storage_class_size: 100Gi
 
 # Alertmanager
-alertmanager_version: v0.16.0
+alertmanager_version: v0.16.1
 alertmanager_storage_class_name: beta
 alertmanager_storage_class_size: 10Gi
 
