@@ -107,7 +107,7 @@ spec:
         image: registry.uninett.no/public/goidc-proxy:latest
         imagePullPolicy: Always
         ports:
-          - containerPort: 80
+          - containerPort: 8080
         volumeMounts:
           - name: db-proxy-config
             mountPath: /conf
@@ -152,7 +152,7 @@ spec:
       - path: /
         backend:
           serviceName: dashboard
-          servicePort: 80
+          servicePort: 8080
 
 ---
 kind: Service
@@ -165,8 +165,8 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 80
+  - port: 8080
+    targetPort: 8080
   selector:
     app: dashboard
 ---
@@ -187,4 +187,4 @@ spec:
             name: kube-ingress
       ports:
         - protocol: TCP
-          port: 80
+          port: 8080
