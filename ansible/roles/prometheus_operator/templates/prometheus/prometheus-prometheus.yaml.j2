@@ -18,13 +18,12 @@ spec:
   retention: 4w
   resources:
     requests:
-      memory: 1500Mi
-      cpu: 200m
+      memory: {{ prometheus_memory_request }}
+      cpu: {{ prometheus_cpu_request }}
     limits:
-      memory: 3Gi
-      cpu: 1000m
-  configMaps:
-    - prometheus-kubelet-ca
+      memory: {{ prometheus_memory_limit }}
+      cpu: {{ prometheus_cpu_limit }}
+  configMaps: {{ prometheus_config_maps|tojson }} 
   ruleSelector:
     matchLabels:
       prometheus: {{ prometheus_instance_name }}

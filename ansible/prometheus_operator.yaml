@@ -6,3 +6,5 @@
     - vars.yaml
   roles:
     - prometheus_operator
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"

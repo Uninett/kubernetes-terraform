@@ -1,5 +1,16 @@
+---
 # Deployment vars
+# In self-hosted clusters we will deploy monitoring of additional
+# components like Kube scheduler, Kube Ctrl Manager, etc
+self_hosted_cluster: true
 monitoring_namespace: monitoring
+
+# Kubernetes
+# Set this path to Kubelet CA cert if available. If not set Prometheus will
+# scrape with insecureSkipVerify: true
+kubelet_ca_path: /etc/prometheus/configmaps/prometheus-kubelet-ca/kubelet-ca.pem
+# Set path to kubeconf file, if not set uses kubectl default
+kubeconfig_path: kubeconfig
 
 # Common
 configmap_reloader_image: jimmidyson/configmap-reload:v0.2.2
@@ -10,6 +21,13 @@ prometheus_instance_name: system
 prometheus_server_version: v2.7.1
 prometheus_storage_class_name: beta
 prometheus_storage_class_size: 100Gi
+prometheus_cpu_request: 200m
+prometheus_cpu_limit: 1000m
+prometheus_memory_request: 1500Mi
+prometheus_memory_limit: 3Gi
+
+prometheus_config_maps:
+  - prometheus-kubelet-ca
 
 # Alertmanager
 alertmanager_version: v0.16.1

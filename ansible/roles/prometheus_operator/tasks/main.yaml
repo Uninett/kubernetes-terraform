@@ -93,23 +93,26 @@
   with_fileglob:
   - '../templates/zabbix/*.yaml.j2'
 
+- include: self_hosted_cluster.yaml
+  when: self_hosted_cluster
+
 - name: Apply common Kubernetes manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen
+  command: kubectl apply -f ./prometheus_gen
 
 - name: Apply Operator Kubernetes manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/operator
+  command: kubectl apply -f ./prometheus_gen/operator
 
 - name: Apply Alertmanager Kubernetes manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/alertmanager
+  command: kubectl apply -f ./prometheus_gen/alertmanager
 
 - name: Apply Prometheus Kubernetes manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/prometheus
+  command: kubectl apply -f ./prometheus_gen/prometheus
 
 - name: Apply node-exporter Kubernetes manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/node-exporter
+  command: kubectl apply -f ./prometheus_gen/node-exporter
 
 - name: Apply kube-state-metrics Kubernetes manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/kube-state-metrics
+  command: kubectl apply -f ./prometheus_gen/kube-state-metrics
 
 - name: Apply alertmanager-zabbix manifests
-  command: kubectl --kubeconfig kubeconfig apply -f ./prometheus_gen/zabbix
+  command: kubectl apply -f ./prometheus_gen/zabbix

@@ -13,7 +13,11 @@ spec:
     port: https-metrics
     scheme: https
     tlsConfig:
-      caFile: /etc/prometheus/configmaps/prometheus-kubelet-ca/kubelet-ca.pem
+{% if kubelet_ca_path is defined %}
+      caFile: {{ kubelet_ca_path }}
+{% else %}
+      insecureSkipVerify: true
+{% endif %}
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     honorLabels: true
     interval: 30s
@@ -28,7 +32,11 @@ spec:
     port: https-metrics
     scheme: https
     tlsConfig:
-      caFile: /etc/prometheus/configmaps/prometheus-kubelet-ca/kubelet-ca.pem
+{% if kubelet_ca_path is defined %}
+      caFile: {{ kubelet_ca_path }}
+{% else %}
+      insecureSkipVerify: true
+{% endif %}
   jobLabel: k8s-app
   namespaceSelector:
     matchNames:
