@@ -1,6 +1,6 @@
-- include: bootstrap.yaml
-- include: setup.yaml
-- include: master.yaml
-- include: cluster_config.yaml
-- include: worker.yaml
-- include: scripts.yaml
+- import_playbook: bootstrap.yaml
+- import_playbook: setup.yaml
+- import_playbook: master.yaml
+- import_playbook: cluster_config.yaml
+- import_playbook: worker.yaml
+- import_playbook: scripts.yaml

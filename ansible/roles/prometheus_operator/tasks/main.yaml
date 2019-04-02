@@ -93,7 +93,7 @@
   with_fileglob:
   - '../templates/zabbix/*.yaml.j2'
 
-- include: self_hosted_cluster.yaml
+- import_tasks: self_hosted_cluster.yaml
   when: self_hosted_cluster
 
 - name: Apply common Kubernetes manifests
