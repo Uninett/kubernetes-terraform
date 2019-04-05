@@ -12,6 +12,7 @@ Environment='RKT_OPTS= \
   --mount volume=etc-ssl-kubelet,target=/etc/ssl/kubelet \
   --volume etc-hosts,kind=host,source=/etc/hosts,readOnly=true \
   --mount volume=etc-hosts,target=/etc/hosts \
+  --dns=host \
 '
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/etc/kubernetes/kubeconfig.yaml \
@@ -26,10 +27,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --pod-manifest-path=/etc/kubernetes/manifests \
   --feature-gates=ExperimentalCriticalPodAnnotation=true \
   --hostname-override={{ inventory_hostname }} \
-  --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},storagenode={% if storagenode is defined and storagenode=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %} \
-{% if inventory_hostname in groups['storage'] %}
-  --register-with-taints=storagenode=true:PreferNoSchedule \
-{% endif %}
+  --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %} \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
   --anonymous-auth=false \

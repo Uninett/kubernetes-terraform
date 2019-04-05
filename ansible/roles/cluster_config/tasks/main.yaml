@@ -37,13 +37,6 @@
   - '../templates/*.yaml.j2'
 - name: Create required pod security policies
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/podsecuritypolicy.yaml
-- name: Create rook operator
-  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/rook-operator.yaml
-- name: wait 10 seconds for CRDs to become available for use
-  wait_for: timeout=10
-  delegate_to: localhost
-- name: Create main rook cluster
-  command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/rook-cluster.yaml
 - name: Install cert-manager
   command: kubectl --kubeconfig kubeconfig apply -f ./cluster_config/cert-manager.yaml
 - name: wait 10 seconds for CRDs to become available for use

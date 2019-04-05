@@ -2,9 +2,3 @@
 ::1         localhost
 
 127.0.0.1   apiserver.cluster.local
-
-{% for host in groups['servers'] %}
-{% if 'internal_ip' in hostvars[host] %}
-{{ hostvars[host]['internal_ip'] }}  {{ host }}.node.cluster.local {{ host }}
-{% endif %}
-{% endfor %}

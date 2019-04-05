@@ -3,6 +3,8 @@ data "aws_availability_zones" "available" {}
 
 resource "aws_vpc" "main" {
   cidr_block = "10.2.0.0/16"
+  enable_dns_hostnames =true # For resolving private DNS names, ref:
+  enable_dns_support = true  # https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
 
   tags {
     Name    = "${var.cluster_name}"

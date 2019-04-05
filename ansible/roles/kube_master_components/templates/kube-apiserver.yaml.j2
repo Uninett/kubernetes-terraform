@@ -18,7 +18,7 @@ spec:
     - --bind-address=0.0.0.0
     - --etcd-servers={% set comma = joiner(',') %}
 {%- for host in groups['masters'] -%}
-{{ comma() }}https://{{ host }}.node.cluster.local:2379
+{{ comma() }}https://{{ host }}:2379
 {%- endfor %}
 
     - --etcd-cafile=/etc/ssl/etcd/ca.pem

@@ -52,7 +52,7 @@ data "template_file" "masters_ansible" {
   count    = "${var.master_count}"
 
   vars {
-    name        = "${var.cluster_name}-master-${count.index}"
+    name        = "${element(aws_instance.master.*.private_dns, count.index)}"
     ip          = "${aws_eip.master.*.public_ip[count.index]}"
     internal_ip = "${element(aws_instance.master.*.private_ip, count.index)}"
   }
@@ -66,7 +66,7 @@ resource "aws_instance" "worker" {
   key_name               = "${aws_key_pair.keypair.key_name}"
   subnet_id              = "${element(aws_subnet.main.*.id, count.index % length(aws_subnet.main.*.id))}"
   vpc_security_group_ids = ["${aws_vpc.main.default_security_group_id}", "${aws_security_group.ssh_access.id}", "${aws_security_group.ingress_lb.id}"]
-  user_data              = "#cloud-config\nhostname: ${var.cluster_name}-worker-${count.index}\n"
+  user_data              = "#cloud-config\npreserve_hostname: true\n"
   source_dest_check      = false
 
   ebs_block_device {
@@ -96,7 +96,7 @@ data "template_file" "workers_ansible" {
   count    = "${var.worker_count}"
 
   vars {
-    name        = "${var.cluster_name}-worker-${count.index}"
+    name        = "${element(aws_instance.worker.*.private_dns, count.index)}"
     ip          = "${aws_eip.worker.*.public_ip[count.index]}"
     internal_ip = "${element(aws_instance.worker.*.private_ip, count.index)}"
   }
