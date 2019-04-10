@@ -31,6 +31,7 @@ spec:
     - --use-service-account-credentials
     - --kubeconfig=/etc/kubernetes/kubeconfig-cm.yaml
     - --feature-gates=ExperimentalCriticalPodAnnotation=true
+    - --cloud-provider=aws
     resources:
       requests:
         cpu: {{ kube_cm_cpu }}

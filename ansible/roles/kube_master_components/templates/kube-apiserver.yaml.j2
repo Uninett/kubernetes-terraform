@@ -52,6 +52,7 @@ spec:
     - --oidc-groups-claim=groups
     - --audit-log-format=json
     - --audit-policy-file=/etc/kubernetes/audit-policy.yaml
+    - --cloud-provider=aws
     volumeMounts:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes

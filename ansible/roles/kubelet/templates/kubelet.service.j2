@@ -27,7 +27,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --pod-manifest-path=/etc/kubernetes/manifests \
   --feature-gates=ExperimentalCriticalPodAnnotation=true \
   --hostname-override={{ inventory_hostname }} \
-  --node-labels=lb={% if lb is defined and lb=='true' %}true{% else %}false{% endif %},type={% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %} \
+  --node-labels=node-role.kubernetes.io/{% if inventory_hostname in groups['masters'] %}master{% else %}worker{% endif %}="" \
   --cluster-dns={{ dns_service_ip }} \
   --cluster-domain=cluster.local \
   --anonymous-auth=false \
@@ -42,7 +42,8 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --node-status-update-frequency=4s \
   --eviction-minimum-reclaim=memory.available=100Mi,nodefs.available=1Gi,imagefs.available=2Gi \
   --eviction-hard=memory.available<{{ eviction_memory }},nodefs.available<{{ eviction_nodefs }},imagefs.available<{{ eviction_imagefs }} \
-  --system-reserved=cpu={{ system_reserved_cpu }},memory={{ system_reserved_memory }}
+  --system-reserved=cpu={{ system_reserved_cpu }},memory={{ system_reserved_memory }} \
+  --cloud-provider=aws
 Restart=always
 RestartSec=10
 [Install]
