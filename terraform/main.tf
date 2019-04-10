@@ -1,5 +1,14 @@
-# Configure the AWS Provider
+# This ugly hack for tag name interpolation inspired by:
+# https://blog.scottlowe.org/2018/06/11/using-variables-in-aws-tags-with-terraform/
 
+locals {
+    common_tags = "${map(
+        "kubernetes.io/cluster/${var.cluster_name}", "uninett",
+        "project", "paas2"
+    )}"
+}
+
+# Configure the AWS Provider
 provider "aws" {
   region = "${var.aws_region}"
 
@@ -24,6 +33,7 @@ resource "aws_instance" "master" {
   vpc_security_group_ids = ["${aws_vpc.main.default_security_group_id}", "${aws_security_group.ssh_access.id}", "${aws_security_group.api_access.id}"] # TODO: Is the default group needed/wanted here?
   user_data              = "#cloud-config\npreserve_hostname: true\n"
   source_dest_check      = false
+  iam_instance_profile   = "${var.aws_master_iam_profile}"
 
   ebs_block_device {
     delete_on_termination = true
@@ -36,10 +46,13 @@ resource "aws_instance" "master" {
     delete_on_termination = true
   }
 
-  tags {
-    Name    = "${var.cluster_name}-master-${count.index}"
-    project = "paas2"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+        "Name", "${var.cluster_name}-master-${count.index}"
+    )
+  )}"
+
 }
 
 resource "aws_eip" "master" {
@@ -68,6 +81,7 @@ resource "aws_instance" "worker" {
   vpc_security_group_ids = ["${aws_vpc.main.default_security_group_id}", "${aws_security_group.ssh_access.id}", "${aws_security_group.ingress_lb.id}"]
   user_data              = "#cloud-config\npreserve_hostname: true\n"
   source_dest_check      = false
+  iam_instance_profile   = "${var.aws_worker_iam_profile}"
 
   ebs_block_device {
     delete_on_termination = true
@@ -80,10 +94,13 @@ resource "aws_instance" "worker" {
     delete_on_termination = true
   }
 
-  tags {
-    Name    = "${var.cluster_name}-worker-${count.index}"
-    project = "paas2"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+        "Name", "${var.cluster_name}-worker-${count.index}"
+    )
+  )}"
+
 }
 
 resource "aws_eip" "worker" {

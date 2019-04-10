@@ -6,10 +6,13 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames =true # For resolving private DNS names, ref:
   enable_dns_support = true  # https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
 
-  tags {
-    Name    = "${var.cluster_name}"
-    project = "paas2"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+        "Name", "${var.cluster_name}"
+    )
+  )}"
+
 }
 
 resource "aws_subnet" "main" {
@@ -18,18 +21,23 @@ resource "aws_subnet" "main" {
   vpc_id            = "${aws_vpc.main.id}"
   availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
 
-  tags {
-    Name    = "${var.cluster_name}-${data.aws_availability_zones.available.names["${count.index}"]}"
-    project = "paas2"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map(
+        "Name", "${var.cluster_name}-${data.aws_availability_zones.available.names["${count.index}"]}"
+    )
+  )}"
+
 }
 
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.main.id}"
 
-  tags {
-    project = "paas2"
-  }
+  tags = "${merge(
+    local.common_tags,
+    map()
+  )}"
+
 }
 
 resource "aws_route" "default" {
@@ -73,6 +81,12 @@ resource "aws_security_group" "ingress_lb" {
   name        = "${var.cluster_name}-ingress_lb"
   description = "Security groups for web ingress load balancer"
   vpc_id      = "${aws_vpc.main.id}"
+
+  tags = "${merge(
+    local.common_tags,
+    map()
+  )}"
+
 }
 
 resource "aws_security_group_rule" "ingress_lb_http" {
