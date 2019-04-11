@@ -1,0 +1,54 @@
+---
+# Deployment vars
+# In self-hosted clusters we will deploy monitoring of additional
+# components like Kube scheduler, Kube Ctrl Manager, etc
+self_hosted_cluster: true
+monitoring_namespace: monitoring
+
+# Common
+configmap_reloader_image: jimmidyson/configmap-reload:v0.2.2
+
+# Kubernetes
+# Set this path to Kubelet CA cert if available. If not set Prometheus will
+# scrape with insecureSkipVerify: true
+#kubelet_ca_path:
+# Set path to kubeconf file, if not set uses kubectl default
+kubeconfig_path: "kubeconfig"
+
+# Prometheus
+prometheus_ingress_host: prometheus.uninett.no
+prometheus_instance_name: system
+prometheus_server_version: v2.8.1
+prometheus_storage_class_name: gp2
+prometheus_storage_class_size: 200Gi
+prometheus_cpu_request: 200m
+prometheus_cpu_limit: 1000m
+prometheus_memory_request: 1500Mi
+prometheus_memory_limit: 3Gi
+
+prometheus_config_maps: []
+
+# Alertmanager
+alertmanager_version: v0.16.1
+alertmanager_storage_class_name: gp2
+alertmanager_storage_class_size: 25Gi
+
+# Alertmanager Zabbix integration
+zabbix_server_host: zabbix-backend.uninett.no
+zabbix_server_port: 10051
+
+# Webhook
+# Source: https://scm.uninett.no/asm/alertmanager-zabbix-webhook
+alertmanager_zabbix_webhook_image: registry.uninett.no/public/alertmanager-zabbix-webhook:latest
+alertmanager_zabbix_webhook_listen_port: 8080
+alertmanager_zabbix_webhook_queue_capacity: 500
+zabbix_host_annotation: zabbix_host
+zabbix_host: prometheus-aws-hhtest
+zabbix_key_prefix: prometheusdata
+
+# Provisioner
+# Source: https://scm.uninett.no/asm/alertmanager-zabbix-provisioner
+alertmanager_zabbix_provisioner_image: registry.uninett.no/public/alertmanager-zabbix-provisioner:latest
+zabbix_discovery_rule_key: test
+rules_polling_interval: 300
+rules_url: http://prometheus-system:9090/api/v1/rules
