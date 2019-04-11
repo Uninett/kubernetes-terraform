@@ -1,0 +1,8 @@
+- name: Provider specific Kubernetes resources
+  hosts: cluster
+  connection: local
+  become: false
+  roles:
+    - aws
+  vars_files:
+  - vars.yaml

@@ -1,0 +1,3 @@
+- import_tasks: aws_storage_classes.yaml
+  when: aws_kubernetes_storage_classes is defined and aws_kubernetes_storage_classes
+

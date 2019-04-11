@@ -1,0 +1,3 @@
+---
+# For self-hosted clusters we need to provision some additional resources
+aws_kubernetes_storage_classes: true

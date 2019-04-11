@@ -1,0 +1,2 @@
+- name: Apply Kubernetes AWS storageclass manifests
+  command: kubectl apply -f ./roles/aws/files/storage_classes
