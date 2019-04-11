@@ -10,6 +10,7 @@
   with_items:
     - "./prometheus_gen"
     - "./prometheus_gen/operator"
+    - "./prometheus_gen/operator/crds"
     - "./prometheus_gen/prometheus"
     - "./prometheus_gen/alertmanager"
     - "./prometheus_gen/node-exporter"
@@ -22,6 +23,13 @@
     dest: "./prometheus_gen/{{ item | basename }}"
   with_fileglob:
   - '*.yaml'
+
+- name: Copy operator CRD configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/operator/crds/{{ item | basename }}"
+  with_fileglob:
+  - 'operator/crds/*.yaml'
 
 - name: Copy operator configuration files
   copy:
@@ -98,6 +106,13 @@
 
 - name: Apply common Kubernetes manifests
   command: kubectl apply -f ./prometheus_gen
+
+- name: Apply Operator Kubernetes CRD manifests
+  command: kubectl apply -f ./prometheus_gen/operator/crds
+
+- name: wait 5 seconds for Prometheus-operator CRDs to become available for use
+  wait_for: timeout=5
+  delegate_to: localhost
 
 - name: Apply Operator Kubernetes manifests
   command: kubectl apply -f ./prometheus_gen/operator
