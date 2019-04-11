@@ -18,7 +18,7 @@ kubeconfig_path: "{{ lookup('env','HOME') }}/.kube/config"
 # Prometheus
 prometheus_ingress_host: prometheus.uninett.no
 prometheus_instance_name: system
-prometheus_server_version: v2.7.1
+prometheus_server_version: v2.8.1
 prometheus_storage_class_name: gp2
 prometheus_storage_class_size: 200Gi
 prometheus_cpu_request: 200m
