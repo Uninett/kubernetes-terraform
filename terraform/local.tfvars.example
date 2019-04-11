@@ -1,7 +1,6 @@
-user_name = ""
-password = ""
 
-cluster_name = "someirdtest"
+cluster_name = "mycluster"
+cluster_dns_domain = "my.domain.example.com"
 
 allow_ssh_from_v4 = [
     "192.168.1.0/24"
