@@ -1,8 +1,0 @@
-auth_url = "https://keystone.api.cloud.ipnett.no/v3"
-domain_name = "uninett.no"
-tenant_name = "paastest.uninett.no"
-region = "no-south-1"
-node_flavor = "b.medium"
-worker_node_flavor = "m.small"
-coreos_image = "35db96d8-7948-46ff-abd6-2ba8ff27c301"
-public_v4_network = "cbcbe027-9391-4ddc-98ec-5bfa96a9332e"
