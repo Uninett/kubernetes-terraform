@@ -1,0 +1,18 @@
+# For Prometheus to discover the kube-controller-manager we need a service
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: kube-system
+  name: kube-controller-manager
+  labels:
+    k8s-app: kube-controller-manager
+spec:
+  selector:
+    k8s-app: kube-controller-manager
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: http-metrics
+    port: 10252
+    targetPort: 10252
+    protocol: TCP

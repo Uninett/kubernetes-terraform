@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: alertmanager-web
+  namespace: monitoring
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-ingress
+    - namespaceSelector:
+        matchLabels:
+          name: monitoring
+    ports:
+    - port: 9093
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      alertmanager: main
+      app: alertmanager
+---
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  name: alertmanager-mesh
+  namespace: monitoring
+spec:
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - alertmanager
+        - key: alertmanager
+          operator: In
+          values:
+          - main
+    # Note: Upstream Prometheus now uses port 9094 here
+    # Operator is not in sync yet
+    ports:
+    - port: 6783
+      protocol: TCP
+    # Added UDP also as Prometheus docs says, operator example
+    # didn't have it
+    - port: 6783
+      protocol: UDP
+  podSelector:
+    matchLabels:
+      alertmanager: main
+      app: alertmanager

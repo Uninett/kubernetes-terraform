@@ -1,0 +1,118 @@
+- name: Clear generated Prometheus configuration directory
+  file:
+    dest: ./prometheus_gen
+    state: absent
+
+- name: Prepare Prometheus configuration directory
+  file:
+    dest: "{{ item }}"
+    state: directory
+  with_items:
+    - "./prometheus_gen"
+    - "./prometheus_gen/operator"
+    - "./prometheus_gen/prometheus"
+    - "./prometheus_gen/alertmanager"
+    - "./prometheus_gen/node-exporter"
+    - "./prometheus_gen/kube-state-metrics"
+    - "./prometheus_gen/zabbix"
+
+- name: Copy namespace configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/{{ item | basename }}"
+  with_fileglob:
+  - '*.yaml'
+
+- name: Copy operator configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/operator/{{ item | basename }}"
+  with_fileglob:
+  - 'operator/*.yaml'
+
+- name: Copy Prometheus configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/prometheus/{{ item | basename }}"
+  with_fileglob:
+  - 'prometheus/*.yaml'
+
+- name: Initialize templated Prometheus configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/prometheus/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/prometheus/*.yaml.j2'
+
+- name: Copy Alertmanager configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/alertmanager/{{ item | basename }}"
+  with_fileglob:
+  - 'alertmanager/*.yaml'
+
+- name: Initialize templated Alertmanager configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/alertmanager/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/alertmanager/*.yaml.j2'
+
+- name: Copy Node-exporter configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/node-exporter/{{ item | basename }}"
+  with_fileglob:
+  - 'node-exporter/*.yaml'
+
+- name: Initialize templated Node-exporter configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/node-exporter/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/node-exporter/*.yaml.j2'
+
+- name: Copy Kube-state-metrics configuration files
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/kube-state-metrics/{{ item | basename }}"
+  with_fileglob:
+  - 'kube-state-metrics/*.yaml'
+
+- name: Initialize templated Kube-state-metrics configuration file
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/kube-state-metrics/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/kube-state-metrics/*.yaml.j2'
+
+- name: Initialize templated alertmanager-zabbix configuration files
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/zabbix/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/zabbix/*.yaml.j2'
+
+- import_tasks: self_hosted_cluster.yaml
+  when: self_hosted_cluster
+
+- name: Apply common Kubernetes manifests
+  command: kubectl apply -f ./prometheus_gen
+
+- name: Apply Operator Kubernetes manifests
+  command: kubectl apply -f ./prometheus_gen/operator
+
+- name: Apply Alertmanager Kubernetes manifests
+  command: kubectl apply -f ./prometheus_gen/alertmanager
+
+- name: Apply Prometheus Kubernetes manifests
+  command: kubectl apply -f ./prometheus_gen/prometheus
+
+- name: Apply node-exporter Kubernetes manifests
+  command: kubectl apply -f ./prometheus_gen/node-exporter
+
+- name: Apply kube-state-metrics Kubernetes manifests
+  command: kubectl apply -f ./prometheus_gen/kube-state-metrics
+
+- name: Apply alertmanager-zabbix manifests
+  command: kubectl apply -f ./prometheus_gen/zabbix

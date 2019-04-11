@@ -1,0 +1,13 @@
+- name: Copy additonal Prometheus configuration files for self-hosted cluster
+  copy:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/prometheus/{{ item | basename }}"
+  with_fileglob:
+  - 'self_hosted/prometheus/*.yaml'
+
+- name: Initialize additional templated Prometheus configuration file for self-hosted cluster
+  template:
+    src: "{{ item }}"
+    dest: "./prometheus_gen/prometheus/{{ item | basename | regex_replace('\\.j2$','') }}"
+  with_fileglob:
+  - '../templates/self_hosted/prometheus/*.yaml.j2'

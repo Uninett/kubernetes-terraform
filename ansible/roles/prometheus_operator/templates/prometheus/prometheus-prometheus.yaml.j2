@@ -1,0 +1,45 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: {{ prometheus_instance_name }}
+  name: {{ prometheus_instance_name }}
+  namespace: monitoring
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: monitoring
+      port: web
+  baseImage: quay.io/prometheus/prometheus
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  replicas: 1
+  retention: 4w
+  resources:
+    requests:
+      memory: {{ prometheus_memory_request }}
+      cpu: {{ prometheus_cpu_request }}
+    limits:
+      memory: {{ prometheus_memory_limit }}
+      cpu: {{ prometheus_cpu_limit }}
+  configMaps: {{ prometheus_config_maps|tojson }} 
+  ruleSelector:
+    matchLabels:
+      prometheus: {{ prometheus_instance_name }}
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: prometheus-{{ prometheus_instance_name }}
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
+  version: {{ prometheus_server_version }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: {{ prometheus_storage_class_name }}
+        resources:
+          requests:
+            storage: {{ prometheus_storage_class_size }}

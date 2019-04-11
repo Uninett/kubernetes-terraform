@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: NetworkPolicy
+metadata:
+  generation: 1
+  name: prometheus
+  namespace: monitoring
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-ingress
+    ports:
+    - port: 9090
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      k8s-app: prometheus
+  policyTypes:
+  - Ingress
+
