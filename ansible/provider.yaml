@@ -6,3 +6,5 @@
     - aws
   vars_files:
   - vars.yaml
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"

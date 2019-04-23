@@ -6,3 +6,5 @@
   - vars.yaml
   roles:
   - cluster_config
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
