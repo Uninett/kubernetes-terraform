@@ -7,7 +7,6 @@ variable "aws_worker_iam_profile" {}
 
 variable "master_instance_type" {}
 variable "worker_instance_type" {}
-variable "image" {}
 
 # From local.tfvars
 variable "cluster_name" {  }

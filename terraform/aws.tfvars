@@ -8,8 +8,3 @@ aws_worker_iam_profile = "K8SWorkerNodeEC2Access"
 # ...
 master_instance_type = "m5.xlarge"
 worker_instance_type = "m5.xlarge"
-
-# TODO: Lookup this in the main.tf instead, ref:
-# https://letslearndevops.com/2018/08/23/terraform-get-latest-centos-ami/
-# https://www.terraform.io/docs/providers/aws/d/ami_ids.html
-image = "ami-3c0a8342" # EU (Stockholm) ami CoreOS

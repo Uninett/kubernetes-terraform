@@ -18,6 +18,25 @@ provider "aws" {
   }
 }
 
+data "aws_ami" "latest-coreos" {
+most_recent = true
+owners = ["679593333241"] # AWS Marketplace
+  filter {
+      name   = "name"
+      values = ["CoreOS-stable-*"]
+  }
+
+  filter {
+      name   = "virtualization-type"
+      values = ["hvm"]
+  }
+
+  filter {
+      name   = "architecture"
+      values = ["x86_64"]
+  }
+}
+
 resource "aws_key_pair" "keypair" {
   key_name   = "${var.cluster_name}"
   public_key = "${file(var.ssh_public_key)}"
@@ -26,7 +45,7 @@ resource "aws_key_pair" "keypair" {
 # Master nodes
 resource "aws_instance" "master" {
   count                  = "${var.master_count}"
-  ami                    = "${var.image}"
+  ami                    = "${data.aws_ami.latest-coreos.id}"
   instance_type          = "${var.master_instance_type}"
   key_name               = "${aws_key_pair.keypair.key_name}"
   subnet_id              = "${element(aws_subnet.main.*.id, count.index % length(aws_subnet.main.*.id))}"
@@ -74,7 +93,7 @@ data "template_file" "masters_ansible" {
 # Worker nodes
 resource "aws_instance" "worker" {
   count                  = "${var.worker_count}"
-  ami                    = "${var.image}"
+  ami                    = "${data.aws_ami.latest-coreos.id}"
   instance_type          = "${var.worker_instance_type}"
   key_name               = "${aws_key_pair.keypair.key_name}"
   subnet_id              = "${element(aws_subnet.main.*.id, count.index % length(aws_subnet.main.*.id))}"
