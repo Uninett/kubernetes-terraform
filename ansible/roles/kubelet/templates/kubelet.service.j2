@@ -12,6 +12,8 @@ Environment='RKT_OPTS= \
   --mount volume=etc-ssl-kubelet,target=/etc/ssl/kubelet \
   --volume etc-hosts,kind=host,source=/etc/hosts,readOnly=true \
   --mount volume=etc-hosts,target=/etc/hosts \
+  --volume var-lib-calico,kind=host,source=/var/lib/calico,readOnly=true \
+  --mount volume=var-lib-calico,target=/var/lib/calico \
   --dns=host \
 '
 ExecStart=/usr/lib/coreos/kubelet-wrapper \

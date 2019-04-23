@@ -23,3 +23,10 @@
     owner: root
     group: root
     mode: 0755
+- name: Make calico folder
+  file:
+    state: directory
+    path: /var/lib/calico
+    owner: root
+    group: root
+    mode: 0755
