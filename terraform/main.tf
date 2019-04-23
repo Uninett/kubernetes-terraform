@@ -72,6 +72,12 @@ resource "aws_instance" "master" {
     )
   )}"
 
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to ami
+      "ami",
+    ]
+  }
 }
 
 resource "aws_eip" "master" {
@@ -119,6 +125,13 @@ resource "aws_instance" "worker" {
         "Name", "${var.cluster_name}-worker-${count.index}"
     )
   )}"
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to ami
+      "ami",
+    ]
+  }
 
 }
 
