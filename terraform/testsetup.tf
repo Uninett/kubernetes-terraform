@@ -45,13 +45,14 @@ resource "openstack_compute_instance_v2" "master" {
         destination_type = "local"
         uuid = "${var.coreos_image}"
     }
+
     lifecycle {
         ignore_changes = [
         # Ignore changes to image_id
         "image_id",
+        "block_device.0.uuid"
         ]
     }
-
 }
 
 resource "openstack_compute_floatingip_associate_v2" "master" {
@@ -98,6 +99,7 @@ resource "openstack_compute_instance_v2" "worker" {
         ignore_changes = [
         # Ignore changes to image_id
         "image_id",
+        "block_device.0.uuid"
         ]
     }
 }
@@ -149,6 +151,13 @@ resource "openstack_compute_instance_v2" "storage" {
         volume_size = "${var.storage_disk_size}"
     }
 
+    lifecycle {
+        ignore_changes = [
+        # Ignore changes to image_id
+        "image_id",
+        "block_device.0.uuid"
+        ]
+    }
 }
 
 resource "openstack_compute_floatingip_associate_v2" "storage" {
