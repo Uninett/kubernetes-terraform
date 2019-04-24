@@ -68,7 +68,8 @@ resource "aws_instance" "master" {
   tags = "${merge(
     local.common_tags,
     map(
-        "Name", "${var.cluster_name}-master-${count.index}"
+        "Name", "${var.cluster_name}-master-${count.index}",
+	"k8s-role", "master"
     )
   )}"
 
@@ -122,7 +123,8 @@ resource "aws_instance" "worker" {
   tags = "${merge(
     local.common_tags,
     map(
-        "Name", "${var.cluster_name}-worker-${count.index}"
+        "Name", "${var.cluster_name}-worker-${count.index}",
+	"k8s-role", "worker"
     )
   )}"
 
