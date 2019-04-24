@@ -6,7 +6,7 @@
     group: root
     mode: 0755
 - name: Generate client SSL keys
-  command: ./tls/generate_cert.sh kubernetes client {{ inventory_hostname }}
+  command: env CERT_ORG="system:nodes" ./tls/generate_cert.sh kubernetes client "system:node:{{ inventory_hostname }}"
   register: create_kubernetes_cert
   changed_when: "create_kubernetes_cert.rc != 2"
   failed_when: "create_kubernetes_cert.rc not in (0, 2)"

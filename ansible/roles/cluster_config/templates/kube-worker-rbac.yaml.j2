@@ -1,18 +1,3 @@
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: kube-worker-node
-subjects:
-{% for host in groups['workers'] %}
-  - kind: User
-    name: "{{ host }}"
-{% endfor %}
-roleRef:
-  kind: ClusterRole
-  name: system:node
-  apiGroup: rbac.authorization.k8s.io
-
-
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1

@@ -27,7 +27,7 @@ spec:
     - --allow-privileged=true
     - --service-cluster-ip-range={{ service_ip_range }}
     - --secure-port=8443
-    - --enable-admission-plugins=DenyEscalatingExec,PodSecurityPolicy
+    - --enable-admission-plugins=DenyEscalatingExec,PodSecurityPolicy,NodeRestriction
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
@@ -35,7 +35,7 @@ spec:
     - --service-account-lookup=true
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/networkpolicies=true,rbac.authorization.k8s.io/v1beta1=true,extensions/v1beta1/podsecuritypolicy=true
     - --feature-gates=ExperimentalCriticalPodAnnotation=true
-    - --authorization-mode=RBAC
+    - --authorization-mode=Node,RBAC
     - --service-node-port-range=30-32767
     - --storage-backend=etcd3
     - --apiserver-count={{ apiserver_count }}
