@@ -45,6 +45,13 @@ resource "openstack_compute_instance_v2" "master" {
         destination_type = "local"
         uuid = "${var.coreos_image}"
     }
+    lifecycle {
+        ignore_changes = [
+        # Ignore changes to image_id
+        "image_id",
+        ]
+    }
+
 }
 
 resource "openstack_compute_floatingip_associate_v2" "master" {
@@ -85,6 +92,13 @@ resource "openstack_compute_instance_v2" "worker" {
         destination_type = "volume"
         uuid = "${var.coreos_image}"
         volume_size = "${var.worker_disk_size}"
+    }
+
+    lifecycle {
+        ignore_changes = [
+        # Ignore changes to image_id
+        "image_id",
+        ]
     }
 }
 
