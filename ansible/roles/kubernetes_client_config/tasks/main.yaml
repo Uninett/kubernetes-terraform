@@ -5,7 +5,7 @@
     owner: root
     group: root
     mode: 0755
-- name: Generate client SSL keys
+- name: Generate client SSL keys for Kubelet
   command: env CERT_ORG="system:nodes" ./tls/generate_cert.sh kubernetes client "system:node:{{ inventory_hostname }}"
   register: create_kubernetes_cert
   changed_when: "create_kubernetes_cert.rc != 2"
@@ -16,6 +16,21 @@
   template:
     dest: /etc/kubernetes/kubeconfig.yaml
     src: kubeconfig.yaml.j2
+    owner: root
+    group: root
+    mode: 0600
+- name: Generate client SSL keys for Kube Proxy
+  command: ./tls/generate_cert.sh kubernetes client "system:kube-proxy"
+  register: create_kubernetes_cert
+  changed_when: "create_kubernetes_cert.rc != 2"
+  failed_when: "create_kubernetes_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+  run_once: true
+- name: kubeconfig-kube-proxy.yaml
+  template:
+    dest: /etc/kubernetes/kubeconfig-kube-proxy.yaml
+    src: kubeconfig-kube-proxy.yaml.j2
     owner: root
     group: root
     mode: 0600
