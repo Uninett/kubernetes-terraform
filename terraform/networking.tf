@@ -2,7 +2,7 @@
 data "aws_availability_zones" "available" {}
 
 resource "aws_vpc" "main" {
-  cidr_block = "10.2.0.0/16"
+  cidr_block = "${var.aws_vpc_cidr_block}"
   enable_dns_hostnames =true # For resolving private DNS names, ref:
   enable_dns_support = true  # https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html
 
@@ -73,7 +73,7 @@ resource "aws_security_group_rule" "api_https" {
   from_port         = 8443
   to_port           = 8443
   protocol          = "tcp"
-  cidr_blocks       = "${var.allow_api_access_from_v4}"
+  cidr_blocks       = "${concat(var.allow_api_access_from_v4, list(var.aws_vpc_cidr_block))}"
   security_group_id = "${aws_security_group.api_access.id}"
 }
 
