@@ -1,10 +1,11 @@
 - name: Generate controller-manager SSL keys
-  command: ./tls/generate_cert.sh kubernetes client {{ inventory_hostname }}-cm
+  command: ./tls/generate_cert.sh kubernetes client system:kube-controller-manager
   register: create_kubernetes_cert
   changed_when: "create_kubernetes_cert.rc != 2"
   failed_when: "create_kubernetes_cert.rc not in (0, 2)"
   delegate_to: localhost
   become: false
+  run_once: true
 - name: kubeconfig-cm.yaml
   template:
     dest: /etc/kubernetes/kubeconfig-cm.yaml
