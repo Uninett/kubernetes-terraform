@@ -1,3 +1,18 @@
+- name: Generate scheduler SSL keys
+  command: ./tls/generate_cert.sh kubernetes client system:kube-scheduler
+  register: create_kubernetes_cert
+  changed_when: "create_kubernetes_cert.rc != 2"
+  failed_when: "create_kubernetes_cert.rc not in (0, 2)"
+  delegate_to: localhost
+  become: false
+  run_once: true
+- name: kubeconfig-scheduler.yaml
+  template:
+    dest: /etc/kubernetes/kubeconfig-scheduler.yaml
+    src: kubeconfig-scheduler.yaml.j2
+    owner: root
+    group: root
+    mode: 0600
 - name: Add kube-scheduler manifest
   template:
     src: kube-scheduler.yaml.j2

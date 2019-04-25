@@ -13,7 +13,7 @@ spec:
     command:
     - /hyperkube
     - scheduler
-    - --master=http://127.0.0.1:8080
+    - --kubeconfig=/etc/kubernetes/kubeconfig.yaml
     - --leader-elect=true
     - --feature-gates=ExperimentalCriticalPodAnnotation=true
     resources:
@@ -26,3 +26,11 @@ spec:
         port: 10251
       initialDelaySeconds: 15
       timeoutSeconds: 1
+    volumeMounts:
+    - mountPath: /etc/kubernetes/kubeconfig.yaml
+      name: kubeconfig
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/kubeconfig-scheduler.yaml
+    name: kubeconfig
