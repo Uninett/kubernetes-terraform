@@ -68,7 +68,8 @@ resource "aws_instance" "master" {
   tags = "${merge(
     local.common_tags,
     map(
-        "Name", "${var.cluster_name}-master-${count.index}"
+        "Name", "${var.cluster_name}-master-${count.index}",
+	"k8s-role", "master"
     )
   )}"
 
@@ -122,7 +123,8 @@ resource "aws_instance" "worker" {
   tags = "${merge(
     local.common_tags,
     map(
-        "Name", "${var.cluster_name}-worker-${count.index}"
+        "Name", "${var.cluster_name}-worker-${count.index}",
+	"k8s-role", "worker"
     )
   )}"
 
@@ -156,7 +158,7 @@ data "template_file" "inventory_tail" {
 
   vars = {
     section_children = "[servers:children]\nmasters\nworkers"
-    section_vars     = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all]\ncluster\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\ncluster_dns_domain=${var.cluster_dns_domain}\napi_internal_lb_name=${aws_lb.k8s-api-nlb-internal.dns_name}\napi_external_lb_name=${aws_lb.k8s-api-nlb.dns_name}"
+    section_vars     = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\ncluster_dns_domain=${var.cluster_dns_domain}\napi_internal_lb_name=${aws_lb.k8s-api-nlb-internal.dns_name}\napi_external_lb_name=${aws_lb.k8s-api-nlb.dns_name}"
   }
 }
 
