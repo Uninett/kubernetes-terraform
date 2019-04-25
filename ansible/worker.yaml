@@ -2,6 +2,5 @@
   hosts: workers
   roles:
     - kubelet
-    - haproxy_apiserver
   vars_files:
   - vars.yaml
