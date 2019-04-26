@@ -2,26 +2,14 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: kube-worker-node-proxier
+  name: node-permissive
 subjects:
-{% for host in groups['workers'] %}
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: system:nodes
   - kind: User
-    name: "{{ host }}"
-{% endfor %}
-roleRef:
-  kind: ClusterRole
-  name: system:node-proxier
-  apiGroup: rbac.authorization.k8s.io
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: kube-worker-permissive
-subjects:
-{% for host in groups['workers'] %}
-  - kind: User
-    name: "{{ host }}"
-{% endfor %}
+    apiGroup: rbac.authorization.k8s.io
+    name: system:kube-proxy
 roleRef:
   kind: ClusterRole
   name: permissive-psp
