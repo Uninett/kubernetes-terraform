@@ -1,3 +1,2 @@
-- include: hosts.yaml
 - include: etcd_certs.yaml
 - include: locksmithd.yaml
