@@ -1,0 +1,12 @@
+- name: Ensure /opt/bin exists
+  file:
+    path: /opt/bin
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+# TODO: What about upgrades here?
+- name: Install crictl
+  shell: curl -sSL "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_ver }}/crictl-v{{ crictl_ver }}-linux-amd64.tar.gz" | tar -C /opt/bin -xz
+  args:
+    creates: /opt/bin/crictl
