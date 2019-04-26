@@ -1,22 +1,11 @@
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/kubernetes/kubernetes
+After=docker.service
+Requires=docker.service
+
 [Service]
-# We are using gcr.io instead of quay.io because the latter is terribly slow
-Environment=RKT_RUN_ARGS=--insecure-options=image
-Environment=KUBELET_IMAGE_URL=docker://gcr.io/google_containers/hyperkube-amd64
-Environment=KUBELET_IMAGE_TAG=v{{ k8s_ver }}
-Environment='RKT_OPTS= \
-  --volume etc-cni,kind=host,source=/etc/cni,readOnly=true \
-  --mount volume=etc-cni,target=/etc/cni \
-  --volume opt-cni,kind=host,source=/opt/cni,readOnly=true \
-  --mount volume=opt-cni,target=/opt/cni \
-  --volume etc-ssl-kubelet,kind=host,source=/etc/ssl/kubelet,readOnly=true \
-  --mount volume=etc-ssl-kubelet,target=/etc/ssl/kubelet \
-  --volume etc-hosts,kind=host,source=/etc/hosts,readOnly=true \
-  --mount volume=etc-hosts,target=/etc/hosts \
-  --volume var-lib-calico,kind=host,source=/var/lib/calico,readOnly=true \
-  --mount volume=var-lib-calico,target=/var/lib/calico \
-  --dns=host \
-'
-ExecStart=/usr/lib/coreos/kubelet-wrapper \
+ExecStart=/opt/bin/kubelet \
   --kubeconfig=/etc/kubernetes/kubeconfig.yaml \
   --network-plugin=cni \
   --cni-bin-dir=/opt/cni/bin \
@@ -48,5 +37,6 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --cloud-provider=aws
 Restart=always
 RestartSec=10
+
 [Install]
 WantedBy=multi-user.target

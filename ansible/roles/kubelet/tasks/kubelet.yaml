@@ -64,6 +64,18 @@
     mode: 0644
   register: kubelet_svc
   tags: k8s_upgrade
+- name: Install kubelet binary
+  shell: curl -sSL "https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_ver }}/bin/linux/amd64/kubelet" -o /opt/bin/kubelet
+  args:
+    creates: /opt/bin/kubelet
+  tags: k8s_upgrade
+- name: Set kubelet binary executable bit
+  file:
+    path: /opt/bin/kubelet
+    state: file
+    owner: root
+    group: root
+    mode: 0755
 - name: Configure kubelet
   template:
     dest: /etc/systemd/system/kubelet.service
