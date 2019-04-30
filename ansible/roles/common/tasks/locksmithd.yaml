@@ -21,3 +21,5 @@
   when: locksmithd_config.changed
 - name: Start locksmithd
   service: name=locksmithd state=started enabled=yes
+- name: Stop update-engine temporarly
+  service: name=update-engine state=stopped enabled=yes
