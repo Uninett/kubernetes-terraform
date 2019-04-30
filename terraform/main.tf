@@ -64,7 +64,7 @@ resource "aws_instance" "master" {
     local.common_tags,
     map(
         "Name", "${var.cluster_name}-master-${count.index}",
-	"k8s-role", "master"
+        "k8s-role", "master"
     )
   )}"
 
@@ -119,7 +119,7 @@ resource "aws_instance" "worker" {
     local.common_tags,
     map(
         "Name", "${var.cluster_name}-worker-${count.index}",
-	"k8s-role", "worker"
+        "k8s-role", "worker"
     )
   )}"
 
