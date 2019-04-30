@@ -1,2 +1,6 @@
-- name: Start update-engine again
-  service: name=update-engine state=started enabled=yes
+- name: Perform cleanup tasks
+  hosts: servers
+  roles:
+    - cleanup
+  vars_files:
+  - vars.yaml
