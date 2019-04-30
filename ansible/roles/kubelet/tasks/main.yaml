@@ -1,4 +1,3 @@
 - include: cni.yaml
 - include: cri.yaml
 - include: kubelet.yaml
-- include: selftest.yaml
