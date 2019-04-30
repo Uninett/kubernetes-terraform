@@ -49,15 +49,9 @@ resource "aws_instance" "master" {
   source_dest_check      = false
   iam_instance_profile   = "${var.aws_master_iam_profile}"
 
-  ebs_block_device {
-    delete_on_termination = true
-    volume_type           = "gp2"
-    device_name           = "/dev/sdb"
-    volume_size           = "${var.master_disk_size}"
-  }
-
   root_block_device {
     delete_on_termination = true
+    volume_size           = "${var.master_disk_size}"
   }
 
   tags = "${merge(
@@ -104,15 +98,9 @@ resource "aws_instance" "worker" {
   source_dest_check      = false
   iam_instance_profile   = "${var.aws_worker_iam_profile}"
 
-  ebs_block_device {
-    delete_on_termination = true
-    volume_type           = "gp2"
-    device_name           = "/dev/sdb"
-    volume_size           = "${var.worker_disk_size}"
-  }
-
   root_block_device {
     delete_on_termination = true
+    volume_size           = "${var.worker_disk_size}"
   }
 
   tags = "${merge(
