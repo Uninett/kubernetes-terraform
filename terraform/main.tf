@@ -153,6 +153,16 @@ data "template_file" "workers_ansible" {
   }
 }
 
+# S3 bucket for backups
+resource "aws_s3_bucket" "backup" {
+  bucket = "uninett-k8s-backup-${var.cluster_name}"
+  acl    = "private"
+
+  tags = {
+    Name        = "k8s-backup-${var.cluster_name}"
+  }
+}
+
 data "template_file" "inventory_tail" {
   template = "$${section_children}\n$${section_vars}"
 
@@ -174,4 +184,8 @@ data "template_file" "inventory" {
 
 output "inventory" {
   value = "${data.template_file.inventory.rendered}"
+}
+
+output "backup-bucket" {
+  value = "${aws_s3_bucket.backup.arn}"
 }
