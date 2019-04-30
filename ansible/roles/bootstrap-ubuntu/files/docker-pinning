@@ -1,0 +1,3 @@
+Package: docker.io
+Pin: version 18.06*
+Pin-Priority: 550

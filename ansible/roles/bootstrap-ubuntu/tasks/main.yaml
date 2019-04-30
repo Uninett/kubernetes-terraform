@@ -1,0 +1,9 @@
+- name: Install Docker package pinning cfg
+  copy:
+    src: "docker-pinning"
+    dest: "/etc/apt/preferences.d/docker-pinning"
+
+- name: Update repositories cache and install Docker package
+  apt:
+    name: docker.io
+    update_cache: yes

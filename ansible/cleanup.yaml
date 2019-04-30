@@ -1,6 +1,0 @@
-- name: Perform cleanup tasks
-  hosts: servers
-  roles:
-    - cleanup
-  vars_files:
-  - vars.yaml

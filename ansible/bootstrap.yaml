@@ -1,4 +1,4 @@
-- name: Bootstrap Python on CoreOS
+- name: Bootstrap Ubuntu
   hosts: servers
   gather_facts: False
   become: False
@@ -11,4 +11,4 @@
       pause:
         seconds: 10
   roles:
-    - defunctzombie.coreos-bootstrap
+    - bootstrap-ubuntu

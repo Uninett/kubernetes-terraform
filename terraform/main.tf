@@ -18,22 +18,17 @@ provider "aws" {
   }
 }
 
-data "aws_ami" "latest-coreos" {
+data "aws_ami" "latest-ubuntu" {
 most_recent = true
-owners = ["679593333241"] # AWS Marketplace
+owners = ["099720109477"] # Canonical
   filter {
       name   = "name"
-      values = ["CoreOS-stable-*"]
+      values = ["ubuntu-minimal/images/hvm-ssd/ubuntu-bionic-18.04-amd64-minimal-*"]
   }
 
   filter {
       name   = "virtualization-type"
       values = ["hvm"]
-  }
-
-  filter {
-      name   = "architecture"
-      values = ["x86_64"]
   }
 }
 
@@ -45,7 +40,7 @@ resource "aws_key_pair" "keypair" {
 # Master nodes
 resource "aws_instance" "master" {
   count                  = "${var.master_count}"
-  ami                    = "${data.aws_ami.latest-coreos.id}"
+  ami                    = "${data.aws_ami.latest-ubuntu.id}"
   instance_type          = "${var.master_instance_type}"
   key_name               = "${aws_key_pair.keypair.key_name}"
   subnet_id              = "${element(aws_subnet.main.*.id, count.index % length(aws_subnet.main.*.id))}"
@@ -100,7 +95,7 @@ data "template_file" "masters_ansible" {
 # Worker nodes
 resource "aws_instance" "worker" {
   count                  = "${var.worker_count}"
-  ami                    = "${data.aws_ami.latest-coreos.id}"
+  ami                    = "${data.aws_ami.latest-ubuntu.id}"
   instance_type          = "${var.worker_instance_type}"
   key_name               = "${aws_key_pair.keypair.key_name}"
   subnet_id              = "${element(aws_subnet.main.*.id, count.index % length(aws_subnet.main.*.id))}"
@@ -168,7 +163,7 @@ data "template_file" "inventory_tail" {
 
   vars = {
     section_children = "[servers:children]\nmasters\nworkers"
-    section_vars     = "[servers:vars]\nansible_ssh_user=core\nansible_python_interpreter=/home/core/bin/python\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\ncluster_dns_domain=${var.cluster_dns_domain}\napi_internal_lb_name=${aws_lb.k8s-api-nlb-internal.dns_name}\napi_external_lb_name=${aws_lb.k8s-api-nlb.dns_name}"
+    section_vars     = "[servers:vars]\nansible_become=yes\nansible_ssh_user=ubuntu\nansible_python_interpreter=python3\n[all:children]\nservers\n[all:vars]\ncluster_name=${var.cluster_name}\ncluster_dns_domain=${var.cluster_dns_domain}\napi_internal_lb_name=${aws_lb.k8s-api-nlb-internal.dns_name}\napi_external_lb_name=${aws_lb.k8s-api-nlb.dns_name}"
   }
 }
 

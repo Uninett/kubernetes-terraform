@@ -4,4 +4,4 @@
 - import_playbook: cluster_config.yaml
 - import_playbook: worker.yaml
 - import_playbook: provider.yaml
-- import_playbook: cleanup.yaml
+
