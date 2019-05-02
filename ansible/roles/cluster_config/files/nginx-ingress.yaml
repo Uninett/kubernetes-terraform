@@ -202,7 +202,7 @@ spec:
       serviceAccount: nginx-ingress
       terminationGracePeriodSeconds: 60
       containers:
-        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.24.0
+        - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.24.1
           name: nginx-ingress-lb
           imagePullPolicy: Always
           livenessProbe:
