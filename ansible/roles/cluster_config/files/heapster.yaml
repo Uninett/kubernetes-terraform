@@ -1,3 +1,8 @@
+# Uninett TODO:
+# To be retired, Heapster is EOL upstream
+# kubernetes Dashboard depend on it until this issue has been fixed:
+# https://github.com/kubernetes/dashboard/issues/2986
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
