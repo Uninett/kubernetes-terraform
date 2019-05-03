@@ -1,6 +1,7 @@
-
 cluster_name = "mycluster"
 cluster_dns_domain = "my.domain.example.com"
+
+aws_role = "arn:aws:iam::<AWS Account ID:role/<AWS Role name>"
 
 allow_ssh_from_v4 = [
     "192.168.1.0/24"
