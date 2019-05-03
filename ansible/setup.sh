@@ -7,7 +7,8 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 if [ ! -x ./.ve/bin/ansible ]; then
     echo "Setting up Python virtualenv containing ansible."
     rm -rf .ve
-    virtualenv -p python2 .ve
+    python3 -m venv .ve
+    .ve/bin/pip install --upgrade pip
     .ve/bin/pip install ansible
     .ve/bin/pip install markupsafe
 fi
