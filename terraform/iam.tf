@@ -11,11 +11,11 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
 
 # Master
 resource "aws_iam_role" "controlplane-instance-role" {
-  name               = "K8SControlPlaneEC2Access"
+  name               = "${var.cluster_name}-K8SControlPlaneEC2Access"
   assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
 }
 resource "aws_iam_instance_profile" "controlplane-instance-profile" {
- name = "K8SControlPlaneEC2Access"
+ name = "${var.cluster_name}-K8SControlPlaneEC2Access"
  role = "${aws_iam_role.controlplane-instance-role.name}"
 }
 resource "aws_iam_role_policy_attachment" "controlplane-instance-attach" {
@@ -25,11 +25,11 @@ resource "aws_iam_role_policy_attachment" "controlplane-instance-attach" {
 
 # Worker
 resource "aws_iam_role" "worker-instance-role" {
-  name               = "K8SWorkerNodeEC2Access"
+  name               = "${var.cluster_name}-K8SWorkerNodeEC2Access"
   assume_role_policy = "${data.aws_iam_policy_document.instance-assume-role-policy.json}"
 }
 resource "aws_iam_instance_profile" "worker-instance-profile" {
- name = "K8SWorkerNodeEC2Access"
+ name = "${var.cluster_name}-K8SWorkerNodeEC2Access"
  role = "${aws_iam_role.worker-instance-role.name}"
 }
 resource "aws_iam_role_policy_attachment" "worker-instance-attach" {
@@ -39,7 +39,7 @@ resource "aws_iam_role_policy_attachment" "worker-instance-attach" {
 
 # Velero backup
 resource "aws_iam_user" "velero-backup-user" {
-  name = "velero-backup"
+  name = "${var.cluster_name}-velero-backup"
 }
 resource "aws_iam_user_policy_attachment" "velero-backup-attach" {
   user       = "${aws_iam_user.velero-backup-user.name}"
@@ -48,7 +48,7 @@ resource "aws_iam_user_policy_attachment" "velero-backup-attach" {
 
 # Worker policy
 resource "aws_iam_policy" "worker-instance-policy" {
-  name        = "K8SWorkerNodeEC2Access"
+  name        = "${var.cluster_name}-K8SWorkerNodeEC2Access"
   description = "For use with instance roles that are attached to K8S worker nodes."
 
   policy = <<EOF
@@ -77,7 +77,7 @@ EOF
 
 # Master policy
 resource "aws_iam_policy" "controlplane-instance-policy" {
-  name        = "K8SControlPlaneEC2Access"
+  name        = "${var.cluster_name}-K8SControlPlaneEC2Access"
   description = "For use with instance roles that are attached to K8S master nodes."
 
   policy = <<EOF
@@ -153,7 +153,7 @@ EOF
 
 # Velero backup policy
 resource "aws_iam_policy" "velero-backup-policy" {
-  name        = "K8SVeleroBackupAccess"
+  name        = "${var.cluster_name}-K8SVeleroBackupAccess"
   description = "Used by the velero IAM user and software to backup K8S resources."
 
   policy = <<EOF
@@ -182,7 +182,7 @@ resource "aws_iam_policy" "velero-backup-policy" {
                 "s3:ListMultipartUploadParts"
             ],
             "Resource": [
-                "arn:aws:s3:::uninett-k8s-backup-mktest/*"
+                "arn:aws:s3:::uninett-k8s-backup-${var.cluster_name}/*"
             ]
         },
         {
@@ -191,7 +191,7 @@ resource "aws_iam_policy" "velero-backup-policy" {
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::uninett-k8s-backup-mktest"
+                "arn:aws:s3:::uninett-k8s-backup-${var.cluster_name}"
             ]
         }
     ]
