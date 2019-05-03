@@ -47,7 +47,7 @@ resource "aws_instance" "master" {
   vpc_security_group_ids = ["${aws_vpc.main.default_security_group_id}", "${aws_security_group.ssh_access.id}", "${aws_security_group.api_access.id}"] # TODO: Is the default group needed/wanted here?
   user_data              = "#cloud-config\npreserve_hostname: true\n"
   source_dest_check      = false
-  iam_instance_profile   = "${var.aws_master_iam_profile}"
+  iam_instance_profile   = "${aws_iam_instance_profile.controlplane-instance-profile.name}"
 
   root_block_device {
     delete_on_termination = true
@@ -96,7 +96,7 @@ resource "aws_instance" "worker" {
   vpc_security_group_ids = ["${aws_vpc.main.default_security_group_id}", "${aws_security_group.ssh_access.id}", "${aws_security_group.ingress_lb.id}"]
   user_data              = "#cloud-config\npreserve_hostname: true\n"
   source_dest_check      = false
-  iam_instance_profile   = "${var.aws_worker_iam_profile}"
+  iam_instance_profile   = "${aws_iam_instance_profile.worker-instance-profile.name}"
 
   root_block_device {
     delete_on_termination = true

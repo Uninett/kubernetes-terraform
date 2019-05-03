@@ -2,8 +2,6 @@
 variable "aws_region" {}
 variable "aws_role" {}
 variable "aws_vpc_cidr_block" {}
-variable "aws_master_iam_profile" {}
-variable "aws_worker_iam_profile" {}
 
 variable "master_instance_type" {}
 variable "worker_instance_type" {}
