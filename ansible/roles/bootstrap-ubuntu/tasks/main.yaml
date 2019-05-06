@@ -1,3 +1,17 @@
+# https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html#/etc/resolv.conf
+# We want to bypass the systemd-resolved and have /etc/resolv.conf point directly
+# to upstream DNS servers
+- name: Remove /etc/resolv.conf symlink to systemd-resolved
+  file:
+   path: "/etc/resolv.conf"
+   state: absent
+
+- name: Add new /etc/resolv.conf pointing to upstream DNS servers
+  file:
+    src: "/run/systemd/resolve/resolv.conf"
+    dest: "/etc/resolv.conf"
+    state: link
+
 - name: Install Docker package pinning cfg
   copy:
     src: "docker-pinning"
