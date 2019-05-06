@@ -1,0 +1,32 @@
+---
+apiVersion: kubelet.config.k8s.io/v1beta1
+kind: KubeletConfiguration
+staticPodPath: /etc/kubernetes/manifests
+clusterDNS:
+  - "{{ dns_service_ip }}"
+clusterDomain: cluster.local
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/etc/ssl/kubelet/ca.pem"
+authorization:
+  mode: Webhook
+serializeImagePulls: false
+readOnlyPort: 0
+tlsCertFile: "/etc/ssl/kubelet/node.pem"
+tlsPrivateKeyFile: "/etc/ssl/kubelet/node-key.pem"
+nodeStatusUpdateFrequency: 4s
+evictionMinimumReclaim:
+  memory.available: 100Mi
+  nodefs.available: 1Gi
+  imagefs.available: 2Gi
+evictionHard:
+  memory.available: "{{ eviction_memory }}"
+  nodefs.available: "{{ eviction_nodefs }}"
+  imagefs.available: "{{ eviction_imagefs }}"
+systemReserved:
+  cpu: {{ system_reserved_cpu }}
+  memory: {{ system_reserved_memory }}
