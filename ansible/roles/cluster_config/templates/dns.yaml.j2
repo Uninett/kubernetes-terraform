@@ -98,9 +98,9 @@ spec:
       labels:
         k8s-app: kube-dns
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
+      priorityClassName: system-node-critical
       serviceAccount: kube-dns
       tolerations:
       - key: "CriticalAddonsOnly"

@@ -80,9 +80,9 @@ spec:
       labels:
         app: heapster
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
+      priorityClassName: system-node-critical
       serviceAccountName: heapster
       containers:
         - image: gcr.io/google_containers/heapster:v1.3.0

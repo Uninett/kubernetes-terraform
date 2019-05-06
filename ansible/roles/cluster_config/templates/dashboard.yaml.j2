@@ -94,9 +94,9 @@ spec:
       labels:
         app: dashboard
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
+      priorityClassName: system-cluster-critical
       serviceAccountName: dashboard
       volumes:
         - name: db-proxy-config
