@@ -62,7 +62,7 @@
     owner: root
     group: root
     mode: 0644
-  register: kubelet_svc
+  register: kube_proxy
   tags: k8s_upgrade
 - name: Install kubelet binary
   shell: curl -sSL "https://storage.googleapis.com/kubernetes-release/release/v{{ k8s_ver }}/bin/linux/amd64/kubelet" -o /opt/bin/kubelet
@@ -100,7 +100,7 @@
   tags: k8s_upgrade
 - name: restart kubelet
   service: name=kubelet state=restarted enabled=yes
-  when: kubelet_svc.changed or kubelet_conf.changed
+  when: kubelet_svc.changed or kubelet_conf.changed or kube_proxy.changed
   tags: k8s_upgrade
 - name: run kubelet
   service: name=kubelet state=started enabled=yes
