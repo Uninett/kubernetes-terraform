@@ -1,3 +1,6 @@
+# NOTE: This project is no longer maintained
+
+
 PaaS 2 kubernetes platform
 ==========================
 
